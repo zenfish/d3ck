@@ -1,0 +1,69 @@
+{
+    "D3CK" : {
+        "home"               : "/etc/d3ck",
+        "keystore"           : "/d3cks",
+        "secretz"            : "/secretz.json",
+        "bin"                : "/exe",
+        "pub"                : "/public",
+        "tmp"                : "/tmp",
+        "logs"               : "/logs",
+        "d3ck_port_int"      : "5555",
+        "d3ck_port_ext"      : "8080",
+        "d3ck_port_signal"   : "8081",
+        "d3ck_proto_signal"  : "tcp",
+        "d3ck_port_forward"  : "5556",
+        "default_image"      : "/public/img/d3ck.png"
+        },
+
+    "fri3nd_find3r" : {
+        "ip":   "54.203.255.17",
+        "port": "8080"
+    },
+
+    "capabilities" : {
+        "friend request":       { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
+        "VPN":                  { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
+        "SIP":                  { "paranoid": "off", "moderate": "off", "trusting": "on"  },
+        "webRTC":               { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
+        "file transfer":        { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
+        "messages":             { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
+        "command execution":    { "paranoid": "off", "moderate": "off", "trusting": "ask" },
+        "Geo-translocation":    { "paranoid": "off", "moderate": "off", "trusting": "ask" }
+    },
+    
+    "crypto": {
+        "keysize"       : "2048",
+        "life_d3ck"     : "365",
+        "life_vpn"      : "30",
+        "bcrypt_rounds" : "12"
+    },
+
+    "limits": {
+        "max_upload_size" : "1073741824",
+        "max_image_size"  : "4194304"
+    },
+
+    "misc": {
+        "did_polling_time" : "3000"
+    },
+
+    "public_routes": [
+        "d3ck",
+        "css",
+        "favicon.ico",
+        "img",
+        "images",
+        "js",
+        "knock",
+        "login",
+        "login.html",
+        "popup.html",
+        "loginFailure",
+        "quikstart.html",
+        "quik",
+        "qs",
+        "sping",
+        "cli3nt"
+    ]
+
+}

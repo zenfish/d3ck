@@ -1,0 +1,74 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            e9:d2:da:f6:f5:12:1d:b4:73:f1:16:33:72:34:97:93
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=AQ, ST=White, L=D3cktown, O=D3ckasaurusRex, CN=c22fef6a178e50a8340edc28277ab1a0
+        Validity
+            Not Before: Sep  8 20:57:32 2014 GMT
+            Not After : Sep  8 20:57:32 2015 GMT
+        Subject: C=AQ, ST=White, L=D3cktown, O=D3ckasaurusRex, CN=bec63b6afd882261a3176a431ed8a4f7
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (1024 bit)
+                Modulus:
+                    00:cc:56:30:10:7c:40:ac:a6:79:86:40:5d:c0:4d:
+                    28:de:eb:da:6a:e7:68:4c:96:6b:f9:15:a1:50:bb:
+                    07:f8:c5:07:d7:06:80:92:80:34:d2:d1:d0:1e:dc:
+                    2a:f6:f6:71:fe:2a:c7:93:42:19:4f:66:08:d8:dd:
+                    5a:97:6e:ed:d9:50:72:98:68:f5:70:d7:e5:a9:c5:
+                    86:24:f9:57:4d:f3:19:3f:98:ee:37:c6:f4:be:fc:
+                    ce:d5:9c:e2:70:12:64:08:bd:c9:4e:64:cd:8b:8f:
+                    85:e1:c2:5d:c3:a5:fb:56:99:c7:d3:f8:e3:53:b1:
+                    5a:a9:65:44:22:13:a6:58:9f
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Cert Type: 
+                SSL Client
+            Netscape Comment: 
+                d3ck Client Certificate
+            X509v3 Subject Key Identifier: 
+                6E:BF:98:7D:A9:79:0E:C6:B0:BE:D0:7F:09:2E:D4:E6:D3:27:DA:2D
+            X509v3 Authority Key Identifier: 
+                keyid:A7:1E:43:51:BC:59:18:D7:D1:12:24:8B:A0:35:AD:57:72:91:45:36
+                DirName:/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=c22fef6a178e50a8340edc28277ab1a0
+                serial:E0:F6:1D:4B:09:D2:D5:D3
+
+            X509v3 Extended Key Usage: 
+                TLS Web Client Authentication
+            X509v3 Key Usage: 
+                Digital Signature
+    Signature Algorithm: sha256WithRSAEncryption
+         11:80:d8:8f:69:d8:a5:1c:2b:4a:30:21:32:5a:32:9c:fb:fe:
+         93:1f:b2:33:c2:0d:b6:88:e1:c5:ab:75:e8:86:af:f2:ef:33:
+         ab:59:49:33:7f:e4:14:ac:cb:cb:a4:23:7b:00:f3:81:a9:3c:
+         8f:1a:de:7c:4d:99:cf:7f:5a:2c:54:64:6c:ce:82:df:f8:c1:
+         d5:cb:b2:e8:e6:3e:15:a2:23:f0:98:9c:7d:1b:2c:9b:ce:49:
+         c5:ef:1a:03:b4:51:c7:b7:f0:44:66:1f:c5:1d:96:2f:f8:f8:
+         27:f7:95:0a:7e:06:0d:55:f5:e8:e6:bc:ad:82:7a:87:4d:ef:
+         56:1c
+-----BEGIN CERTIFICATE-----
+MIIDpDCCAw2gAwIBAgIRAOnS2vb1Eh20c/EWM3I0l5MwDQYJKoZIhvcNAQELBQAw
+dDELMAkGA1UEBhMCQVExDjAMBgNVBAgMBVdoaXRlMREwDwYDVQQHDAhEM2NrdG93
+bjEXMBUGA1UECgwORDNja2FzYXVydXNSZXgxKTAnBgNVBAMMIGMyMmZlZjZhMTc4
+ZTUwYTgzNDBlZGMyODI3N2FiMWEwMB4XDTE0MDkwODIwNTczMloXDTE1MDkwODIw
+NTczMlowdDELMAkGA1UEBhMCQVExDjAMBgNVBAgMBVdoaXRlMREwDwYDVQQHDAhE
+M2NrdG93bjEXMBUGA1UECgwORDNja2FzYXVydXNSZXgxKTAnBgNVBAMMIGJlYzYz
+YjZhZmQ4ODIyNjFhMzE3NmE0MzFlZDhhNGY3MIGfMA0GCSqGSIb3DQEBAQUAA4GN
+ADCBiQKBgQDMVjAQfECspnmGQF3ATSje69pq52hMlmv5FaFQuwf4xQfXBoCSgDTS
+0dAe3Cr29nH+KseTQhlPZgjY3VqXbu3ZUHKYaPVw1+WpxYYk+VdN8xk/mO43xvS+
+/M7VnOJwEmQIvclOZM2Lj4Xhwl3DpftWmcfT+ONTsVqpZUQiE6ZYnwIDAQABo4IB
+NDCCATAwCQYDVR0TBAIwADARBglghkgBhvhCAQEEBAMCB4AwJgYJYIZIAYb4QgEN
+BBkWF2QzY2sgQ2xpZW50IENlcnRpZmljYXRlMB0GA1UdDgQWBBRuv5h9qXkOxrC+
+0H8JLtTm0yfaLTCBpgYDVR0jBIGeMIGbgBSnHkNRvFkY19ESJIugNa1XcpFFNqF4
+pHYwdDELMAkGA1UEBhMCQVExDjAMBgNVBAgMBVdoaXRlMREwDwYDVQQHDAhEM2Nr
+dG93bjEXMBUGA1UECgwORDNja2FzYXVydXNSZXgxKTAnBgNVBAMMIGMyMmZlZjZh
+MTc4ZTUwYTgzNDBlZGMyODI3N2FiMWEwggkA4PYdSwnS1dMwEwYDVR0lBAwwCgYI
+KwYBBQUHAwIwCwYDVR0PBAQDAgeAMA0GCSqGSIb3DQEBCwUAA4GBABGA2I9p2KUc
+K0owITJaMpz7/pMfsjPCDbaI4cWrdeiGr/LvM6tZSTN/5BSsy8ukI3sA84GpPI8a
+3nxNmc9/WixUZGzOgt/4wdXLsujmPhWiI/CYnH0bLJvOScXvGgO0Uce38ERmH8Ud
+li/4+Cf3lQp+Bg1V9ejmvK2CeodN71Yc
+-----END CERTIFICATE-----

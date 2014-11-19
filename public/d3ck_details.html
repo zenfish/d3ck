@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+<meta charset="utf-8">
+<title>Detailed D3CKasaurus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="rawr!">
+
+<!-- Le styles -->
+<!-- <link href="/css/bootstrap.min.css" rel="stylesheet"> -->
+
+<!-- made a one line change in this, noted at top -->
+<link href="/css/bootstrap.css" rel="stylesheet">
+
+<!-- trivial bits here -->
+<link href="/css/d3ck.css" rel="stylesheet">
+
+<!-- form to add files -->
+<link href="/css/jquery.filer.css" rel="stylesheet">
+
+<!-- a few more icons -->
+<link href="/css/whhg.css" rel="stylesheet">
+
+<!-- nav menus -->
+<link href="/css/yamm.css" rel="stylesheet">
+
+<!-- <link href="/css/bootstrap-responsive.css" rel="stylesheet"> -->
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="/js/html5shiv.js"></script>
+<![endif]-->
+
+<!-- for d3cks -->
+<!-- http://cube3x.com/adipoli-jquery-image-hover-plugin/ -->
+<!-- <link href="/css/adipoli.css" rel="stylesheet" type="text/css"/> -->
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <nav class="navbar navbar-default zenlarge" role="navigation">
+
+            <ul class="nav nav-tabs navbar-nav navbar-left">
+
+                <li class="active"><a href="/" data-toggle="tab"><span id="d3ck_top_home" title="home" data-content="Click your heels three times..." class="glyphicon glyphicon-home"></span></a></li>
+            </ul>
+
+        </nav>
+
+        <div class="container-fluid">
+
+            <!-- for incoming/outgoing calls -->
+
+            <a href="#" id="incoming" class="button left"></a>
+            <a href="#" id="outgoing" class="button left"></a>
+
+        </div> <!-- end of form/top stuff -->
+
+
+        <div class="container-fluid tab-content">
+
+        <!-- d3cks -->
+
+        <div class="container">
+
+            <div class="panel-group" id="d3ck_accordion">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#d3ck_accordion" href="#d3ck_base_details">D3CK details </a>
+                    </h4>
+                </div>
+                <div id="d3ck_base_details" class="panel-collapse collapse in">
+                    <div id="d3ck_basics" class="panel-body"> </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#d3ck_accordion" href="#d3ck_vpn_details">D3CK VPN details </a>
+                    </h4>
+                </div>
+                <div id="d3ck_vpn_details" class="panel-collapse collapse">
+                    <div id="d3ck_vpn_basics" class="panel-body"> </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- make it so -->
+        <form action='/form' method="POST">
+        <fieldset>
+            <div class="control-group">
+                <span> <input style="display:none" id="d3ck_action" name="d3ck_action" value="DELETE" /> </span>
+                <span> <input style="display:none" id="d3ckid_form" name="d3ckid" value="" /> </span>
+                <div class="controls">
+                <!-- this does some javascript fu below to post the data and redirect back to this page -->
+                <button id="d3ck_button_delete" class="btn btn-large btn-danger">DELETE w NO CONFIRM </button>
+                </div>
+            </div>
+        </fieldset>
+        </form>
+        </div>
+
+        <!-- spacer n feets below -->
+
+        <div class="btn-toolbar"> <span></span></div>
+        <div class="btn-toolbar"> <span class="spacer100"></span></div>
+
+        <div class="footer" id="d3ck_footy">
+            <p id='ip_diddy' class="text-muted credit">no electrons were harmed in the making of this footer</p>
+        </div>
+
+
+<script type="text/javascript" src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript" src='/js/jquery-ui.1.9.2.min.js'></script>
+<script type="text/javascript" src='/js/bootstrap.js'></script>
+<script type="text/javascript" src='/js/moustache.js'></script>
+<script type="text/javascript" src='/js/jquery.adipoli.min.js'></script>
+<script type="text/javascript" src='/js/jquery.json-2.4.min.js'></script>
+<script type="text/javascript" src='/js/jquery.inputmask.js'></script>
+<script type="text/javascript" src="/js/underscore-min.js"></script>
+
+<script type="text/javascript" src='/js/spin.js'></script>
+<script type="text/javascript" src='/js/jquery.blockUI.js'></script>
+<script type="text/javascript" src='/js/jquery.avgrund.js'></script>
+<script type="text/javascript" src="/js/bootstrap-paginator.js"></script>
+
+<script type="text/javascript" src="/js/jquery.filer.min.js"></script>
+<script type="text/javascript" src="/js/jquery.mCustomScrollbar.concat.js"></script>
+<!-- <script type="text/javascript" src="/js/simplewebrtc.js"></script> -->
+
+<!-- my stuff -->
+<script type="text/javascript" src='/js/d3ck.js'></script>
+
+    <!-- make the known d3cks appear in the correct section -->
+    <script type='text/javascript'>
+
+       d3ckid = ""
+       //
+       // if they hit nuke d3ck... post data to server to make it happen
+       // 
+       // TODO - check if it worked :)
+       function d3ck_delete() {
+
+          $('#d3ck_button_delete').text("... nuking ...")
+
+          var d3ckid = document.getElementById('d3ckid').textContent
+
+          console.log('deleting ' + d3ckid)
+
+          var    dead_d3ck         = {}
+          dead_d3ck['d3ckid']      = d3ckid
+          dead_d3ck['d3ck_action'] = 'DELETE'
+
+          var postify = $.ajax({
+               type: "POST",
+               // XXXX
+               // url: "/d3ck",
+               url: "/form",
+               dataType: "json",
+               data: dead_d3ck
+          })
+              .done(function()   { console.log("success"); })
+              .fail(function()   { console.log("error"); })
+              .always(function() { console.log("finished"); });
+       window.location = '/d3ck.html'
+       }
+
+
+
+
+//
+// when ready...
+//
+$(document).ready(function () {
+
+    $("#d3ck_button_delete").on('click', function(e) { 
+        e.preventDefault();
+        d3ck_delete()
+    })
+
+
+
+     $('#d3ck_accordion').collapse({
+        toggle: false
+     })
+
+     // perhaps look for a better way :)
+     var query = location.search.substr(1);
+     var data = query.split("&");
+
+     for(var i=0; i<data.length; i++) {
+        var item = data[i].split("=");
+        if (item[0] = "d3ckid") {
+           $('#d3ck_vpn').append(item[1])
+           // global
+           d3ckid = item[1]
+           // console.log("d3ckid: " + item[1])
+        }
+        else {
+           error = 1
+           $('#d3ck_id').append("Error - this page must be called with a d3ckid=valid-id")
+           console.log('Error - this page must be called with a valid-id, like https://localhost/d3ck_details.html?d3ck=markus007')
+        }
+     }
+     $('input[id=d3ckid_form]').val(d3ckid)
+
+     // get more detailed data...
+     $.getJSON('/d3ck/' + d3ckid, function(d3ckinfo) {
+
+        // console.log(d3ckinfo)
+
+        print_d3ck(d3ckid, d3ckinfo, ['#d3ck_basics', '#d3ck_vpn_basics', '#d3ck_vpn_client_basics'])
+
+     })
+
+
+    $('body').on('click', '#d3ck_top_home', function(event) { 
+        console.log('clickin my heelz as fast as I can')
+        window.location.href = "/"
+    })
+
+})
+
+</script>
+
+</body>
+</html>

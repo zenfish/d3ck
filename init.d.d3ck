@@ -1,0 +1,125 @@
+#!/bin/bash
+
+#
+# xxx - needs fixing, actually track pids, you idiot
+#
+
+
+#
+# D3CK service start
+#
+# Based on /etc/init.d/d3ck on raspberry
+#
+
+### BEGIN INIT INFO
+# Provides:        d3ck
+# Required-Start:  $network $local_fs
+# Required-Stop:   $local_fs
+# Default-Start:   2 3 4 5
+# Default-Stop:    0 1 6
+# Short-Description: Start d3ck server(s)
+# Description:       Used to start and stop a d3ck server
+### END INIT INFO
+
+
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+. /lib/lsb/init-functions
+
+DAEMON=$(readlink -f /usr/local/sbin/d3ckd)
+PIDFILE=/var/run/d3ckd.pid
+
+test -x $DAEMON || exit 5
+
+if [ -r /etc/default/d3ck ]; then
+        . /etc/default/d3ck
+fi
+
+# LOCKFILE=/var/lock/d3ck
+
+NUM_PIDS=4
+
+lock_d3ckdate() {
+        if [ -x /usr/bin/lockfile-create ]; then
+                lockfile-create $LOCKFILE
+                lockfile-touch $LOCKFILE &
+                LOCKTOUCHPID="$!"
+        fi
+}
+
+unlock_d3ckdate() {
+        if [ -x /usr/bin/lockfile-create ] ; then
+                kill $LOCKTOUCHPID
+                lockfile-remove $LOCKFILE
+        fi
+}
+
+all_da_ps() {
+        # only works on D3CK... will kill others if not careful...!   ;)
+        echo $(ps axuww|egrep 'nginx|openv|yate|node main.js'|grep -v grep | awk '{print $2}')
+}
+
+case $1 in
+
+        start)
+
+                # without this... we're hosed
+                # service redis-server start
+                /etc/init.d/redis* start
+
+                log_daemon_msg "Starting D3CK server" "d3ckd"
+                # lock_d3ckdate
+                # start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --startas $DAEMON -- -p $PIDFILE $D3CKD_OPTS > /etc/d3ck/logs/d3ck.log
+                start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --startas $DAEMON -- -p $PIDFILE $D3CKD_OPTS
+                status=$?
+                # unlock_d3ckdate
+                log_end_msg $status
+                ;;
+
+
+        stop)
+                log_daemon_msg "Stopping D3CK server" "d3ckd"
+                log_end_msg $status
+
+                for PID in $(all_da_ps); do
+                    kill $PID
+                done
+
+                service nginx stop
+                /etc/init.d/redis* stop
+                # killall -9 redis-server
+                service openvpn stop
+
+                log_end_msg $?
+                  ;;
+
+        restart|force-reload)
+                $0 stop && sleep 2 && $0 start
+                  ;;
+
+        try-restart)
+                if $0 status >/dev/null; then
+                        $0 restart
+                else
+                        exit 0
+                fi
+                ;;
+
+        status)
+                num=$( echo $(all_da_ps) | awk '{print NF}')
+
+                if [ $num != $NUM_PIDS ] ; then
+                    log_success_msg "d3ck is running $num program(s) (should be $NUM_PIDS)"
+                    exit 3
+                else
+                    log_success_msg "d3ck is running"
+                    exit 0
+                fi
+
+                ;;
+        *)
+                echo "Usage: $0 {start|stop|restart|try-restart|status}"
+                exit 2
+                ;;
+esac

@@ -1,0 +1,5 @@
+
+puck-to-puck auth will use client-side certs (among other things.)
+
+Sample node-to-node client/server test programs here
+

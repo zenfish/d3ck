@@ -1,0 +1,125 @@
+# hack for my old box
+user zen;
+
+# misc jinxy stuff
+
+pid                     /etc/d3ck/logs/nginx.pid;
+worker_processes        1;
+working_directory       /etc/d3ck;
+
+events { 
+    worker_connections  1024; 
+}
+
+
+#
+# where the rubber meets the road
+#
+http {
+
+    server {
+
+        #
+        # basix
+        #
+        listen                      *:8080;
+        listen                      *:443;
+        ssl                         on;
+        server_name                 d3ck;
+
+        # xxx - todo - drag this in from other confs
+        client_max_body_size 1024M;
+
+        #
+        # logs
+        #
+        # access_log                  /etc/d3ck/logs/proxy-access.log;
+        # error_log                   /etc/d3ck/logs/proxy-error.log debug;
+        # error_log                   /etc/d3ck/logs/proxy-error.log;
+        # turn off
+        access_log                    /dev/null;
+        error_log                     /dev/null;
+
+        #
+        # certs
+        #
+        ssl_certificate             /etc/d3ck/d3cks/D3CK/d3ck.crt;
+        ssl_certificate_key         /etc/d3ck/d3cks/D3CK/d3ck.key;
+        ssl_client_certificate      /etc/d3ck/d3cks/D3CK/ca.crt;
+
+        #
+        # ssl options and stuff
+        #
+
+        # ok if you have a cert, but it'd better be right if so
+        ssl_verify_client           optional;
+
+        # thanks for all the fish, whit
+        ssl_dhparam                 /etc/d3ck/d3cks/D3CK/dh.params;
+
+        ssl_session_timeout         5m;
+
+        ssl_prefer_server_ciphers   On;
+
+        #
+        # fuck older versions!
+        #
+        # well.. that was my sentiment... but now the latest firefox breaks on 
+        # ECDHE-RSA-AES256-SHA... and demands TLSv1, apparently, sigh! ... frickin browsers,
+        # if it's not one thing it's another.
+        # https://bugzilla.mozilla.org/show_bug.cgi?id=1042520
+
+        ssl_protocols               SSLv3 TLSv1.2 TLSv1.1 TLSv1;
+        # ssl_protocols               SSLv3 TLSv1.2 TLSv1.1;
+
+        # mostly from https://wiki.mozilla.org/Security/Server_Side_TLS -
+        # but now their own browser breaks on this, irony
+        # ssl_ciphers                 ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK;
+        ssl_ciphers                 ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK;
+
+        keepalive_timeout           5m;
+
+        ### Set headers to help out nodey
+        proxy_set_header            X-SSL-Client-Verify $ssl_client_verify;
+        proxy_set_header            X-SSL-Client-S-DN   $ssl_client_s_dn;
+
+        proxy_set_header            Accept-Encoding     "";
+        proxy_set_header            Host                $host;
+        proxy_set_header            X-Real-IP           $remote_addr;
+        proxy_set_header            X-Forwarded-For     $proxy_add_x_forwarded_for;
+        proxy_set_header            X-Forwarded-Proto   $scheme;
+
+        add_header                  Front-End-Https     on;
+
+
+        #
+        # websockets
+        #
+        location /socket.io {   
+
+            # sockety stuff
+            proxy_pass              http://D3CK_SIG:5555;
+            proxy_http_version      1.1;
+            proxy_redirect          off;
+
+            proxy_set_header        Upgrade $http_upgrade;
+            proxy_set_header        Connection "upgrade";
+
+        }
+
+        #
+        # normal web stuff
+        #
+        location / {
+
+            root                    /etc/d3ck;
+            proxy_pass              http://localhost:5555;
+            proxy_redirect          off;
+
+            # proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+
+        }
+
+    }
+
+}

@@ -1,0 +1,31 @@
+
+ubuntu... make something in /etc/init.d runnable...
+
+    update-rc.d foo-filename defaults
+    update-rc.d foo-filename enable
+
+
+
+poker cards 3.5 x 2.5
+
+
+
+
+When a d3ck is added:
+
+    create set of certs they may use to communicate to our d3ck
+
+    save these certs in the directory corresponding to the keys we got from them
+
+        xxx - save in redis
+
+
+
+# rasbperry pi
+
+wget http://node-arm.herokuapp.com/node_latest_armhf.deb
+
+#   [...]
+#   Saving to: `node_latest_armhf.deb'
+
+sudo dpkg -i node_latest_armhf.deb

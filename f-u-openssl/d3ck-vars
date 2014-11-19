@@ -1,0 +1,4 @@
+export EASY_RSA="`pwd`"
+export KEY_DIR="$EASY_RSA/keys"
+export PKCS11_MODULE_PATH="dummy"
+export PKCS11_PIN="dummy"

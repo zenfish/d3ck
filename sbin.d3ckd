@@ -1,0 +1,139 @@
+#!/bin/bash -x
+
+#
+# Starts up the D3CK programs... openvpn, yate, and the node app
+#
+# Will create a default D3CK if none are present
+#
+
+echo starting D3CK server...
+
+. /etc/d3ck/config.sh
+
+cd $D3CK_HOME
+
+# nuke any past status
+echo '{"events":{"new_d3ck":""},"openvpn_server":{"vpn_status":"down","start":"n/a","start_s":"n/a","duration":"unknown","stop":"unknown","stop_s":"unknown", "client": "unknown", "client_did":"unknown"},"openvpn_client":{"vpn_status":"down","start":"n/a","start_s":"n/a","duration":"unknown","stop":"unknown","stop_s":"unknown"}, "browser_events":{"127.0.0.1" :{ "notify_add":false, "notify_ring":false, "notify_file":false}}, "file_events": { "file_name" : "", "file_size" : "", "file_from" : ""}}' > $D3CK_HOME/status.d3ck
+
+
+service openvpn stop
+service nginx   stop
+
+# clear server and client logs
+echo > $D3CK_LOGS/client_vpn.log
+echo > $D3CK_LOGS/server_vpn.log
+
+# wipe out command logs
+rm -f $D3CK_LOGS/*.err.log
+rm -f $D3CK_LOGS/*.out.log
+
+# if no dir or symlink
+if [ ! -d $d3ck_keystore -o ! -h $d3ck_keystore ] ; then
+    cd $hell
+    mkdir clients
+
+    ./rot-in-hell.sh
+
+    cd ..
+
+    mkdir $d3ck_keystore
+    mkdir $keystore/vpn_client
+    mkdir $D3CK_UPLOADS
+
+    cp $hell/ca* $hell/d3ck* $d3ck_keystore
+
+    # all in one file
+    cat $hell/d3ck*{key,crt} $hell/ca* > $d3ck_keystore/d3ck.all
+
+    ln -s $d3ck_keystore/ca.crt $d3ck_keystore/d3ckroot.crt
+
+    cp $hell/vpn* $keystore/vpn_client
+    cat $hell/vpn*{crt,key} > $keystore/vpn_client/vpn_client.all
+
+    # print SHA1 fingerprint
+    openssl x509 -noout -fingerprint -in $d3ck_keystore/d3ck.crt | awk -F= '{printf("%s", $2)}' | sed 's/://g' | tee -a $d3ck_keystore/d3ck.did
+
+    did=`cat $d3ck_keystore/d3ck.did`
+    cp $d3ck_keystore/d3ck.did $D3CK_HOME/public/d3ck.did
+
+    # DHM key
+    ./create_tlsauth.sh $did
+
+    # xxx - give all clients the same TA key?  No!
+
+    ./create_dhm.sh
+
+    mv $d3ck_keystore/* $keystore/$did
+    rmdir $d3ck_keystore
+    ln -s $keystore/$did $d3ck_keystore
+
+    # print out some summary data about the keys
+    for cert in $d3ck_keystore/{d3ck,ca}.crt $keystore/vpn_client/vpn_client.crt ; do
+        $D3CK_BIN/dump_cert.sh $cert > $cert.info
+    done
+
+    ./exe/certitude.sh $d3ck_keystore/d3ck.crt > $d3ck_keystore/d3ck.crt.json
+
+    ln -s $d3ck_keystore/d3ck.crt.json $D3CK_HOME/public/d3ck.crt.json
+
+    # current eth0 ip addr
+    ip=$(ifconfig eth0 | awk '/inet/ {split($2, ip, ":"); print ip[2]}')
+
+    # need to start this before we try a REST call to it....
+
+    ./exe/init_d3ck.sh $did img $ip "$($D3CK_HOME/exe/get_net.sh)" Ms_D3CK d3ck@example.com
+
+    NODE_PATH="$D3CK_HOME/" node main.js &
+
+else
+    cp $d3ck_keystore/d3ck.did $D3CK_HOME/public/d3ck.did
+
+    # if not started above, do so now
+    NODE_PATH="$D3CK_HOME/" node main.js &
+
+fi
+
+# for testing only... get something in the 10.x.y/24 zone
+x=$((RANDOM%254+1))
+y=$((RANDOM%254+1))
+
+base10="10.$x.$y"
+
+#
+# why in the name of holy fuck does openvpn require a /29 or bigger?
+# Did /31 kill their dog or something?  There must be a reason... somewhere...
+#
+mask10="255.255.255.248"
+
+cd $D3CK_HOME
+
+echo flushing all iptables and cached routes
+./exe/flush.sh
+
+openvpn --server $base10.0 $mask10 --config S.conf &
+
+echo "$base10.1" > $D3CK_HOME/public/openvpn_server.ip
+
+yate -c $D3CK_HOME/yate/ -vvvvv -d -l $D3CK_HOME/log/yate.log -Dt
+
+# another... hack... in a long line of ... oh, forget it.
+vpn_sleep=10
+echo sleeping for $vpn_sleep seconds to try to ensure openvpn has an ip adddress up
+
+sleep $vpn_sleep
+
+vpn_ip=$(ifconfig | awk '{if (n) { all[dev] = substr($2, match($2, ":") + 1); n = 0 }} {if (match($0, "^[^ \t]") && $1 != "lo" && match($1, "^tun0$")) { n = 1; dev = $1; all[dev]="" }} END { for (i in all) print all[i]}'| sed 's/,]$/]/')
+
+if [ "X$vpn_ip" = "X" ]; then
+    echo "WARNING!  No IP picked up for OpenVPN"
+    echo "WARNING!  No IP picked up for OpenVPN"
+    echo "WARNING!  No IP picked up for OpenVPN"
+    echo "WARNING!  No IP picked up for OpenVPN"
+else
+    echo firing up proxy....
+    $D3CK_BIN/proxy_fix.sh
+    # echo ...nothing to do...
+fi
+
+exit 0
+

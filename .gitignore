@@ -1,3 +1,5 @@
+# git default for node...
+
 # Logs
 logs
 *.log
@@ -26,3 +28,129 @@ node_modules
 
 # Users Environment Variables
 .lock-wscript
+
+
+#
+# more by me
+
+#
+########################
+# node.js / npm
+########################
+lib-cov
+*.seed
+*.log
+*.logs
+*.csv
+*.dat
+*.out
+*.pid
+*.did
+*.gz
+
+pids
+results
+
+logs/*
+
+node_modules
+node_modules/**
+node_modules/*
+
+npm-debug.log
+
+
+########################
+# misc / editors
+########################
+*~
+*#
+.DS_STORE
+@eaDir
+.idea
+*.swp
+
+########################
+# local config
+########################
+config/local.js
+
+###### me ######
+uploads
+uploads/*
+
+tmp
+tools
+_test_
+data
+*.old*
+
+_*
+
+dump.rdb
+
+tmp/*
+
+# some key stuff
+*.key
+keys
+f-u-openssl/keys
+index.txt
+index.txt.old
+serial
+serial.old
+ca.crt
+ca.key
+d3ck.crt
+d3ck.csr
+d3ck.key
+ta.key
+vpn_client.crt
+vpn_client.csr
+vpn_client.key
+
+f-u-openssl/d3ck.crt
+f-u-openssl/d3ck.key
+f-u-openssl/d3ck.csr
+
+f-u-openssl/[A-Z]*
+f-u-openssl/[0-9]*
+
+# d3ck details/data
+d3cks/*
+.gitignore
+
+public/img/????????????????????????????????????????.???
+
+public/*.ip
+public/*.pid
+
+server_vpn.json
+client_vpn.json
+
+secretz.json
+
+ToDo
+status.d3ck
+
+inSync.sh
+Redis-notez
+
+dump.rdb
+
+.rnd
+
+public/openvpn_server.ip 
+public/d3ck.pid 
+public/d3ck.crt.json
+
+d3ck.pid 
+openvpn_server.ip
+
+haproxy.cf
+
+nginx.cf
+conf/nginx.cf
+
+nginx32
+

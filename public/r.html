@@ -1,0 +1,81 @@
+<html lang="en">
+
+<!-- slightly modified version from:
+
+    // Muaz Khan         - www.MuazKhan.com
+    // MIT License       - www.WebRTC-Experiment.com/licence
+    // Experiments       - github.com/muaz-khan/WebRTC-Experiment
+
+-->
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        
+        <!-- ui-stylesheet -->
+        <link href="/css/rtc_style.css" rel="stylesheet">
+        <link href="/css/rtc_scroll.css" rel="stylesheet">
+        
+        <link href="/css/bootstrap.css" rel="stylesheet">
+
+    </head>
+
+    <body>
+
+        <div class="controls">
+            <button id="allow-webcam" class="icon" disabled></button>
+            <button id="allow-mic" class="icon" disabled></button>
+            <button id="allow-screen" class="icon" disabled></button>
+            <button id="share-files" class="icon" disabled></button>
+        </div>
+
+        <div id="video_one"></div>
+        <div id="video_two"></div>
+
+        <div class="settings">
+            <button id="settings">Settings</button>
+        </div>
+	
+        <div class="users-list">
+            <span>Users: </span><span class="numbers-of-users">0</span>
+        </div>
+		
+        <div>
+            <img style="clear:both; height: 100px; width=1px;" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+        </div>
+
+        <div class="main-input-box">
+            <textarea placeholder="...type your blah blahs out..."></textarea>
+			
+			<p id="who-is-typing"></p>
+			
+        </div>
+        
+        <div class="users-container"></div>
+		
+        <div class="main">
+            <div class="new-message"> </div>
+        </div>
+        
+
+        <script type="text/javascript" src="/js/jquery-2.1.0.min.js"></script>
+        <script type="text/javascript" src='/js/firebase.js''></script>
+        <script type="text/javascript" src="/js/RTCMultiConnection-v1.7.js"> </script>
+
+        <!-- RTC -->
+
+<!--
+        <script type="text/javascript" src="/js/linkify.js"> </script>
+        <script type="text/javascript" src='/js/screenshot.js'></script>
+        <script type="text/javascript" src='/js/RecordRTC.js'></script>
+        <script type="text/javascript" src="/js/rtc_ui.main.js"> </script>
+        <script type="text/javascript" src="/js/rtc_ui.peer-connection.js"> </script>
+        <script type="text/javascript" src="/js/rtc_ui.share-files.js"> </script>
+        <script type="text/javascript" src="/js/rtc_ui.users-list.js"> </script>
+        <script type="text/javascript" src="/js/rtc_ui.settings.js"> </script>
+-->
+
+    </body>
+</html>

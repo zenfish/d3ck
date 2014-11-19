@@ -1,0 +1,46 @@
+<!-- <script src="http://192.168.0.250:5555/socket.io/socket.io.js"></script> -->
+<script src="https://192.168.0.250:8080/socket.io/socket.io.js"></script>
+<script>
+    // var socket = io.connect('http://192.168.0.250:5556' , { resource: "sigsig" } );
+    // var socket = io.connect('http://10.45.131.1:8080' , { resource: "sigsig" } );
+    var socket = io.connect('https://192.168.0.250:8080' , { resource: "sigsig" } );
+
+    socket.on('connect', function(){
+        console.log('[<..>] woot woot!')
+        socket.emit('message', '123456');
+    })
+
+    socket.on('error', function(e){
+        console.log('[!!..!!] erroneous rex... ')
+        console.log(JSON.stringify(e))
+    })
+
+    socket.on('reconnection', function() {
+        console.log('[x] sockio ... Ive missed you so!')
+    })
+
+
+    socket.on('open', function() {
+        console.log('[*] sockio open... sez a me... clearing the d3cks')
+    })
+
+    // socket.on('event', function(data){});
+
+    // hoop, skip, jump
+    socket.on('disconnect', function() {
+        console.log('[-] sockio disconnect')
+    })
+
+    socket.on('close', function() {
+        console.log('[-] sockio closed')
+    })
+
+    socket.on('message', function(data) {
+        console.log('[m] message...')
+        console.log(JSON.stringify(data))
+    })
+
+
+
+</script>
+

@@ -1,0 +1,314 @@
+
+/* some simple additions */
+
+/* bootstrap colors - from http://getbootstrap.com/customize/#less-variables */
+.bs_danger  { color: #d9534f; }
+.bs_info    { color: #5bc0de; }
+.bs_primary { color: #428bca; }
+.bs_success { color: #5cb85c; }
+.bs_warning { color: #f0ad4e; }
+
+
+.tippy-top      { top: 0px    !important; }
+
+.nav .active a { background:#blue!important }
+
+.navbar-brand {
+    margin-left: 80px;
+}
+
+/* 
+
+#remote_videos video { max-height: 500px; }
+#local_videos { height: 360px; }
+video { width: 350px; height: 200px; }
+
+*/
+
+.d3ck_img {
+    display: block;
+    /* cards are about 3.5 x 2.25 (2.5 for poker) */
+    max-width:  250px;
+    max-height: 200px;
+    padding: 4;
+    width: auto;
+    height: auto;
+}
+
+.glyph_badge {
+   background: #428bca;  /* bootstrap primary */
+   position:relative;
+   top: -20px;
+}
+
+.d3ck_vpn {
+    display:      block;
+    margin-left:  auto !important;
+    margin-right: auto !important;
+}
+
+
+@font-face {
+  font-family: 'Diplomata-Regular';
+  src: url('/fonts/Diplomata-Regular.ttf');
+}
+
+.diplomat { font-family: 'Diplomata-Regular', 'Georgia', serif; }
+
+.text-rotate {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform:    rotate(-45deg);
+    -o-transform:      rotate(-45deg);
+    -ms-transform:     rotate(-45deg);
+}
+
+.dropshadowclass {
+    border: solid 1px #CCC;
+        -moz-box-shadow: 5px 5px 0px #999;
+        -webkit-box-shadow: 5px 5px 0px #999;
+        box-shadow: 5px 5px 0px #999;
+}    
+
+/* logs */
+
+.output{margin:20px 40px;}
+
+.output a{display:inline-block; text-decoration:none; padding:3px 15px; -webkit-border-radius:15px; -moz-border-radius:15px; border-radius:15px; background:#000; margin:5px 20px 5px 0;} 
+
+.content { margin:10px; height:500px; padding:20px; overflow:auto; background:#eee; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;}
+
+
+/* misc */
+
+.nounderline{
+    text-decoration: none;
+}
+
+body {
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+.ip_address {
+    /* border-style: solid ; 
+    border-color: black; 
+    border-width: 2px; */
+    color: gray:
+}
+
+
+div.growlUI { 
+    background: url(check48.png) no-repeat 10px 10px 
+}
+div.growlUI h1, div.growlUI h2 {
+    color      : white; 
+    padding    : 5px 5px 5px 75px; 
+    text-align : left;
+}
+
+.top-spacer5   { margin-top:  5px; }
+.top-spacer10  { margin-top: 10px; }
+.top-spacer20  { margin-top: 20px; }
+.top-spacer30  { margin-top: 30px; }
+.top-spacer50  { margin-top: 50px; }
+.top-spacer100 { margin-top:100px; }
+
+.top-spacer200 { margin-top:100px; vertical-align:bottom;}
+
+.spacer5,
+.spacer10,
+.spacer20,
+.spacer30,
+.spacer50,
+.spacer100,
+.spacer200 {
+    display: block;
+    margin:      0; 
+    padding:     0; 
+    border:      0; 
+    font-size:   0; 
+    width:    100%; 
+}
+
+.spacer5   { height:   5px; }
+.spacer10  { height:  10px; }
+.spacer20  { height:  20px; }
+.spacer30  { height:  30px; }
+.spacer50  { height:  50px; }
+.spacer100 { height: 100px; }
+.spacer200 { height: 200px; }
+
+
+/* bootstrap green */
+/* div .cat_chat:first { background-color: "#dff0d8" } */
+
+/* http://www.bootply.com/113647# */
+.btn-hover {
+  font-weight: normal;
+  color: #333333;
+  cursor: pointer;
+  background-color: inherit;
+  border-color: transparent;
+}
+
+.btn-hover-alt {
+  font-weight: normal;
+  color: #ffffff;
+  cursor: pointer;
+  background-color: inherit;
+  border-color: transparent;
+}
+
+
+/* 
+  from:
+    http://www.jqueryrain.com/?C9yJS02s
+ */
+.spinner {
+  width: 40px;
+  height: 40px;
+
+  position: relative;
+  margin: 100px auto;
+}
+
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #333;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  -webkit-animation: bounce 2.0s infinite ease-in-out;
+  animation: bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+@-webkit-keyframes bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes bounce {
+  0%, 100% { 
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 50% { 
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+  }
+}
+
+/* slightly modded from http://www.paulund.co.uk/playground/demo/css_pulse_animation/core.css */
+@-webkit-keyframes pulse_animation {
+    0% { -webkit-transform: scale(1); }
+    10% { -webkit-transform: scale(1.02); }
+    20% { -webkit-transform: scale(1.04); }
+    30% { -webkit-transform: scale(1.06); }
+    40% { -webkit-transform: scale(1.08); }
+    50% { -webkit-transform: scale(1.10); }
+    60% { -webkit-transform: scale(1.08); }
+    70% { -webkit-transform: scale(1.06); }
+    80% { -webkit-transform: scale(1.04); }
+    90% { -webkit-transform: scale(1.02); }
+   100% { -webkit-transform: scale(1); }
+}
+
+.pulse {
+    -webkit-animation-name:            'pulse_animation';
+    -webkit-animation-duration:        10s;
+    -webkit-transform-origin:          70% 70%;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+}
+
+
+/* almost verbatim from jquery-filer */
+
+.dragDropBox{
+    position:relative;
+    display:block;
+    min-height: 100px;
+    width:220;
+    background-color:#f3f3f3;
+    border:2px dashed #aaa;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 100px; 
+}
+
+/*
+.dragDropBox span.message{
+    color:#333;
+    font-family:sans-serif;
+    position:absolute;
+    left:50%;
+    margin-left:-105px;
+    top:45%;
+}
+*/
+.dragDropBox:not(.done):hover, .dragDropBox.hover{
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+    cursor:pointer;
+}
+
+/* very slight mod to http://jsfiddle.net/wprw3/ */
+.dead_center {
+    left: 0;
+    line-height: 200px;
+    margin-top: -100px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 100%;
+    /* for fadeout 
+    -webkit-animation-duration: 10s;
+       -moz-animation-duration: 10s;
+        -ms-animation-duration: 10s;
+         -o-animation-duration: 10s;
+            animation-duration: 10s;
+    */
+}
+
+
+/* from http://stackoverflow.com/questions/15308061/how-to-avoid-text-overflow-in-twitter-bootstrap */
+.dotdotdot {
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+/* http://designshack.net/articles/css/4-fun-css-image-effects-you-can-copy-and-paste/ */
+.polaroid {
+  position: relative;
+  width: 220px;
+}
+ 
+.polaroid img {
+  border: 10px solid #fff;
+  border-bottom: 45px solid #fff;
+  -webkit-box-shadow: 3px 3px 3px #777;
+     -moz-box-shadow: 3px 3px 3px #777;
+          box-shadow: 3px 3px 3px #777;
+}
+
+.polaroid p {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  bottom: 0px;
+  font: 400 18px/1 'Kaushan Script', cursive;
+  color: #888;
+}
+ 
+

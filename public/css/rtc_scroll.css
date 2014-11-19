@@ -1,0 +1,44 @@
+/*
+// Muaz Khan         - www.MuazKhan.com
+// MIT License       - www.WebRTC-Experiment.com/licence
+// Experiments       - github.com/muaz-khan/WebRTC-Experiment
+*/
+
+textarea,input chat {
+    font-size: 1em;
+}
+
+::-webkit-scrollbar chat {
+    width: 15px;
+    height: 15px;
+}
+
+::-webkit-scrollbar-track-piece chat {
+    background-color: white;
+}
+
+::-webkit-scrollbar-button:start:decrement,::-webkit-scrollbar-button:end:increment,::-webkit-scrollbar-thumb chat {
+    background-color: white;
+    border: solid 1px #bec1c4;
+}
+
+::-webkit-scrollbar-button:vertical:start:decrement chat {
+    background-image: url('/images/rtc_scrollbar_arrow_up.gif');
+    background-position: center;
+}
+
+::-webkit-scrollbar-button:vertical:end:increment chat {
+    background-image: url('/images/rtc_scrollbar_arrow_down.gif');
+    background-position: center;
+}
+
+::-webkit-scrollbar-button:horizontal:start:decrement chat {
+    background-image: url('/images/rtc_scrollbar_arrow_left.gif');
+    background-position: center;
+}
+
+::-webkit-scrollbar-button:horizontal:end:increment chat {
+    background-image: url('/images/rtc_scrollbar_arrow_right.gif');
+    background-position: center;
+}
+

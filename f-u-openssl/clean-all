@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ "$KEY_DIR" ]; then
+    rm -rf "$KEY_DIR"
+    mkdir "$KEY_DIR" 
+    chmod go-rwx "$KEY_DIR" 
+    touch "$KEY_DIR/index.txt" 
+    bits_o_128=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '{$1=""; printf("%s", $0)}' | sed 's/ //g')
+    echo $bits_o_128 >"$KEY_DIR/serial"
+
+    echo "unique_subject = no" > "$KEY_DIR/index.txt.attr"
+
+
+else
+    echo 'Please source the vars script first (i.e. "source ./vars")'
+    echo 'Make sure you have edited it to reflect your configuration.'
+fi
+

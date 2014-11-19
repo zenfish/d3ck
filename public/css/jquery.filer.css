@@ -1,0 +1,208 @@
+/*!
+ * CSS Filer(Input File)
+ * Copyright (c) 2013 CreativeDream
+ * Website: http://creativedream.net/plugins
+ * Version: 1.2 (23-Aug-2014)
+*/
+
+/* Input File */
+.file{
+	/* Optional */
+	width:350px;
+	height: 35px;
+	
+	position: relative;
+	margin:10px 0;
+	background:#FFF;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 12px;
+	font-family: sans-serif;
+	color: #888;
+	cursor: pointer;
+	overflow: hidden;
+	background-clip: padding-box;
+	
+	-webkit-box-shadow: 0px 1px 0px white, rgba(0, 0, 0, .35) 0px 4px 5px -5px inset;
+	   -moz-box-shadow: 0px 1px 0px white, rgba(0, 0, 0, .35) 0px 4px 5px -5px inset;
+	     -o-box-shadow: 0px 1px 0px white, rgba(0, 0, 0, .35) 0px 4px 5px -5px inset;
+            box-shadow: 0px 1px 0px white, rgba(0, 0, 0, .35) 0px 4px 5px -5px inset;
+	
+}
+.file:hover{
+	border: 1px solid #bbbbbb;
+	border-top: 1px solid #aaaaaa;
+}
+.file span.filer-button {
+	float: right;
+	display: inline-block;
+	width:60px;
+	height: 100%;
+	margin: 0px;
+	padding:0 12px;
+	border: none;
+	border-left: 1px solid #bbb;
+	border-radius:0px;
+	font-size: 12px;
+	line-height: 35px;
+	color:#666666 !important;
+	text-shadow:none !important;
+	text-align: center;
+	font-weight:bold;
+	
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+	background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+	background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+	background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+	background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+	box-shadow:none;
+	
+	-webkit-transition: all 0.1s ease-out;  
+    -moz-transition: all 0.1s ease-out;  
+    -o-transition: all 0.1s ease-out;  
+    transition: all 0.1s ease-out;  
+
+}
+.file span.filer-button:hover{
+	 -moz-box-shadow:    inset 0 0 10px rgba(0,0,0,0.1);
+     -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+     box-shadow:         inset 0 0 10px rgba(0,0,0,0.1);
+}
+.file span.filer-button:active{
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e6e6e6), to(#ffffff));
+	background-image: -webkit-linear-gradient(top, #e6e6e6, #ffffff);
+	background-image: -o-linear-gradient(top, #e6e6e6, #ffffff);
+	background-image: linear-gradient(to bottom, #e6e6e6, #ffffff);
+	background-image: -moz-linear-gradient(top, #e6e6e6, #ffffff);
+}
+.file .filer-feedback {
+	display: block;
+	height: 100%;
+	line-height: 35px;
+	padding-left: 10px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+/* Input Thumbs */
+#input-thumbs ul,#input-thumbs ul li{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+#input-thumbs ul li{	
+	/* Optional */
+	max-width:136px;
+	max-height:85px;
+	margin:5px;
+
+	position: relative;
+	float:left;
+	overflow: hidden;
+	font-family:Arial, Helvetica, sans-serif;
+}
+#input-thumbs ul li img {
+	position: relative;
+	z-index: 2;
+	display: block;
+	
+	max-height:100%;
+	
+	-webkit-transition: opacity 120ms linear;
+	-moz-transition: opacity 120ms linear;
+	-o-transition: opacity 120ms linear;
+	transition: opacity 120ms linear;
+}
+#input-thumbs ul li em{
+	position:absolute;
+	width:100%;
+	height:15px;
+	bottom:0;
+	float:left;
+	padding-top:3px;
+	padding-left:3px;
+	background:rgba(0,0,0,0.6);	
+	color:#FFF;
+	font-size:9px;
+	font-style:normal;
+	line-height:12px;
+	z-index:3;
+}
+#input-thumbs ul li span{
+	position: absolute;
+	top: 0;
+	right: 0;
+	width:18px;
+	height:18px;
+	display:block;
+	z-index: 2;
+	cursor:pointer;
+	background:#000 url('../images/delete1.png') center no-repeat;
+	opacity:0.7;-moz-opacity:0.7;-khtml-opacity:0.7;-ms-filter:"alpha(Opacity=70)";filter:alpha(opacity=70);
+	border-bottom-left-radius:2px;
+}
+#input-thumbs ul li span:hover{
+	opacity:1;	
+	-khtml-opacity:1;
+	  -moz-opacity:1;
+      -ms-filter:"alpha(Opacity=100)";
+	      filter:alpha(opacity=100);	
+}
+#input-thumbs ul li.filer-plus a{
+	width: 132px;
+	height: 81px;
+	display: block;
+	border: 2px dashed #58595b;
+	text-align: center;
+	line-height: 81px;
+	color: #58595b;
+	font-weight: bold;
+	font-size: 28px;
+	cursor:pointer;
+	opacity:0.5;-moz-opacity:0.5;-khtml-opacity:0.5;-ms-filter:"alpha(Opacity=50)";filter:alpha(opacity=50);	
+}
+#input-thumbs ul li.filer-plus a:hover{
+	opacity:1;-moz-opacity:1;-khtml-opacity:1;-ms-filter:"alpha(Opacity=100)";filter:alpha(opacity=100);	
+}
+#input-thumbs:after{
+	content: "";display: block;height: 0;clear: both;zoom:1;visibility: hidden
+}
+#input-thumbs ul li.add-more a{
+	width: 115px;
+	height: 81px;
+	display:inline-block;
+	border: 2px dashed #bbb;
+	text-align: center;
+	color: #bbb;
+	line-height: 81px;
+	font-size: 38px;
+	cursor: pointer;	
+}
+#input-thumbs ul li.add-more a:hover{
+	border-color:#999;
+	color: #999;	
+}
+#input-thumbs ul li div.progress-bar{
+	position: absolute;
+	display:block;
+	height: 100%;
+	background-color: rgba(255,255,255,0.5);
+	top: 0;
+	left: 0;
+	z-index: 2;
+	-webkit-transition: width 0.3s linear;
+	   -moz-transition: width 0.3s linear;
+	     -o-transition: width 0.3s linear;
+	        transition: width 0.3s linear;
+}
+#input-thumbs ul li div.progress-bar.done-erase{
+	background: url('../images/done.png') no-repeat center center rgba(255,255,255,0.5);
+	background-size: 32px auto;
+	background-position: 50% 20px;
+}
+#input-thumbs ul li div.progress-bar.done-erase:hover{
+	background: url('../images/delete2.png') no-repeat center center rgba(255,255,255,0.5);
+	background-size: 32px auto;
+	background-position: 50% 20px;
+	cursor:pointer;
+}
