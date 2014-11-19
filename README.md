@@ -70,3 +70,8 @@ Time to write or talk to me and tell me what (a) went wrong, (b) went
 right (if anything!), and (c) how you think it could be improved upon.
 
 
+Setup instructions 
+------------------
+
+[See the Install file](INSTALL.md)
+
