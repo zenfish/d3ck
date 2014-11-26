@@ -101,14 +101,59 @@ security and communications for 3 situations:
     - browser to d3ck https communication
 
 
-Requirements
-------------
+OpenVPN notes
+-------------
 
-You need to be fairly techie at this stage. You'll need a linux box -
-a cheap raspberry pi works fine, as does VMware, Amazon's EC2, etc.
-It works in multiple linuxes, but ubuntu is probably the safest bet (if
-the distro doesn't have the "services" command it'll be a bit painful,
-but I've gotten it working even then.)
+A d3ck's OpenVPN connection uses the same certificates that were used
+for HTTPS. A static pre-shared key (PSK) is used to help protect against
+DoS attacks.
+
+The minimum version of OpenVPN should be 2.3.2 (as of Jul-11th-2014,
+the most recent version is 2.3.4), which allows TLS v1.0 DHE et al9. (This
+is currently not enforced, but will be.)
+
+Currently the OpenVPN tunnel uses TLSv1, cipher TLSv1/SSLv3
+DHE-RSA-AES256-SHA, 1024 bit RSA. I'm investigating what is the right
+one to use... so much crypto, so little time.
+
+Key Management
+
+I'm using an extraordinarily simple key management scheme; it may be
+too simple, but I hope it will work for relatively small amounts of d3cks.
+
+Certificates aren't tied to particular IP addresses; indeed, effort has
+been made to kill this off so things will work, as machines and people
+move around.
+
+When certificates are no longer valid (generally due to being out-of-date)
+they will simply stop working (UI needs to reflect this!)
+
+Revocation will be done when a card is deleted. This may or may not
+be what the user really wants, but at least it's really, really
+gone! Note - if a d3ck is re-flashed/reinstalled it will have no memory
+of past certificates that have been revoked.
+
+The revocation will ONLY apply to the d3ck that did the deletion; there
+is no passing around revocation lists or whatever.
+
+Perhaps a short lifespan on certificates (weeks or even days or something)
+would be reasonable, because after you've befriended someone's d3ck
+it could just do the change automatically under the hood without user
+interaction the next time you talk to them. A d3ck could simply constantly
+revoke and reissue new keys.
+
+
+
+Usage Requirements
+------------------
+
+You need to be fairly techie at this stage - not to use it (that's
+actually pretty simple), but to install it.
+
+You'll need a linux box - a cheap raspberry pi works fine, as does
+VMware, Amazon's EC2, etc.  It works in multiple linuxes, but ubuntu
+is probably the safest bet (if the distro doesn't have the "services"
+command it'll be a bit painful, but I've gotten it working even then.)
 
 You will probably need your own network (not sure who doesn't these days,
 but...) and be able to open a network port to the inside.

@@ -66,6 +66,8 @@ sudo mkdir /etc/d3ck/logs
 sudo mkdir /etc/d3ck/redis
 sudo mkdir /etc/d3ck/d3cks
 
+sudo mkdir -p /etc/d3ck/f-u-openssl/clients
+
 sudo chown redis.redis /etc/d3ck/redis
 
 touch /etc/d3ck/logs/client_vpn.log
