@@ -4,21 +4,21 @@ d3ck
 
 A pure p2p communication thingee
 
-The Problem (as I see it)
+The problem I'm trying to address:
 
-If you and I wanted to have a private voice or Skype-like conversation,
-share data, instant message, etc - it's pretty rough unless we involve
-a 3rd party.  Unfortunately we haven't had much luck with those 3rd
-parties keeping our data to themselves.  There seems to be a movement
-to changing this, and there are actually a fair number of projects
-that allow comm with a 3rd party that look good. But I'm not the most
-trusting of people.
+    If you and I wanted to have a private voice or Skype-like
+    conversation, share data, instant message, etc - it's pretty
+    rough unless we involve a 3rd party.  Unfortunately we haven't had
+    much luck with those 3rd parties keeping our data to themselves.
+    There seems to be a movement to changing this, and there are actually
+    a fair number of projects that allow comm with a 3rd party that look
+    good. But I'm not the most trusting of people.
 
-d3ck is software I've written that allows you to communicate (voice,
-video, IM, file transfers, etc.) with confidentiality to someone else who
-has the same software. It runs on linux, and can sit on a Raspberry Pi
-(a small $20+ computer), a virtual machine inside VMware or Amazon's EC2,
-or your random basic linux system.
+    d3ck is software I've written that allows you to communicate (voice,
+    video, IM, file transfers, etc.) with confidentiality to someone
+    else who has the same software. It runs on linux, and can sit on
+    a Raspberry Pi (a small $20+ computer), a virtual machine inside
+    VMware or Amazon's EC2, or your random basic linux system.
 
 
 features
