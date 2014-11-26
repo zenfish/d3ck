@@ -35,7 +35,7 @@ features
     phones (uses WebRTC). Older/broken browsers will still connect,
     just not support nifty video/etc.
 
-    Military grade or better encryption (as they say)
+    Military grade or better encryption (as they say ;))
 
     Under the hood: Linux, OpenVPN, Node.js, and more
 
@@ -99,6 +99,54 @@ security and communications for 3 situations:
     - client-side authentication and https encryption for for d3ck to d3ck communication
 
     - browser to d3ck https communication
+
+
+Most of the important operations are not written in node/javascript;
+instead I primarily chose to execute shell scripts and programs to do
+the dirty work. I thought this would be much easier to understand and
+check for errors if pieces of funcationality were broken out in this way.
+
+
+Networking/Firewall/packet-filter
+---------------------------------
+
+I'm ready to put this in, but it sure makes testing difficult... so for
+now it's turned off (this is the 2nd thing I'll change from now.) So...
+keep behind a real firewall for now!
+
+When it's a fully operational death-d3ck, one port will be open (currently
+TCP 8080) and another optional (SSH, TCP port 22.) If a VPN tries to start
+up (e.g. both d3cks accept) UDP port 8080 (currently) is opened - only up
+to the other IP address - and then closed after the VPN connection stops.
+
+All ports used (all TCP except for OpenVPN); first, on external ports
+(whatever the IP address of the server):
+
+    22          SSH
+
+    5555        node.js
+
+    8080/udp    OpenVPN
+
+    443         Nginx (redirects to 8080 currently)
+    8080        Nginx (redirects to 8080 currently)
+
+    // yate may or may not get ditched in V1
+    161         Yate (Asterix-like multipurpose server)
+    2427/udp    Yate
+    4569/udp    Yate (Yate-to-Yate comm)
+    5222        Yate (Jabber)
+    5222/udp    Yate (Jabber)
+    5269        Yate (IM)
+    5269/udp    Yate (IM)
+    5060        Yate (SIP)
+    
+
+And on localhost/127.0.0.1:
+
+    6666        openVPN admin channel
+    6379        Redis server
+
 
 
 OpenVPN notes
