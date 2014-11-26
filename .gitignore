@@ -95,6 +95,7 @@ tmp/*
 *.key
 keys
 f-u-openssl/keys
+f-u-openssl/clients
 index.txt
 index.txt.old
 serial
