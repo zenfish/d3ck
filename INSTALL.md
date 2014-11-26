@@ -1,12 +1,15 @@
 
+A d3ck runs on Linux; ubuntu is great, but I've installed it
+on other distros as well.
+
+
 There's a variety of packages needed to run this thing.
 
-- a recent version of nodejs for starters
+One of the most important ones is a recent version of nodejs.
 
-Here's some installs for other bits -
+Here's some installs for other bits for an Ubuntu-like system.
 
     apt-get update  # probably wise :)
-
     apt-get install -y python-software-properties
     apt-get install -y openssh-server
     apt-get install -y openvpn
@@ -46,5 +49,5 @@ your password!
 
 
 
-More details on usage in a sec.
+More details on usage shortly.
 
