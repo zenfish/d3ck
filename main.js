@@ -1099,7 +1099,7 @@ function getGeo(req, res, next) {
         return (geo_data)
     })
 
-//  https_get(url).then(function (geo_data) {
+//  get_https(url).then(function (geo_data) {
 //      console.log('geo hmmm....')
 //      console.log( { geo: geo_data } )
 //      // ip2geo[ip_addr] = JSON.stringify(geo_data)
@@ -1138,7 +1138,7 @@ function resolveGeo(ip_addr) {
 //      return({ip_addr: ip_addr, geo : ip2geo[ip_addr] })
 //  }
 
-    https_get_certified(url, ip2d3ck[ip_addr]).then(function (geo_data) {
+    get_https_certified(url, ip2d3ck[ip_addr]).then(function (geo_data) {
 
         console.log('geo hmmm....')
         console.log( { geo: geo_data } )
@@ -2167,7 +2167,7 @@ function stopVPN(req, res, next) {
 
 
             // request.get(url, options, function cb (err, resp) {
-            https_get_certified(url, ip2d3ck[did]).then(function (resp) {
+            get_https_certified(url, ip2d3ck[did]).then(function (resp) {
 
                 if (err) {
                     console.error('vpn stop request failed:', JSON.stringify(err))
@@ -3073,7 +3073,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
 
 //  if (defined d3ck2ip[ip])
-//     https_get_certified(url, ip2dck[ip]).then(function (ping_data) {
+//     get_https_certified(url, ip2dck[ip]).then(function (ping_data) {
 //     have any of these seen a cert?
 //  all_ips.forEach(function(ip, i) {
 
@@ -3091,7 +3091,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
         var url = 'https://' + ip + ':' + d3ck_port_ext + '/ping'
 
         // var req = https.get(url, function(response) {
-        https_get_certified(url, ping_d3ckid).then(function (ping_data) {
+        get_https_certified(url, ping_d3ckid).then(function (ping_data) {
             // console.log('+++ someday has come for ' + ip + ' ... ping response back')
             // console.log(ping_data)
             try {
@@ -3355,7 +3355,7 @@ function quikStart(req, res, next) {
 //
 // grab a https url
 //
-function https_get(url) {
+function get_https(url) {
 
     // console.log('getting... ' + url)
 
@@ -3403,7 +3403,7 @@ function https_get(url) {
 //
 // grab a https url... with client side certs
 //
-function https_get_certified(url, d3ckid) {
+function get_https_certified(url, d3ckid) {
 
     // console.log('getting... ' + url)
 
@@ -3522,7 +3522,7 @@ function create_d3ck_locally(ip_addr) {
     var data = ""
 
     // ping first
-    https_get(url).then(function (ping_data) {
+    get_https(url).then(function (ping_data) {
 
         var p_deferred = Q.defer();
 
@@ -3563,7 +3563,7 @@ function create_d3ck_locally(ip_addr) {
         var c_data = ""
 
         // grab a d3ck's data via URL
-        https_get(c_url).then(function (c_data) {
+        get_https(c_url).then(function (c_data) {
 
             var c_deferred = Q.defer();
 
