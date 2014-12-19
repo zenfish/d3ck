@@ -491,16 +491,48 @@
 
 
 
-
-
-
              <div class="tab-pane fade" id="rtc_hack">
+
+                <span class='small' style="color:red">If connected to another D3CK and you don't see video... something is wrong!</span>
 
                     <!-- vpn stuff -->
 
-                    <span class='small' style="color:red">If connected to another D3CK and you don't see video... something is wrong!</span>
+                <div id="all_videos" class="col-md-10">
 
-                    <div class="col-md-4">
+                    <div class="row">
+                        <div id="remoteVideos" class="col-md-4">
+                            <h4 id="h4_remote">Remote Video</h4>
+                        </div>
+
+                        <!-- little hack for fun -->
+                        <span id="video_effect_div" class="hidden">
+                         <span class="spacer10"></span>
+                          <select id="video_effect"  class="textbox">
+                            <option><b>Select an effect</b></option>
+                            <option id="vid-sepia"      value="sepia(1)">          sepia</option>
+                            <option id="vid-blur"       value="blur(3px)">         blur</option>
+                            <option id="vid-grayscale"  value="grayscale(1)">      grayscale</option>
+                            <option id="vid-contrast"   value="contrast(5)">       contrast</option>
+                            <option id="vid-hue-rotate" value="hue-rotate(125deg)">hue-rotate</option>
+                            <option id="vid-invert"     value="invert(1)">         invert</option>
+                            <option id="vid-saturate"   value="saturate(3)">       saturate</option>
+                            <option id="vid-opacity"    value="opacity(0.3)">      opacity</option>
+                            <option id="vid-clear"      value="clear">             <span id="cleary">clear effects</span></option>
+                         </select>
+                        </span>
+
+                        <div id="localVideos" class="col-md-4">
+                            <h4 id="h4_local">Local Video</h4>
+                            <video id="localVideo"></video>
+                        </div>
+
+                    </div> <!-- row -->
+
+                </div> <!-- vids -->
+
+
+
+                <div class="col-md-4" style="clear:both">
 
                         <div style="padding:10px">
                             <b>Cat Chat!</b> <span class="muted small">instant messaging, D3CK style</span><br />
@@ -515,7 +547,7 @@
                             <div id="cat_chat" class="content"></div>
                         </div>
 
-                    </div> <!-- col-md-4 -->
+                </div> <!-- col-md-4 -->
 
                     <div class="container-fluid hidden">
 
@@ -545,42 +577,6 @@
                             </div>
                         </div>  <!-- row -->
                     </div> <!-- container -->
-
-                
-                <div id="all_videos" class="col-md-8">
-
-                    <div class="row">
-                        <div id="remoteVideos">
-                            <h4 id="h4_remote">Remote Video</h4>
-                        </div>
-
-                        <!-- little hack for fun -->
-                        <span id="video_effect_div" class="hidden">
-                         <span class="spacer10"></span>
-                          <select id="video_effect"  class="textbox">
-                            <option><b>Select an effect</b></option>
-                            <option id="vid-sepia"      value="sepia(1)">          sepia</option>
-                            <option id="vid-blur"       value="blur(3px)">         blur</option>
-                            <option id="vid-grayscale"  value="grayscale(1)">      grayscale</option>
-                            <option id="vid-contrast"   value="contrast(5)">       contrast</option>
-                            <option id="vid-hue-rotate" value="hue-rotate(125deg)">hue-rotate</option>
-                            <option id="vid-invert"     value="invert(1)">         invert</option>
-                            <option id="vid-saturate"   value="saturate(3)">       saturate</option>
-                            <option id="vid-opacity"    value="opacity(0.3)">      opacity</option>
-                            <option id="vid-clear"      value="clear">             <span id="cleary">clear effects</span></option>
-                         </select>
-                        </span>
-
-                    </div> <!-- row -->
-
-                    <div class="row">
-                        <div id="localVideos">
-                            <h4 id="h4_local">Local Video</h4>
-                            <video id="localVideo"></video>
-                        </div>
-                    </div> <!-- row -->
-
-                </div>
             </div>
 
          </div> <!-- tab content -->
