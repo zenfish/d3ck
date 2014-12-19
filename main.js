@@ -3424,7 +3424,7 @@ function get_https_certified(url, d3ckid) {
 
         request(options, function cb (err, resp, body) {
             if (err) {
-                console.error('CSC nab of remote failzor:', JSON.stringify(err))
+                // console.error('CSC nab of remote failzor:', JSON.stringify(err))
                 deferred.reject(err)
                 }
             else {

@@ -62,172 +62,20 @@ Date: Wed, 17 Dec 2014 19:04:48 -0800 (PST)
 testy testy testy
 
 
-From from@fromdomain.com  Wed Dec 17 19:09:54 2014
-Return-Path: <from@fromdomain.com>
-X-Original-To: snort
-Delivered-To: snort@silent.localdomain
-Received: from silent (localhost [127.0.0.1])
-	by silent.localdomain (Postfix) with ESMTP id E4682CAE0C8
-	for <snort>; Wed, 17 Dec 2014 19:09:53 -0800 (PST)
-From: from frommy from <from@fromdomain.com>
-To: snort@silent.localdomain
-Subject: SMTP test
-Message-Id: <20141218030953.E4682CAE0C8@silent.localdomain>
-Date: Wed, 17 Dec 2014 19:09:53 -0800 (PST)
-
-testy testy testy
-
-
-From zen@silent.localdomain  Wed Dec 17 19:15:44 2014
-Return-Path: <zen@silent.localdomain>
-X-Original-To: snort
-Delivered-To: snort@silent.localdomain
-Received: from lucky.fish2.com (unknown [192.168.0.7])
-	by silent.localdomain (Postfix) with ESMTP id 27C54CAE0C8
-	for <snort>; Wed, 17 Dec 2014 19:15:44 -0800 (PST)
-From: from frommy from <zen@silent.localdomain>
-To: snort@silent.localdomain
-Subject: SMTP test
-Message-Id: <20141218031544.27C54CAE0C8@silent.localdomain>
-Date: Wed, 17 Dec 2014 19:15:44 -0800 (PST)
-
-foo foo barrroooo!!!!!
-
-
-
-From zen@silent.localdomain  Wed Dec 17 22:08:30 2014
-Return-Path: <zen@silent.localdomain>
-X-Original-To: snort
-Delivered-To: snort@silent.localdomain
-Received: from silent (localhost [127.0.0.1])
-	by silent.localdomain (Postfix) with ESMTP id 0168542F351
-	for <snort>; Wed, 17 Dec 2014 22:08:30 -0800 (PST)
-From: from frommy from <zen@silent.localdomain>
-To: snort@silent.localdomain
-Subject: SMTP test
-Message-Id: <20141218060830.0168542F351@silent.localdomain>
-Date: Wed, 17 Dec 2014 22:08:30 -0800 (PST)
-
-foo foo barrroooo!!!!!
-
-
-
-From zen@silent.localdomain  Thu Dec 18 12:46:09 2014
-Return-Path: <zen@silent.localdomain>
-X-Original-To: snort
-Delivered-To: snort@silent.localdomain
-Received: from silent (localhost [127.0.0.1])
-	by silent.localdomain (Postfix) with ESMTP id 883CBCAE0C8
-	for <snort>; Thu, 18 Dec 2014 12:46:09 -0800 (PST)
-From: from frommy from <zen@silent.localdomain>
-To: snort@silent.localdomain
-Subject: SMTP test
-Message-Id: <20141218204609.883CBCAE0C8@silent.localdomain>
-Date: Thu, 18 Dec 2014 12:46:09 -0800 (PST)
-
-foo foo barrroooo!!!!!
-
-
-
-From zen@silent.localdomain  Thu Dec 18 12:46:27 2014
-Return-Path: <zen@silent.localdomain>
-X-Original-To: snort
-Delivered-To: snort@silent.localdomain
-Received: from silent (localhost [127.0.0.1])
-	by silent.localdomain (Postfix) with ESMTP id 17A7BCAE0C8
-	for <snort>; Thu, 18 Dec 2014 12:46:27 -0800 (PST)
-From: from frommy from <zen@silent.localdomain>
-To: snort@silent.localdomain
-Subject: SMTP test
-Message-Id: <20141218204627.17A7BCAE0C8@silent.localdomain>
-Date: Thu, 18 Dec 2014 12:46:27 -0800 (PST)
-
-foo foo barrroooo!!!!!
-
-
-
-From zen@silent.localdomain  Thu Dec 18 12:47:59 2014
-Return-Path: <zen@silent.localdomain>
-X-Original-To: snort
-Delivered-To: snort@silent.localdomain
-Received: from silent (localhost [127.0.0.1])
-	by silent.localdomain (Postfix) with ESMTP id 1E2EECAE0C8
-	for <snort>; Thu, 18 Dec 2014 12:47:59 -0800 (PST)
-From: from frommy from <zen@silent.localdomain>
-To: snort@silent.localdomain
-Subject: SMTP test
-Message-Id: <20141218204759.1E2EECAE0C8@silent.localdomain>
-Date: Thu, 18 Dec 2014 12:47:59 -0800 (PST)
-
-foo foo barrroooo!!!!!
-
-
-
-From zen@silent.localdomain  Thu Dec 18 13:02:13 2014
-Return-Path: <zen@silent.localdomain>
-X-Original-To: snort
-Delivered-To: snort@silent.localdomain
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by silent.localdomain (Postfix) with ESMTPS id 20193CAE0C8
-	for <snort>; Thu, 18 Dec 2014 13:02:13 -0800 (PST)
-From: from frommy from <zen@silent.localdomain>
-To: snort@silent.localdomain
-Subject: SMTP test
-Message-Id: <20141218210213.20193CAE0C8@silent.localdomain>
-Date: Thu, 18 Dec 2014 13:02:13 -0800 (PST)
-
-foo foo barrroooo!!!!!
-
-
-
-From zen@silent.localdomain  Thu Dec 18 13:21:42 2014
+From zen@silent.localdomain  Fri Dec 19 11:59:14 2014
 Return-Path: <zen@silent.localdomain>
 X-Original-To: snort
 Delivered-To: snort@silent.localdomain
 Received: from lucky.fish2.com (lucky.fish2.com [192.168.0.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by silent.localdomain (Postfix) with ESMTPS id 2482CCAE0C8
-	for <snort>; Thu, 18 Dec 2014 13:21:42 -0800 (PST)
-From: from frommy from <zen>
-To: snort
-Subject: SMTP test
-
-foo foo barrroooo!!!!!
-
-
-
-From zen@silent.localdomain  Fri Dec 19 10:05:24 2014
-Return-Path: <zen@silent.localdomain>
-X-Original-To: snort
-Delivered-To: snort@silent.localdomain
-Received: from lucky.fish2.com (lucky.fish2.com [192.168.0.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by silent.localdomain (Postfix) with ESMTPS id B6F7ACAE0C8
-	for <snort>; Fri, 19 Dec 2014 10:05:24 -0800 (PST)
-From: from frommy from <zen>
-To: snort
-Subject: SMTP test
-
-foo foo barrroooo!!!!!
-
-
-
-From zen@silent.localdomain  Fri Dec 19 11:39:56 2014
-Return-Path: <zen@silent.localdomain>
-X-Original-To: snort
-Delivered-To: snort@silent.localdomain
-Received: from lucky.fish2.com (lucky.fish2.com [192.168.0.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by silent.localdomain (Postfix) with ESMTPS id 978B8CAE0C8
-	for <snort>; Fri, 19 Dec 2014 11:39:56 -0800 (PST)
+	by silent.localdomain (Postfix) with ESMTPS id 05970CAE0C8
+	for <snort>; Fri, 19 Dec 2014 11:59:14 -0800 (PST)
 From: from frommy from <god>
 To: snort
 Subject: foo barroo
+Content-Length: 47
+Lines: 5
 
 barrroooo!!!!!
 barrroooo!!!!!
