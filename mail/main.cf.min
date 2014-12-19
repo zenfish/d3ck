@@ -1,0 +1,23 @@
+
+alternate_config_directories = /etc/d3ck/postfix
+
+inet_interfaces   = 127.0.0.1
+
+queue_directory   = /etc/d3ck/postfix/queue
+data_directory    = /etc/d3ck/postfix/data
+
+# daemon_directory  = /usr/libexec/postfix
+# command_directory = /usr/sbin
+
+inet_protocols = ipv4
+
+unknown_local_recipient_reject_code = 550
+
+mail_owner       = postfix
+
+debug_peer_level = 2
+
+debugger_command =
+	 PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+	 ddd $daemon_directory/$process_name $process_id & sleep 5
+
