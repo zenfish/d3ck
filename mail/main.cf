@@ -4,55 +4,55 @@ mydestination = 84E8B049B2981D9B7E096BA3B31116DC45112D5F localhost 127.0.0.1 192
 
 # smtpd_authorized_xclient_hosts = 192.168.0.0/24, 127.0.0.0/8
 
+# where stuff goes
+queue_directory              = /etc/d3ck/mail/queue
+data_directory               = /etc/d3ck/mail/data
 alternate_config_directories = /etc/d3ck/mail
+mail_spool_directory         = /etc/d3ck/mail/spool
 
-inet_interfaces   = all
+# some basic opts
+inet_protocols  = ipv4
+inet_interfaces = all
+mail_owner      = postfix
 
-queue_directory      = /etc/d3ck/mail/queue
-data_directory       = /etc/d3ck/mail/data
-mail_spool_directory = /etc/d3ck/mail/spool
-
-inet_protocols = ipv4
 
 unknown_local_recipient_reject_code = 550
 
-mail_owner       = postfix
+# de bugs, de bugs
+debug_peer_level          = 4
+smtp_tls_loglevel         = 4
+smtpd_tls_received_header = yes
 
-debug_peer_level = 4
 
-debugger_command =
-     PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
-     ddd $daemon_directory/$process_name $process_id & sleep 5
+# misc locations
+transport_maps    = hash:/etc/d3ck/mail/transport
+tls_random_source = dev:/dev/urandom
 
+# for d3ck mail routing
+append_dot_mydomain = no
+
+
+# smtp D - us
+smtpd_tls_security_level         = fingerprint
 smtpd_tls_CAfile                 = /etc/d3ck/d3cks/D3CK/ca.crt
 smtpd_tls_cert_file              = /etc/d3ck/d3cks/D3CK/d3ck.crt
 smtpd_tls_key_file               = /etc/d3ck/d3cks/D3CK/d3ck.key
 
+smtpd_tls_CApath                 = /etc/d3ck/mail/CAs
+
+smtpd_tls_ask_ccert              = yes
+
 smtpd_tls_session_cache_database = btree:/etc/d3ck/mail/smtpd_tls_session_cache
 
-smtp_tls_loglevel = 4
-smtpd_tls_received_header = yes
-tls_random_source = dev:/dev/urandom
 
-append_dot_mydomain = no
-transport_maps = hash:/etc/d3ck/mail/transport
-smtp_tls_policy_maps = hash:/etc/d3ck/mail/smtp_tls_policy
+# smtp - them
+smtp_tls_security_level     = fingerprint
+smtp_tls_policy_maps        = hash:/etc/d3ck/mail/smtp_tls_policy
 smtp_tls_fingerprint_digest = sha1
 
 
-# smtpd_tls_security_level = encrypt
-
-smtpd_tls_security_level = fingerprint
-smtp_tls_security_level = fingerprint
-
-# smtp_tls_security_level = may
-# smtpd_tls_security_level = may
-
-smtpd_tls_cert_file = /etc/d3ck/d3cks/D3CK/d3ck.crt
-smtpd_tls_key_file  = /etc/d3ck/d3cks/D3CK/d3ck.key
-
 # added
-smtpd_use_tls=yes
-smtp_tls_note_starttls_offer = yes
+# smtpd_use_tls=yes
+# smtp_tls_note_starttls_offer = yes
 
 
