@@ -1,9 +1,0 @@
-
-<jaguba@wildpackets.com>: client TLS configuration problem
-recipient=jaguba@wildpackets.com
-offset=642
-dsn_orig_rcpt=rfc822;jaguba@wildpackets.com
-status=4.7.5
-action=delayed
-reason=client TLS configuration problem
-

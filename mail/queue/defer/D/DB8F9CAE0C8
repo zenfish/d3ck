@@ -1,9 +1,0 @@
-
-<zen@fish2.com>: client TLS configuration problem
-recipient=zen@fish2.com
-offset=647
-dsn_orig_rcpt=rfc822;zen@fish2.com
-status=4.7.5
-action=delayed
-reason=client TLS configuration problem
-

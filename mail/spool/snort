@@ -10,7 +10,7 @@ Message-Id: <20141218023522.38A3DCAE0C8@silent.localdomain>
 Date: Wed, 17 Dec 2014 18:35:22 -0800 (PST)
 From: zen@silent.localdomain
 Status: RO
-X-IMAPbase: 1419039795 0000000010 $NotJunk $Junk NotJunk
+X-IMAPbase: 1419039795 0000000011 $NotJunk $Junk NotJunk
 X-UID: 1 
 X-Keywords: $NotJunk NotJunk
 X-Status: D
@@ -233,8 +233,89 @@ Date: Fri, 19 Dec 2014 18:08:59 -0800
 To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
 Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
 X-Mailer: Apple Mail (2.1993)
-X-UID: 10                                                  
-Status: O
+X-UID: 10        
+Status: RO
+X-Keywords: $NotJunk NotJunk
+X-Status: D
 
 xxx
+
+From MAILER-DAEMON  Fri Dec 19 18:11:26 2014
+Return-Path: <>
+X-Original-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Delivered-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Received: by silent.localdomain (Postfix)
+	id C9E9BCAE0CA; Fri, 19 Dec 2014 18:11:26 -0800 (PST)
+Date: Fri, 19 Dec 2014 18:11:26 -0800 (PST)
+From: MAILER-DAEMON@silent.localdomain (Mail Delivery System)
+Subject: Undelivered Mail Returned to Sender
+To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Auto-Submitted: auto-replied
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status;
+	boundary="DB8F9CAE0C8.1419041486/silent.localdomain"
+Message-Id: <20141220021126.C9E9BCAE0CA@silent.localdomain>
+X-UID: 11                   
+Status: RO
+Content-Length: 1971
+X-Keywords: $Junk
+X-Status: D
+
+This is a MIME-encapsulated message.
+
+--DB8F9CAE0C8.1419041486/silent.localdomain
+Content-Description: Notification
+Content-Type: text/plain; charset=us-ascii
+
+This is the mail system at host silent.localdomain.
+
+I'm sorry to have to inform you that your message could not
+be delivered to one or more recipients. It's attached below.
+
+For further assistance, please send mail to postmaster.
+
+If you do so, please include this problem report. You can
+delete your own text from the attached returned message.
+
+                   The mail system
+
+<zen@fish2.com>: mail for fish2.com loops back to myself
+
+--DB8F9CAE0C8.1419041486/silent.localdomain
+Content-Description: Delivery report
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; silent.localdomain
+X-Postfix-Queue-ID: DB8F9CAE0C8
+X-Postfix-Sender: rfc822; snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Arrival-Date: Fri, 19 Dec 2014 17:32:33 -0800 (PST)
+
+Final-Recipient: rfc822; zen@fish2.com
+Original-Recipient: rfc822;zen@fish2.com
+Action: failed
+Status: 5.4.6
+Diagnostic-Code: X-Postfix; mail for fish2.com loops back to myself
+
+--DB8F9CAE0C8.1419041486/silent.localdomain
+Content-Description: Undelivered Message
+Content-Type: message/rfc822
+
+Return-Path: <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Received: from lucky.fish2.com (lucky.fish2.com [192.168.0.7])
+	(using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by silent.localdomain (Postfix) with ESMTPS id DB8F9CAE0C8
+	for <zen@fish2.com>; Fri, 19 Dec 2014 17:32:33 -0800 (PST)
+From: d3ck <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+Subject: xxx
+Message-Id: <41CCE02C-1A15-4117-BF27-A5D0EDF4125D@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Date: Fri, 19 Dec 2014 17:32:33 -0800
+To: dan farmer <zen@fish2.com>
+Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
+X-Mailer: Apple Mail (2.1993)
+
+
+--DB8F9CAE0C8.1419041486/silent.localdomain--
 
