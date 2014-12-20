@@ -10,6 +10,10 @@ data_directory               = /etc/d3ck/mail/data
 alternate_config_directories = /etc/d3ck/mail
 mail_spool_directory         = /etc/d3ck/mail/spool
 
+# tls stuff
+transport_maps               = hash:/etc/d3ck/mail/transport
+tls_random_source            = dev:/dev/urandom
+
 # some basic opts
 inet_protocols  = ipv4
 inet_interfaces = all
@@ -24,10 +28,6 @@ smtp_tls_loglevel         = 4
 smtpd_tls_received_header = yes
 
 
-# misc locations
-transport_maps    = hash:/etc/d3ck/mail/transport
-tls_random_source = dev:/dev/urandom
-
 # for d3ck mail routing
 append_dot_mydomain = no
 
@@ -37,8 +37,11 @@ smtpd_tls_security_level         = fingerprint
 smtpd_tls_CAfile                 = /etc/d3ck/d3cks/D3CK/ca.crt
 smtpd_tls_cert_file              = /etc/d3ck/d3cks/D3CK/d3ck.crt
 smtpd_tls_key_file               = /etc/d3ck/d3cks/D3CK/d3ck.key
+smtpd_tls_dh2048_param_file      = /etc/d3ck/d3cks/D3CK/dh2048.params
 
-smtpd_tls_CApath                 = /etc/d3ck/mail/CAs
+smtpd_tls_fingerprint_digest     = sha1
+
+smtpd_tls_CApath                 = /etc/d3ck/mail/CAs/
 
 smtpd_tls_ask_ccert              = yes
 
@@ -46,13 +49,16 @@ smtpd_tls_session_cache_database = btree:/etc/d3ck/mail/smtpd_tls_session_cache
 
 
 # smtp - them
-smtp_tls_security_level     = fingerprint
-smtp_tls_policy_maps        = hash:/etc/d3ck/mail/smtp_tls_policy
-smtp_tls_fingerprint_digest = sha1
-
+smtp_tls_CApath                  = /etc/d3ck/d3cks/D3CK/ca.crt/
+smtp_tls_security_level          = fingerprint
+smtp_tls_policy_maps             = hash:/etc/d3ck/mail/smtp_tls_policy
+smtp_tls_session_cache_database  = btree:/var/spool/postfix/smtp_scache
+smtp_tls_fingerprint_digest      = sha1
 
 # added
 # smtpd_use_tls=yes
 # smtp_tls_note_starttls_offer = yes
 
-
+# smtp_tls_key_file = /etc/postfix/smtp.key
+# smtp_tls_cert_file = /etc/postfix/smtp.pem
+# smtp_tls_session_cache_timeout = 10800s

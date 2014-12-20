@@ -31,7 +31,7 @@
 #  -o milter_macro_daemon_name=ORIGINATING
 #smtps     inet  n       -       n       -       -       smtpd
 
-smtps    inet  n       -       n       -       -       smtpd -o smtpd_tls_wrappermode=yes -o smtpd_sasl_auth_enable=yes
+# smtps    inet  n       -       n       -       -       smtpd -o smtpd_tls_wrappermode=yes -o smtpd_sasl_auth_enable=yes
 
 #  -o syslog_name=postfix/smtps
 #  -o smtpd_tls_wrappermode=yes
