@@ -1,0 +1,201 @@
+From god@silent.localdomain  Wed Dec 17 18:42:44 2014
+X-UIDL: /no!!QI$"!Og?"!TQm"!
+Return-Path: <god@silent.localdomain>
+X-Original-To: snort
+Delivered-To: snort@silent.localdomain
+Received: from silent (localhost [127.0.0.1])
+	by silent.localdomain (Postfix) with SMTP id 78A7ECAE0C8
+	for <snort>; Wed, 17 Dec 2014 18:42:44 -0800 (PST)
+Message-Id: <20141218024244.78A7ECAE0C8@silent.localdomain>
+Date: Wed, 17 Dec 2014 18:42:44 -0800 (PST)
+From: god@silent.localdomain
+X-IMAPbase: 1419039826 0000000008 $NotJunk NotJunk
+X-UID: 1
+Status: RO
+X-Keywords:                                                      
+Content-Length: 36
+
+boo!
+boo!
+boo!
+boo!
+boo!
+boo!
+boo!
+
+
+From from@fromdomain.com  Wed Dec 17 19:04:48 2014
+X-UIDL: i,\"!)M!"!NRM!!\iZ!!
+Return-Path: <from@fromdomain.com>
+X-Original-To: snort
+Delivered-To: snort@silent.localdomain
+Received: from silent (localhost [127.0.0.1])
+	by silent.localdomain (Postfix) with ESMTP id D5FAACAE0C8
+	for <snort>; Wed, 17 Dec 2014 19:04:48 -0800 (PST)
+From: from frommy from <from@fromdomain.com>
+To: snort@silent.localdomain
+Subject: SMTP test
+Message-Id: <20141218030448.D5FAACAE0C8@silent.localdomain>
+Date: Wed, 17 Dec 2014 19:04:48 -0800 (PST)
+X-UID: 2
+Status: RO
+X-Keywords:                                                                       
+Content-Length: 19
+
+testy testy testy
+
+
+From zen@silent.localdomain  Fri Dec 19 11:59:14 2014
+X-UIDL: LR*"!'$T"!6EZ"!\(b"!
+Return-Path: <zen@silent.localdomain>
+X-Original-To: snort
+Delivered-To: snort@silent.localdomain
+Received: from lucky.fish2.com (lucky.fish2.com [192.168.0.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by silent.localdomain (Postfix) with ESMTPS id 05970CAE0C8
+	for <snort>; Fri, 19 Dec 2014 11:59:14 -0800 (PST)
+From: from frommy from <god>
+To: snort
+Subject: foo barroo
+Lines: 5
+X-UID: 3
+Status: RO
+X-Keywords:                                                                       
+Content-Length: 47
+
+barrroooo!!!!!
+barrroooo!!!!!
+barrroooo!!!!!
+
+
+
+From zen@silent.localdomain  Fri Dec 19 16:31:08 2014
+X-UIDL: TdI!!)-a"!Dod"!S&8!!
+Return-Path: <zen@silent.localdomain>
+X-Original-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Delivered-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Received: from lucky.fish2.com (lucky.fish2.com [192.168.0.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by silent.localdomain (Postfix) with ESMTPS id A7C16CAE0C8
+	for <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>; Fri, 19 Dec 2014 16:31:08 -0800 (PST)
+From: from frommy from <god>
+To: snort
+Subject: foo barroo
+X-UID: 4
+Status: RO
+X-Keywords:                                                                       
+Content-Length: 47
+
+barrroooo!!!!!
+barrroooo!!!!!
+barrroooo!!!!!
+
+
+
+From dfarmer@wildpackets.com  Fri Dec 19 16:34:10 2014
+X-UIDL: 9YR!!*@G!!,_a"!3JU!!
+Return-Path: <dfarmer@wildpackets.com>
+X-Original-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Delivered-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Received: from lucky.fish2.com (lucky.fish2.com [192.168.0.7])
+	(using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by silent.localdomain (Postfix) with ESMTPS id 8DB57CAE0C8
+	for <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>; Fri, 19 Dec 2014 16:34:10 -0800 (PST)
+From: dan farmer <dfarmer@wildpackets.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Subject: testify
+Message-Id: <F32C78DA-FF05-4B75-A25C-78A741BCA1D8@wildpackets.com>
+Date: Fri, 19 Dec 2014 16:33:59 -0800
+To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
+X-Mailer: Apple Mail (2.1993)
+X-UID: 5
+Status: RO
+X-Keywords:                                                                       
+Content-Length: 18
+
+test, tist, tost
+
+
+From snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F  Fri Dec 19 17:36:59 2014
+Return-Path: <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+X-Original-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Delivered-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Received: from lucky.fish2.com (lucky.fish2.com [192.168.0.7])
+	(using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by silent.localdomain (Postfix) with ESMTPS id 7BC79CAE0CA
+	for <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>; Fri, 19 Dec 2014 17:36:59 -0800 (PST)
+From: d3ck <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Subject: test
+Message-Id: <F444FD70-8FE7-45EA-947A-549AEC8A224F@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Date: Fri, 19 Dec 2014 17:36:59 -0800
+To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
+X-Mailer: Apple Mail (2.1993)
+X-UID: 6
+Status: RO
+X-Status: A
+X-Keywords: $NotJunk                                                                        
+Content-Length: 4
+
+xxx
+
+From snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F  Fri Dec 19 17:43:45 2014
+Return-Path: <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+X-Original-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Delivered-To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Received: from lucky.fish2.com (lucky.fish2.com [192.168.0.7])
+	(using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by silent.localdomain (Postfix) with ESMTPS id 5D7F2CAE0CA
+	for <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>; Fri, 19 Dec 2014 17:43:45 -0800 (PST)
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
+Subject: Re: test
+From: d3ck <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+In-Reply-To: <F444FD70-8FE7-45EA-947A-549AEC8A224F@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Date: Fri, 19 Dec 2014 17:43:45 -0800
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <D73B8E50-9466-4624-B757-49B033EDA09E@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+References: <F444FD70-8FE7-45EA-947A-549AEC8A224F@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+X-Mailer: Apple Mail (2.1993)
+X-UID: 7
+Status: RO
+X-Keywords: $NotJunk                                                                      
+Content-Length: 130
+
+testsststlkjadslfkjfdl
+
+> On Dec 19, 2014, at 5:36 PM, d3ck =
+<snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F> wrote:
+>=20
+> xxx
+
+
+From zen@silent.localdomain  Wed Dec 17 18:35:22 2014
+X-UIDL: &WZ"!?Kf!!RfJ"!MH>!!
+Return-Path: <zen@silent.localdomain>
+X-Original-To: snort
+Delivered-To: snort@silent.localdomain
+Received: from silent (localhost [127.0.0.1])
+	by silent.localdomain (Postfix) with SMTP id 38A3DCAE0C8
+	for <snort>; Wed, 17 Dec 2014 18:35:22 -0800 (PST)
+Message-Id: <20141218023522.38A3DCAE0C8@silent.localdomain>
+Date: Wed, 17 Dec 2014 18:35:22 -0800 (PST)
+From: zen@silent.localdomain
+X-UID: 8
+Status: RO
+X-Keywords: $NotJunk NotJunk                                                                        
+Content-Length: 5
+
+hey
+
+
