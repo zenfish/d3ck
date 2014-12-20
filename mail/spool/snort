@@ -11,8 +11,9 @@ Date: Wed, 17 Dec 2014 18:35:22 -0800 (PST)
 From: zen@silent.localdomain
 Status: RO
 X-IMAPbase: 1419039795 0000000009 $NotJunk $Junk NotJunk
-X-UID: 1             
+X-UID: 1 
 X-Keywords: $NotJunk NotJunk
+X-Status: D
 
 hey
 
@@ -176,7 +177,7 @@ Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
 X-Mailer: Apple Mail (2.1993)
 X-UID: 8
 Status: RO
-X-Keywords: $NotJunk                                    
+X-Keywords: $NotJunk NotJunk                            
 X-Status: AD
 
 xxx

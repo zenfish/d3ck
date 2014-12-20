@@ -6,7 +6,7 @@ mydestination = 84E8B049B2981D9B7E096BA3B31116DC45112D5F localhost 127.0.0.1 192
 
 alternate_config_directories = /etc/d3ck/mail
 
-inet_interfaces   = 127.0.0.1, 192.168.0.250
+inet_interfaces   = all
 
 queue_directory      = /etc/d3ck/mail/queue
 data_directory       = /etc/d3ck/mail/data
