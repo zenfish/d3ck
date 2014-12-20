@@ -50,9 +50,10 @@ smtpd_tls_session_cache_database = btree:/etc/d3ck/mail/smtpd_tls_session_cache
 
 # smtp - them
 smtp_tls_CApath                  = /etc/d3ck/d3cks/D3CK/ca.crt/
+# smtp_tls_security_level          = fingerprint
 smtp_tls_security_level          = fingerprint
 smtp_tls_policy_maps             = hash:/etc/d3ck/mail/smtp_tls_policy
-smtp_tls_session_cache_database  = btree:/var/spool/postfix/smtp_scache
+smtp_tls_session_cache_database  = btree:/var/spool/postfix/smtp_cache
 smtp_tls_fingerprint_digest      = sha1
 
 # added
