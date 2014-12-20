@@ -1,4 +1,7 @@
 
+# mydestination = 84E8B049B2981D9B7E096BA3B31116DC45112D5F $myhostname localhost
+mydestination = 84E8B049B2981D9B7E096BA3B31116DC45112D5F localhost 127.0.0.1 192.168.0.250
+
 # smtpd_authorized_xclient_hosts = 192.168.0.0/24, 127.0.0.0/8
 
 alternate_config_directories = /etc/d3ck/mail
@@ -38,4 +41,10 @@ smtp_tls_loglevel = 2
 smtpd_tls_received_header = yes
 tls_random_source = dev:/dev/urandom
 
+
+append_dot_mydomain = no
+transport_maps = hash:/etc/d3ck/mail/transport
+smtp_tls_policy_maps = hash:/etc/d3ck/mail/smtp_tls_policy
+smtp_tls_fingerprint_digest = sha1
+smtp_tls_security_level = fingerprint
 
