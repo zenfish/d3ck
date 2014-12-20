@@ -12,7 +12,7 @@
 # smtp      inet  n       -       n       -       -       smtpd
 
 # run on port 28, localhost
-28         inet  n       -       n       -       -       smtpd
+26         inet  n       -       n       -       -       smtpd
 
 #smtp      inet  n       -       n       -       1       postscreen
 #smtpd     pass  -       -       n       -       -       smtpd
