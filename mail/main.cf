@@ -2,6 +2,11 @@
 # mydestination = 84E8B049B2981D9B7E096BA3B31116DC45112D5F $myhostname localhost
 mydestination = 84E8B049B2981D9B7E096BA3B31116DC45112D5F localhost 127.0.0.1 192.168.0.250
 
+mynetworks = 84E8B049B2981D9B7E096BA3B31116DC45112D5F localhost 127.0.0.1
+
+smtpd_client_restrictions = permit_mynetworks, reject
+
+
 # smtpd_authorized_xclient_hosts = 192.168.0.0/24, 127.0.0.0/8
 
 # where stuff goes
@@ -33,19 +38,25 @@ append_dot_mydomain = no
 
 
 # smtp D - us
-smtpd_tls_security_level         = fingerprint
+# smtpd_tls_security_level         = fingerprint
+smtpd_tls_security_level         = encrypt
 smtpd_tls_CAfile                 = /etc/d3ck/d3cks/D3CK/ca.crt
 smtpd_tls_cert_file              = /etc/d3ck/d3cks/D3CK/d3ck.crt
 smtpd_tls_key_file               = /etc/d3ck/d3cks/D3CK/d3ck.key
-smtpd_tls_dh2048_param_file      = /etc/d3ck/d3cks/D3CK/dh2048.params
+# smtpd_tls_dh2048_param_file      = /etc/d3ck/d3cks/D3CK/dh2048.params
 
 smtpd_tls_fingerprint_digest     = sha1
 
 smtpd_tls_CApath                 = /etc/d3ck/mail/CAs/
 
 smtpd_tls_ask_ccert              = yes
+# require client-side (mail client) certs
+# smtpd_tls_req_ccert              = yes
 
 smtpd_tls_session_cache_database = btree:/etc/d3ck/mail/smtpd_tls_session_cache
+
+permit_tls_clientcerts           = yes
+relay_clientcerts                = hash:/etc/d3ck/mail/relay_clientcerts
 
 
 # smtp - them
@@ -55,6 +66,11 @@ smtp_tls_security_level          = fingerprint
 smtp_tls_policy_maps             = hash:/etc/d3ck/mail/smtp_tls_policy
 smtp_tls_session_cache_database  = btree:/var/spool/postfix/smtp_cache
 smtp_tls_fingerprint_digest      = sha1
+
+
+smtp_tls_cert_file = /etc/d3ck/d3cks/4EA45A067FD1DCCD65E442ECD31AEA5F69674A33/d3ck.pem
+smtp_tls_key_file  = /etc/d3ck/d3cks/4EA45A067FD1DCCD65E442ECD31AEA5F69674A33/d3ck.pem
+
 
 # added
 # smtpd_use_tls=yes

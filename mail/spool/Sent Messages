@@ -12,7 +12,7 @@ X-Smtp-Server: 192.168.0.250
 Message-Id: <D73B8E50-9466-4624-B757-49B033EDA09E@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
 References: <F444FD70-8FE7-45EA-947A-549AEC8A224F@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
 To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
-X-IMAPbase: 1419039825 0000000017 $NotJunk NotJunk
+X-IMAPbase: 1419039825 0000000022 $NotJunk NotJunk
 X-UID: 1
 Status: RO
 X-Keywords: $NotJunk NotJunk                                                     
@@ -339,4 +339,105 @@ X-Keywords: $NotJunk NotJunk
 Content-Length: 5
 
 xxxx
+
+From snort@silent.nocarrier.com  Sat Dec 20 10:38:39 2014
+From: d3ck <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Smtp-Server: fish2.com
+Subject: hey from snort
+Message-Id: <6C61D11F-FA01-4D73-BD2A-6D20156D30BE@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+X-Universally-Unique-Identifier: 6D73A720-68CD-4DC2-B13D-13B1A61B5898
+Date: Sat, 20 Dec 2014 10:38:39 -0800
+To: ubuntu@4EA45A067FD1DCCD65E442ECD31AEA5F69674A33
+Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
+X-UID: 18
+Status: RO
+X-Keywords: $NotJunk NotJunk                                                                        
+Content-Length: 7
+
+live!
+
+
+From snort@silent.nocarrier.com  Sat Dec 20 12:01:50 2014
+From: d3ck <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Smtp-Server: fish2.com
+Subject: xxx
+Message-Id: <2945A98A-C301-49F8-B84C-15CD1122B50C@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+X-Universally-Unique-Identifier: 58B9DA5B-C8BC-4960-9B38-36069C44DA9B
+Date: Sat, 20 Dec 2014 12:01:50 -0800
+To: ubuntu@4EA45A067FD1DCCD65E442ECD31AEA5F69674A33
+Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
+X-UID: 19
+Status: RO
+X-Keywords: $NotJunk NotJunk                                                                        
+Content-Length: 5
+
+xxxx
+
+From snort@silent.nocarrier.com  Sat Dec 20 12:40:57 2014
+From: d3ck <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Smtp-Server: fish2.com
+Subject: test
+Message-Id: <A155B333-B20B-4140-8958-6924BE80D74F@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+X-Universally-Unique-Identifier: D9736951-D323-40F7-A86E-9F529384803C
+Date: Sat, 20 Dec 2014 12:40:57 -0800
+To: snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F
+Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
+X-UID: 20
+Status: RO
+X-Keywords: $NotJunk NotJunk                                                                        
+Content-Length: 4
+
+foo
+
+From snort@silent.nocarrier.com  Sat Dec 20 13:05:59 2014
+From: d3ck <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Smtp-Server: fish2.com
+Subject: got a few mins to try something?
+Message-Id: <AC6BFB4A-BD07-4B8F-899F-DB4942E03951@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+X-Universally-Unique-Identifier: DB56DD3B-2ECC-42B1-97FF-19AD727E1B66
+Date: Sat, 20 Dec 2014 13:05:59 -0800
+To: Markus Fix <lispmeister@gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 8.1 \(1993\))
+X-UID: 21
+Status: RO
+X-Keywords: $NotJunk NotJunk                                                                       
+Content-Length: 99
+
+
+Paul says hi, btw ;)
+
+No big deal if not=E2=80=A6 but this is pretty nifty, if I do say so.
+
+dan=
+
+From snort@silent.nocarrier.com  Sat Dec 20 13:17:54 2014
+Date: Sat, 20 Dec 2014 13:17:24 -0800
+Subject: test y
+From: "snort@" <snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+To: <ubuntu@4EA45A067FD1DCCD65E442ECD31AEA5F69674A33>
+Message-ID: <D0BB2782.1C906E%snort@84E8B049B2981D9B7E096BA3B31116DC45112D5F>
+Thread-Topic: test y
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="UTF-8"
+Content-transfer-encoding: 7bit
+X-UID: 22
+Status: RO
+X-Keywords:                                                                        
+Content-Length: 5
+
+yyy
+
 

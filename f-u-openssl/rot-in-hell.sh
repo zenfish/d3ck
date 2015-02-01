@@ -43,6 +43,9 @@ magic="-subj /C=$KEY_COUNTRY/ST=$KEY_PROVINCE/L=$KEY_CITY/O=$KEY_ORG/CN=$KEY_CN"
 openssl req $magic -extensions server -batch -nodes -new -newkey rsa:$KEY_SIZE -config stupid.conf -keyout d3ck.key -out d3ck.req -batch
 openssl  ca $magic -extensions server -batch -in d3ck.req -out d3ck.crt -config stupid.conf -days $KEY_LIFE -batch
 
+# create PEM format
+openssl x509 -in d3ck.crt -out d3ck.pem -outform PEM
+
 # even more pseudo random
 KEY_CN=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '{$1=""; printf("%s", $0)}' | sed 's/ //g')
 magic="-subj /C=$KEY_COUNTRY/ST=$KEY_PROVINCE/L=$KEY_CITY/O=$KEY_ORG/CN=$KEY_CN"

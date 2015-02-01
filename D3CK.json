@@ -47,6 +47,11 @@
         "did_polling_time" : "3000"
     },
 
+    "ping": {
+        "TIMEOUT"          : "10000",
+        "DAEMON_LOOP_TIME" : "30000"
+    },
+
     "public_routes": [
         "d3ck",
         "css",

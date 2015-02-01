@@ -21,6 +21,7 @@
     "geoip-lite": "^1.1.3",
     "http-proxy": "1.3.0",
     "json": "latest",
+    "lockfile": "^1.0.0",
     "method-override": "2.1.2",
     "mkdirp": "0.5.0",
     "moment": "2.8.2",
@@ -49,6 +50,7 @@
     "wait.for": "0.6.4",
     "websocket": "1.0.8",
     "when": "3.4.4",
+    "winston": "^0.8.3",
     "ws": "0.4.31"
   },
   "author": "dan f with some very early help from the mighty Markus Fix",
