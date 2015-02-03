@@ -20,6 +20,10 @@
         "port": "8080"
     },
 
+    "trust" : {
+        "default": "trusting"
+    },
+
     "capabilities" : {
         "friend request":       { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
         "VPN":                  { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
@@ -29,6 +33,17 @@
         "messages":             { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
         "command execution":    { "paranoid": "off", "moderate": "off", "trusting": "ask" },
         "Geo-translocation":    { "paranoid": "off", "moderate": "off", "trusting": "ask" }
+    },
+
+    "owner_capabilities" : {
+        "friend request"    : "on",
+        "VPN"               : "on",
+        "SIP"               : "on",
+        "webRTC"            : "on",
+        "file transfer"     : "on",
+        "messages"          : "on",
+        "command execution" : "on",
+        "Geo-translocation" : "on"
     },
     
     "crypto": {
@@ -45,6 +60,11 @@
 
     "misc": {
         "did_polling_time" : "3000"
+    },
+
+    "ping": {
+        "TIMEOUT"          : "10000",
+        "DAEMON_LOOP_TIME" : "30000"
     },
 
     "public_routes": [

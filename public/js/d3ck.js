@@ -751,6 +751,8 @@ function rip_geo(element, geo) {
 
     console.log('tearing up geo data')
 
+    console.log('tearing up geo data')
+
 //
 // something like... for one of my EC2 instances....
 //  { ip: '54.203.255.17',
@@ -767,25 +769,31 @@ function rip_geo(element, geo) {
 //
 
     // xxx - do different stuff for foreign, have no data yet!
+    if (! def(geo)) return
+
 
     // think this is true for private ip space (10/8, etc.)
-    if (geo.country_name == 'Reserved') {
-        return
-    }
+    if (!def(geo.country_name) || geo.country_name == 'Reserved') { return }
 
-    phone = ''
-    if (geo.area_code != '') {
-        var phone = '(' + geo.area_code + ')-' + geo.metro_code + '-xxxx'
-    }
+    var phone = ''
+    if (def(geo.area_code)) { var phone = '(' + geo.area_code + ')-' + geo.metro_code + '-xxxx' }
+
+    var region = ''
+    if (def(geo.region_code)) { var region = geo.region_code + ', ' }
+
+    var city = ''
+    if (def(geo.city)) { var city = geo.city + ', ' }
 
     // nifty flags courtesy of http://flag-sprites.com/ -->
-    flag = ''
-    if (geo.country_code != '') {
+    var flag = ''
+    if (def(geo.country_code)) {
         var flag  = '<img style="margin-left:4px;" src="img/blank.gif" class="flag flag-' + geo.country_code.toLowerCase() + '">'
     }
 
-    if (phone != '' || flag != '')
-        $(element).append(geo.city + ', ' +  geo.region_code + ', ' + geo.country_code + '; ' + flag + ' ' + geo.zipcode + ' ' +  '; ' + phone)
+    var zip = ''
+    if (def(geo.zipcode)) { var zip  = geo.zipcode + '; ' }
+
+    $(element).append(city +  region + geo.country_name + '; ' + flag + ' ' + zip + phone)
 
     // latitude, longitude
 
@@ -1394,6 +1402,38 @@ function load_vault() {
     })
 
 }
+
+//
+// load up the capabilities data for d3ck X
+//
+function load_capabilities(d3ck, element) {
+
+    console.log('loadin capabilities settings for ' + d3ck.D3CK_ID)
+
+    var jqXHR_trust_def = $.ajax({ url: '/capabilities/' + d3ck.D3CK_ID, dataType: 'json' })
+    jqXHR_trust_def.done(function (data, textStatus, jqXHR) {
+        console.log('jxq default capabilities returned')
+        console.log(data)
+
+        var row = '<td>' + d3ck.owner.name + '</td>'
+            row = row + '<td>' + data.cap['friend request'] + '</td>'
+            row = row + '<td>' + data.cap['VPN'] + '</td>'
+            row = row + '<td>' + data.cap['SIP'] + '</td>'
+            row = row + '<td>' + data.cap['webRTC'] + '</td>'
+            row = row + '<td>' + data.cap['file transfer'] + '</td>'
+            row = row + '<td>' + data.cap['messages'] + '</td>'
+            row = row + '<td>' + data.cap['command execution'] + '</td>'
+            row = row + '<td>' + data.cap['Geo-translocation'] + '</td>'
+            row = row + '</td>'
+
+        // $(element).append(JSON.stringify(data) + '<br />')
+        $(element).append(row)
+
+    })
+
+}
+
+
 
 function panic_button() {
 
@@ -2347,5 +2387,18 @@ function raise_shields(ip) {
         console.log('events errz on event listing' + err)
         inform_user('VPN', 'Shield down command failed: ' + JSON.stringify(err), 'error')
     })
+
+}
+
+//
+// is a variable defined or no?  Returns true if it is
+//
+function def(varvar) {
+    console.log('checking ' + varvar)
+
+    if (typeof varvar === "undefined")
+        return false
+
+    return true
 
 }

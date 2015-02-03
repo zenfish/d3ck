@@ -365,6 +365,9 @@ $(document).ready(function () {
 
                          $('.thumbnail').addClass('dotdotdot')
 
+                         // load up trust info
+                         load_capabilities(d3ckinfo, '#d3ck_trust_table')
+
                     } // else ... d3cks other than this one
                     else {
                         my_d3ck = d3ckinfo
@@ -375,6 +378,10 @@ $(document).ready(function () {
 
                         // desparation sets in....
                         rtc_haxx0r_trick()
+
+                        // load up trust defaults
+                        load_capabilities(my_d3ck, '#d3ck_trust_you')
+
                     }
                 })
             })

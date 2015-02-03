@@ -32,9 +32,6 @@
 <!-- trivial bits here -->
 <link href="/css/d3ck.css" rel="stylesheet">
 
-<!-- form to add files -->
-<link href="/css/jquery.filer.css" rel="stylesheet">
-
 <!-- a few more icons -->
 <link href="/css/whhg.css" rel="stylesheet">
 
@@ -119,40 +116,29 @@
                         </div>
 
                         <div class="row">
-                          <div class="col-md-6"> <h4>Which below best most closely matches your atitude of security?</h4></div>
-                        </div>
-
-                        <div class="row">
-                          <div class="col-md-10">
+                          <div class="col-md-7"> <h4>Which below best most closely matches your atitude of security?</h4>
+                          
                             <div class="inline radio">
-                                <label> I'm not only paranoid, they *are* out to get me!  </label>
+                                <label> I'm not only <span style="color: red">paranoid</span>, they *are* out to get me!  </label>
                                 <input type="radio" name="radio_free_d3ck" id="radio_free_d3ck1" value="paranoid">
                             </div>
-                          </div>
-                        </div>
 
-                        <div class="row">
-                          <div class="col-md-10">
                             <div class="inline radio">
-                                <label> I'm reasonably concerned about security </label>
-                                <input type="radio" name="radio_free_d3ck" id="radio_free_d3ck2" value="reasonable">
+                                <label> I'm <span style="color: red">reasonably</span> concerned about security </label>
+                                <input type="radio" name="radio_free_d3ck" id="radio_free_d3ck2" value="reasonably">
                             </div>
-                          </div>
-                        </div>
 
-                        <div class="row">
-                          <div class="col-md-10">
                             <div class="inline radio">
-                                <label> For the love of god, just make it work!  </label>
+                                <label> For the love of god, just <span style="color: red">make it work!</span></label>
                                 <input type="radio" name="radio_free_d3ck" id="radio_free_d3ck3" value="make_it_work" checked>
                             </div>
-                          </div>
-                        </div>
 
-                        <div class="row">
+                          </div>
+
+                          <div class="col-md-4" class="row"><h4 id="explanation_title"></h4><div id="explanations"> </div> </div>
 
                         <div class="btn-toolbar"> <span class="spacer20"></span></div>
-                        <div class="col-md-5"> </div>
+                        <div class="col-md-2"> </div>
                         <div class="col-md-2">
                           <span> <input style="display:none" id="d3ck_action" name="d3ck_action" value="SETUP" /> </span>
                           <!-- this does some javascript fu below to post the data and redirect back to this page -->
@@ -188,8 +174,6 @@
 <script type="text/javascript" src='/js/jquery.inputmask.js'></script>
 <script type="text/javascript" src='/js/jquery.blockUI.js'></script>
 <script type="text/javascript" src='/js/jquery.avgrund.js'></script>
-<script type="text/javascript" src="/js/jquery.bootstrap-growl.min.js"></script>
-<script type="text/javascript" src="/js/jquery.filer.js"></script>
 <script type="text/javascript" src="/js/jquery.mCustomScrollbar.concat.js"></script>
 
 <script type="text/javascript" src='/js/bootstrap.js'></script>
@@ -201,15 +185,77 @@
 
 // $('#demo4').click(function() {
 $(document).ready(function () {
-    $.reject({
-        reject: { all: true },
-        display: ['firefox','chrome'],
-        header: "WARNING - this uses modern browsers only... if you're using something other than these it may or may not work",
-        paragraph1: "If your browser works @ <a href='http://appear.in' target='_blank'>appear.in's</a> fine site you'll probably be good.",
-        paragraph2: "",
-        closeLink: '<span style="color:red"><b> Close This Window </b></span>', 
-        closeMessage: "By closing this window you acknowledge that (a) I can't program browsers very well and (b) your normal browsing experience here may be degraded or cease to function. But good luck anyway :)"
-    });
+
+//    $.reject({
+//        reject: { all: true },
+//        display: ['firefox','chrome'],
+//        header: "WARNING - this uses modern browsers only... if you're using something other than these it may or may not work",
+//        paragraph1: "If your browser works @ <a href='http://appear.in' target='_blank'>appear.in's</a> fine site you'll probably be good.",
+//        paragraph2: "",
+//        closeLink: '<span style="color:red"><b> Close This Window </b></span>', 
+//        closeMessage: "By closing this window you acknowledge that (a) I can't program browsers very well and (b) your normal browsing experience here may be degraded or cease to function. But good luck anyway :)"
+//    });
+
+
+    var cap = { 
+              "paranoid": { 
+                    "friend request":     "off",
+                    "VPN":                "ask",
+                    "SIP":                "off",
+                    "webRTC":             "off",
+                    "file transfer":      "off",
+                    "messages":           "ask",
+                    "cmd execution":      "off",
+                    "Geo-translocation":  "off"
+                },
+              "reasonably": { 
+                    "friend request":     "ask",
+                    "VPN":                "ask",
+                    "SIP":                "off",
+                    "webRTC":             "ask",
+                    "file transfer":      "ask",
+                    "messages":           "ask",
+                    "cmd execution":      "off",
+                    "Geo-translocation":  "off"
+                },
+              "make_it_work": {
+                    "friend request":     "on",
+                    "VPN":                "on",
+                    "SIP":                "on",
+                    "webRTC":             "on",
+                    "file transfer":      "on",
+                    "messages":           "on",
+                    "cmd execution":      "ask",
+                    "Geo-translocation":  "ask"
+                }
+              }
+
+    $('#explanations').append('<table id="dyn_table" class="table table-condensed table-hover table-striped"><tr><th>Capability</th><th>State</th></tr><tbody>')
+    $.each(cap['make_it_work'], function(k,v) {
+        $('#dyn_table').append('<tr><td>' + k + '</td><td>' + v + '</td></tr>')
+    })
+
+    $('#explanation_title').append('<span class="color: red">"Make it Work"</span> enables/disables:')
+
+    $('input:radio[name="radio_free_d3ck"]').change(
+        function(){
+            var val = $(this).val()
+            console.log(val + ' was checked')
+
+            $('#explanation_title').html('')
+            $('#explanation_title').append('<span class="color: red">"' + val.replace(/_/g, " ") + '"' + "</span> enables/disables:")
+
+            if ($(this).is(':checked')) {
+                $('#explanations').html('')
+                $('#explanations').append('<table id="dyn_table" class="table table-condensed table-hover table-striped"><tr><th>Capability</th><th>State</th></tr><tbody>')
+                $.each(cap[val], function(k,v) {
+                    console.log(k,v)
+                    $('#dyn_table').append('<tr><td>' + k + '</td><td>' + v + '</td></tr>')
+                })
+            }
+        }
+    );
+    
 
 })
 

@@ -81,8 +81,10 @@ var d3ck_proto_signal = config.D3CK.d3ck_proto_signal
 // start with a clean slate
 status_queue = []   // not to be confused with quo
 
-// capabilities...
-var capabilities      = config.capabilities
+// capabilities & trust
+var capabilities       = config.capabilities
+var owner_capabilities = config.owner_capabilities
+var trust              = config.trust
 
 var d3ck = require('./modules');
 
@@ -118,7 +120,7 @@ if (fs.existsSync(d3ck_secretz)) {
 // owner user array
 var d3ck_owners = []
 
-var all_d3cks   = []
+var all_d3cks   = {}
 
 
 //
@@ -159,8 +161,42 @@ catch (e) {
     process.exit(2)
 }
 
-// suck up our own d3ck
 
+
+// server internal helper to get d3ck data
+function _get_d3ck(d3ck_id) {
+    console.log('\tget d3ck ' + d3ck_id)
+
+    var deferred = Q.defer();
+
+    rclient.get(d3ck_id, function (err, res) {
+
+        // console.log('\tfinished getting...')
+
+        if (!err) {
+            if (res == null) {
+                // console.log('ERRZ getting d3ck: ' + d3ck_id + ' -> ' + JSON.stringify(err))
+                console.log('\tERRZ getting d3ck: ' + d3ck_id)
+                deferred.reject(err)
+            }
+            else {
+                console.log('setting: ' + d3ck_id + ' to ' + JSON.stringify(res).length + ' bytes')
+                all_d3cks[d3ck_id] = JSON.parse(res)
+                deferred.resolve(res)
+            }
+        }
+        else {
+            console.log(err, '\t_get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
+            process.exit(9)
+        }
+    })
+    
+    return deferred.promise;
+
+}
+
+
+// suck up our own d3ck
 rclient.get(d3ck_id, function (err, reply) {
     console.log('bwana!')
     console.log(d3ck_id)
@@ -183,6 +219,34 @@ rclient.get(d3ck_id, function (err, reply) {
         sys.exit({ "no": "d3ck"})
     }
 })
+
+// get all known d3cks
+rclient.keys('[A-F0-9]*', function (err, keys) {
+    if (err) {
+        console.log(err, 'list_d3ck: unable to retrieve all d3cks');
+        next(err);
+    } else {
+        console.log('Number of d3cks so far: ', keys.length);
+
+        __.each(keys, function(k) {
+            console.log('grabbing ' + k)
+            _get_d3ck(k)
+        })
+    }
+});
+
+
+
+
+
+// ... trust isnt in redis DB?
+// ... get /trust/xxxxx returns undef
+// ... blow things away, start scratch, see if they have trust?
+
+
+
+
+
 
 
 //
@@ -410,14 +474,15 @@ function assign_capabilities(_d3ck, new_capabilities) {
     else {
         var capz = {}
 
-        console.log('taking from base defaults...')
+        console.log('taking from base default trust level: ' + trust.default)
         Object.keys(capabilities).forEach(function(k) {
-            console.log(k + '\t: ' + capabilities[k].trusting)
+            console.log(k + '\t: ' + capabilities[k][trust.default])
             capz[k] = capabilities[k].trusting
         })
 
+        console.log('CAPZ: ')
+        console.log(capz)
         _d3ck["capabilities"] = capz
-
     }
 
     update_d3ck(_d3ck)
@@ -542,7 +607,7 @@ function auth(req, res, next) {
     // for now... let in localhost... may rethink
     // console.log('localhost')
     if (ip == '127.0.0.1') {
-        console.log('pass... localhost' + req.path)
+        console.log("you ain't from around here, are ya... wait... yes you are... hi, bobby-sue!  " + req.path)
         return next();
     }
 
@@ -1051,7 +1116,37 @@ function getIP(req, res, next) {
     var ip = get_client_ip(req)
 
     res.send(200, '{"ip" : "' + ip + '"}');
+
 }
+
+//
+//
+//
+function getCapabilities(req, res, next) {
+
+    var d3ck_id = req.params.deckid
+
+    // console.log(req)
+    console.log(req.params)
+
+    console.log('get cap for: ' + d3ck_id)
+
+    // console.log(all_d3cks[d3ck_id])
+
+    var cap   = {}
+
+    try {
+        cap = all_d3cks[d3ck_id].capabilities
+    }
+    catch (e) {
+        console.log('erk... what we have here is a failure to trust...')
+    }
+
+    res.send(200, { d3ck: d3ck_id, cap: cap })
+
+
+}
+
 
 //
 // given an IP addr, return looks like...
@@ -1093,11 +1188,35 @@ function getGeo(req, res, next) {
         return
     }
 
-    Q.fcall(function() {
-        var geo_data = resolveGeo(ip_addr)
-        res.send(200, geo_data )
-        return (geo_data)
+    get_https(url, ip_addr).then(function (geo_data) {
+
+        console.log('geo hmmm....')
+
+        geo_data = JSON.parse(geo_data)
+
+        console.log(JSON.stringify(geo_data))
+
+        // ip2geo[ip_addr] = JSON.stringify(geo_data)
+        ip2geo[ip_addr] = geo_data
+
+        // d3ck_queue.push({type: 'info', event: 'geo', ip_addr: ip_addr, geodata: geo_data })
+        // return geo_data
+        // res.send(200, geo_data )
+
+        console.log("fucking send something, geo!")
+        deferred.resolve({ip_addr: ip_addr, geo : ip2geo[ip_addr] })
+        res.send(200, {ip_addr: ip_addr, geo : ip2geo[ip_addr] })
+
+    }).catch(function (error) {
+        console.log('geo err! What or where - is the world coming to?')
+        console.log(error)
+        deferred.reject(error)
+        res.send(420, {ip_addr: ip_addr, geo : ''})
     })
+
+    return deferred.promise;
+
+}
 
 //  get_https(url).then(function (geo_data) {
 //      console.log('geo hmmm....')
@@ -1107,12 +1226,8 @@ function getGeo(req, res, next) {
 //      d3ck_queue.push({type: 'info', event: 'geo', ip_addr: ip_addr, geodata: geo_data })
 //      // return geo_data
 //      res.send(200, geo_data )
-//      return deferred.resolve(geo_data)
+//      deferred.resolve(geo_data)
 //  })
-
-    return deferred.promise;
-
-}
 
 function resolveGeo(ip_addr) {
 
@@ -1123,22 +1238,7 @@ function resolveGeo(ip_addr) {
 
     var deferred = Q.defer();
 
-//  var secz = new Date() / 1000;
-//  // cache for 24 hours
-//  var diff = secz - old_secz
-//  if (typeof old_geo[ip_addr] != "undefined" && diff <= geo_cache_threshold) {
-//      console.log('using cached value: ' + old_geo[ip_addr])
-//      return old_geo[ip_addr]
-//  }
-
-    // cache until can't cache no more (restart)
-//  if (typeof ip2geo[ip_addr] !== "undefined") {
-//      console.log('returning cached geo result')
-//      console.log(ip2geo[ip_addr])
-//      return({ip_addr: ip_addr, geo : ip2geo[ip_addr] })
-//  }
-
-    get_https_certified(url, ip2d3ck[ip_addr]).then(function (geo_data) {
+    get_https(url, ip2d3ck[ip_addr]).then(function (geo_data) {
 
         console.log('geo hmmm....')
         console.log( { geo: geo_data } )
@@ -1152,16 +1252,14 @@ function resolveGeo(ip_addr) {
         // return geo_data
         // res.send(200, geo_data )
 
-        return deferred.resolve(geo_data)
-
+        console.log("fucking send something, geo!")
+        deferred.resolve(geo_data)
 
     }).catch(function (error) {
         console.log('geo err! What or where - is the world coming to?')
         console.log(error)
-        return deferred.reject(error)
+        deferred.reject(error)
     })
-    .done();
-
 
     return deferred.promise;
 
@@ -1398,7 +1496,8 @@ function format_d3ck(req, res, body) {
 function update_d3ck(_d3ck) {
 
     console.log('updating data for ' + _d3ck.D3CK_ID)
-// 
+    console.log(_d3ck)
+
     rclient.set(_d3ck.D3CK_ID, JSON.stringify(_d3ck), function(err) {
         if (err) {
             console.log(err, 'update_d3ck failed ' + JSON.stringify(err));
@@ -1406,6 +1505,7 @@ function update_d3ck(_d3ck) {
         } else {
             _d3ck_events = { updated_d3ck : '127.0.0.1' }
 
+            all_d3cks[_d3ck.D3CK_ID] = _d3ck
             // reate_d3ck_key_store(_d3ck)
             // create_d3ck_image(_d3ck)
 
@@ -1414,7 +1514,6 @@ function update_d3ck(_d3ck) {
 
         }
     })
-
 
 }
 
@@ -1767,6 +1866,8 @@ function delete_d3ck(req, res, next) {
             d3ck_queue.push( {type: 'info', event: 'd3ck_delete', d3ck: req.params.key} )
 
             delete all_d3cks[req.params.key]
+
+            // XXX -> revoke client keys!
 
             res.send(204);
         }
@@ -3324,8 +3425,7 @@ function quikStart(req, res, next) {
 
     // update
     // update_d3ck(bwana_d3ck)
-    assign_capabilities(bwana_d3ck)     // does update
-
+    assign_capabilities(bwana_d3ck, owner_capabilities)  // does a DB update
 
     secretz          = {}
     secretz.id       = 0
@@ -3467,7 +3567,7 @@ function create_d3ck_by_ip(ip_addr) {
         console.log('created local -> ' + JSON.stringify(data))
 
         if (typeof data.did == "undefined" || typeof data.owner.name == "undefined") {
-            return deferred.reject({ error: "couldnt get remote d3ck ID or owner name"} )
+            deferred.reject({ error: "couldnt get remote d3ck ID or owner name"} )
         }
 
         //
@@ -3492,7 +3592,7 @@ function create_d3ck_by_ip(ip_addr) {
 
         d3ck_queue.push({type: 'info', event: 'd3ck_create', 'd3ck_status': d3ck_status})
 
-        return deferred.resolve();
+        deferred.resolve();
     })
 
     return deferred.promise;
@@ -3947,6 +4047,9 @@ server.post('/form', auth, handleForm);
 
 // get your ip addr(s)
 server.get('/getip', auth, getIP);
+
+// get trust data for a d3ck
+server.get('/capabilities/:deckid', auth, getCapabilities);
 
 // get your geo on
 server.get('/geo', auth, getGeo);

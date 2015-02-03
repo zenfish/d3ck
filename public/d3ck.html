@@ -97,8 +97,8 @@
                     <ul class="dropdown-menu">
                         
                         <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_generate"> Generate Authentication Tokens</a> </li>
-                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_explore"> Creating and seeing who you trust</a> </li>
                         <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_you"> Who trusts your D3CK?</a> </li>
+                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_explore"> Whom does your d3ck trust?</a> </li>
 
                     </ul>
                 </li>
@@ -326,27 +326,36 @@
 
             <!-- trust/love -->
 
-            <div class="tab-pane fade" id="d3ck_trust_explore">
-                <div class="row-fluid marketing">
-                    <div class="muted">
-                        <h3 style="clear:both">Who do you trust?</h3>
-                    </div>
-                    <div>
-                        ...tbd...
-                    </div>
-                </div>
-            </div>
-
             <div class="tab-pane fade" id="d3ck_trust_you">
                 <div class="row-fluid marketing">
                     <div class="muted">
                         <h3 style="clear:both">Who trusts your D3CK?</h3>
                     </div>
-                    <div>
-                        ...tbd...
+                </div>
+            </div>
+                        
+            <div class="tab-pane fade" id="d3ck_trust_explore">
+                <div class="row-fluid marketing">
+                    <div class="muted">
+                        <h3 style="clear:both">Who does your d3ck allow to do...?</h3>
+                            <h4> "*" means not implemented yet </h4>
+                            <table id="d3ck_trust_table" class="table table-condensed table-hover table-striped">
+                                <tr> 
+                                    <th> Owner </th> 
+                                    <th> VPN </th> 
+                                    <th> WebRTC (Video, etc) </th> 
+                                    <th> File Transfer </th> 
+                                    <th> Instant Messaging </th> 
+                                    <th> Friend Request </th> 
+                                    <th> * SIP </th> 
+                                    <th> * Cmd Execution </th> 
+                                    <th> * Geo Translocation </th> 
+                                </tr>
+                                <tbody>
+                                </tbody>
+                            </table>
                     </div>
                 </div>
-
             </div>
 
             <div class="tab-pane fade" id="d3ck_trust_generate">
