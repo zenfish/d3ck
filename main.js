@@ -872,8 +872,16 @@ function watch_logs(logfile, log_type) {
             //
             //      Client Connect : 10.105.154.6
             //
+            var client_vpn_ip = ''
+
             if (line.indexOf(magic_server_rvpn) > -1) {
-                client_vpn_ip = line.match(/((([0-9]+\.){3}([0-9]+){1}))/)[0]
+                // apparently... sometimes the IP isn't there...???
+                try {
+                    client_vpn_ip = line.match(/((([0-9]+\.){3}([0-9]+){1}))/)[0]
+                }
+                catch (e) {
+                    client_vpn_ip = '???'
+                }
                 console.log('\n------> ' + client_vpn_ip + '<--- openvpn client IP\n\n')
             }
 

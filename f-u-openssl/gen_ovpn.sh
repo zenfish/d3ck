@@ -73,23 +73,24 @@ proto $d3ck_vpn_proto
 port  $d3ck_vpn_port
 $remote
 
-# seems recommended...?!?
-# link-mtu 1500
-tun-mtu  1500
-
 cipher $d3ck_cipher
 auth $d3ck_auth
 
-resolv-retry infinite
+# seems recommended
+tun-mtu  1500
 
-comp-lzo
-nobind
-persist-key
-persist-tun
-verb 3
+comp-lzo    
+nobind    
+verb    5
+
+# for up/down scripts
+script-security 2
 
 remote-cert-tls server
-redirect-gateway
+
+single-session
+
+key-direction 1
 
 EOV
 
