@@ -2118,6 +2118,8 @@ function ask_user_4_response(data) {
         return
     }
 
+    console.log(data.d3ck_status)
+
     var req = data.d3ck_status.d3ck_requests
 
 // ask_user_4_response({qtype: 'knock', 'from': friend, 'ip_addr': d3ck_status.d3ck_requests.ip_addr, 'did': d3ck_status.d3ck_requests.from_d3ck})
@@ -2228,7 +2230,7 @@ function ask_user_4_response(data) {
                   Seconds         : { show: true, color: "#2b94ea"}
               }
           }).addListener(function(unit, value, total) {
-              // console.log(DEFAULT_RING_TIME, unit,value,total)
+              console.log(DEFAULT_RING_TIME, unit,value,total)
               if (value <= 0) {
                   // alert('wakka!')
                   console.log('clicking... cancel!')
@@ -2334,7 +2336,7 @@ function show_user_sequence(d3ckid) {
 
 function lower_shields(ip) {
 
-    console.log('lowering shields to ' + ip)
+    console.log('lowering shieldz to ' + ip)
     var url = '/shields/up'
 
     var jqXHR_shields = $.ajax({ url: url })
