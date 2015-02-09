@@ -222,6 +222,11 @@ rclient.get(d3ck_id, function (err, reply) {
 
 // get all known d3cks
 rclient.keys('[A-F0-9]*', function (err, keys) {
+
+    if (err) {
+        console.log('foo is bar when bar == foo')
+    }
+
     if (err) {
         console.log(err, 'list_d3ck: unable to retrieve all d3cks');
         next(err);
@@ -2928,8 +2933,8 @@ function d3ck_spawn_sync(command, argz) {
     console.log('stdout + stderr ' + result.stdout);
 
     try {
-        out = fs.writeFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.out.log', result.stdout, 'a+')
-        err = fs.writeFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.err.log', result.stdout, 'a+')
+        out = fs.writeFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.out.log', 'a+')
+        err = fs.writeFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.err.log', 'a+')
     }
     catch (e) {
         console.log("error writing log file with " + command + ' => ' + e.message)

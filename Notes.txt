@@ -1,4 +1,13 @@
 
+
+To do GEO displacement:
+
+    ./ipt.sh -> make it a tool that sucks up appriate values... right now just a one-off that needs editing
+
+
+
+
+
 ubuntu... make something in /etc/init.d runnable...
 
     update-rc.d foo-filename defaults
@@ -6,7 +15,7 @@ ubuntu... make something in /etc/init.d runnable...
 
 
 
-poker cards 3.5 x 2.5
+poker cards are 3.5 x 2.5
 
 
 
