@@ -1350,6 +1350,7 @@ function getDNS (req, res, next) {
         console.log('returning cached ip2fqdns result')
         console.log(ip2fqdns[ip])
         res.send(200,    {ip: ip, fqdn : ip2fqdns[ip] } )
+        return
     }
 
     // xxx - yeah, bad... will figure out a better dns call later
@@ -1360,7 +1361,7 @@ function getDNS (req, res, next) {
         deferred.reject({ip: ip, fqdn : ip } )
 
         try {
-            res.send(420, { ip: ip, fqdn : ip })
+            res.send(200, { ip: ip, fqdn : ip })
         }
         catch (e) {
             //
@@ -1375,7 +1376,7 @@ function getDNS (req, res, next) {
                 ip2fqdns[ip] = ip
                 console.log(err)
                 deferred.reject({ip: ip, fqdn : ip } )
-                res.send(420,   {ip: ip, fqdn : ip } )
+                res.send(200,   {ip: ip, fqdn : ip } )
             }
             else {
                 fqdn         = fqdn.join()
