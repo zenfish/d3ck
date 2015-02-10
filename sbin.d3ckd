@@ -34,15 +34,6 @@ echo "1" > /proc/sys/net/ipv4/ip_forward
 # if no dir or symlink
 if [ ! -d $d3ck_keystore -o ! -h $d3ck_keystore ] ; then
 
-    # initialize number of client certs ever issued
-    echo 'set n_client_keys_issued 0' | redis-cli
-
-    if [ $? != 0 ] ; then
-        echo "couldn't initialize a variable (n_client_keys_issued) within Redis..."
-        echo "either it's not running or redis-cli isn't around... either way, bailing out...!"
-        exit 2
-    fi
-
     cd $hell
     mkdir clients
 
