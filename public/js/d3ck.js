@@ -1958,6 +1958,8 @@ function cat_chat() {
 //
 function crypto_411(d3ck_id, element) {
 
+    console.log('\ngetting cert data for ' + d3ck_id + '\n')
+
     var url = '/certz/' + d3ck_id + '.crt.json'
 
     var jqXHR_crypto = $.ajax({
@@ -1984,7 +1986,7 @@ function crypto_411(d3ck_id, element) {
 
         var len_cry = _.keys(data).length
 
-        $(element).append('<tr><td style="color:red">D3CK ID</td><td style="color:red">' + d3ck_id + '</td></tr>\n')
+        $(element).append('<tr><td style="color:red; font-weight: bold;">D3CK ID</td><td style="color:red; font-weight: bold;">' + d3ck_id + '</td></tr>\n')
 
         for (var i = 0; i < len_cry; i++) {
             var k = _.keys(data)[i]

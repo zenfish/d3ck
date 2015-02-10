@@ -2976,8 +2976,8 @@ function d3ck_spawn_sync(command, argz) {
     console.log('stdout + stderr ' + result.stdout);
 
     try {
-        out = fs.writeFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.out.log', result.stdout, 'a+')
-        err = fs.writeFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.err.log', result.stdout, 'a+')
+        out = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.out.log', result.stdout)
+        err = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.err.log', result.stdout)
     }
     catch (e) {
         console.log("error writing log file with " + command + ' => ' + e.message)
