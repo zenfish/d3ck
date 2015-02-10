@@ -1355,9 +1355,7 @@ function getDNS (req, res, next) {
     // xxx - yeah, bad... will figure out a better dns call later
     var d = require('domain').create();
     d.on('error', function(err) {
-        if (err.message != 'connect ECONNREFUSED') {
-            console.log('shuxx0r, dns blew a gastket, could be an issue: ' + err.message);
-        }
+        // if (err.message != 'connect ECONNREFUSED') { console.log('shuxx0r, dns blew a gastket, could be an issue: ' + err.message); }
         deferred.reject({ip: ip, fqdn : err } )
         res.send(200, { ip: ip, fqdn : ip })
         // res.send(420,   {ip: ip, fqdn : err } )
