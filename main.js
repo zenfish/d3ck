@@ -1359,7 +1359,7 @@ function getDNS (req, res, next) {
             console.log('shuxx0r, dns blew a gastket, could be an issue: ' + err.message);
         }
         deferred.reject({ip: ip, fqdn : err } )
-        // res.send(200, { ip: ip, fqdn : ip })
+        res.send(200, { ip: ip, fqdn : ip })
         // res.send(420,   {ip: ip, fqdn : err } )
 
     });
@@ -1369,7 +1369,7 @@ function getDNS (req, res, next) {
             if (err) {
                 ip2fqdns[ip] = err
                 console.log(err)
-                deferred.reject({ip: ip, fqdn : err } )
+                deferred.reject({ip: ip, fqdn : ip } )
                 res.send(420,   {ip: ip, fqdn : err } )
             }
             else {

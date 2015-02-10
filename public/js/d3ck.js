@@ -751,8 +751,6 @@ function rip_geo(element, geo) {
 
     console.log('tearing up geo data')
 
-    console.log('tearing up geo data')
-
 //
 // something like... for one of my EC2 instances....
 //  { ip: '54.203.255.17',
@@ -776,24 +774,24 @@ function rip_geo(element, geo) {
     if (!def(geo.country_name) || geo.country_name == 'Reserved') { return }
 
     var phone = ''
-    if (def(geo.area_code)) { var phone = '(' + geo.area_code + ')-' + geo.metro_code + '-xxxx' }
+    if (def(geo.area_code) && geo.area_code != '') { var phone = '(' + geo.area_code + ')-' + geo.metro_code + '-xxxx' }
 
     var region = ''
-    if (def(geo.region_code)) { var region = geo.region_code + ', ' }
+    if (def(geo.region_code) && geo.region_code != '') { var region = geo.region_code + ', ' }
 
     var city = ''
-    if (def(geo.city)) { var city = geo.city + ', ' }
+    if (def(geo.city) && geo.city != '') { var city = geo.city + ', ' }
 
     // nifty flags courtesy of http://flag-sprites.com/ -->
     var flag = ''
-    if (def(geo.country_code)) {
+    if (def(geo.country_code) && geo.country_code != '') {
         var flag  = '<img style="margin-left:4px;" src="img/blank.gif" class="flag flag-' + geo.country_code.toLowerCase() + '">'
     }
 
     var zip = ''
-    if (def(geo.zipcode)) { var zip  = geo.zipcode + '; ' }
+    if (def(geo.zipcode) && geo.zipcode != '') { var zip  = geo.zipcode + '; ' }
 
-    $(element).append(city +  region + geo.country_name + '; ' + flag + ' ' + zip + phone)
+    $(element).append(city +  region + geo.country_name + '&nbsp;' + flag + ' ' + zip + phone)
 
     // latitude, longitude
 
