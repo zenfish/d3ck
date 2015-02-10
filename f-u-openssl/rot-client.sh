@@ -5,6 +5,14 @@
 #
 
 #
+# the client's key CN will be the issuing d3ck's ID + .rand() TRUNCATED TO 64 CHARS, where
+# ".rand()" uses the same function that generates the normal d3ck ID. I'm only truncating
+# it because RFC 3280 - Internet X.509 Public Key Infrastructure - defines the upper bound
+# length limit as "INTEGER ::= 64". Various reports seem to say various things... but this
+# seems relatively safe.
+#
+
+#
 #   A haiku to openssl:
 #
 #       openssl
@@ -32,14 +40,28 @@ cd $hell
 
 . d3ck-vars
 
-d3ck_home="$keystore/$1"
+client_d3ck_home="$keystore/$1"
 storage="$hell/clients"
 
-mkdir "$d3ck_home" 2> /dev/null
+mkdir "$client_d3ck_home" 2> /dev/null
 
 echo Client key size will be $KEY_SIZE bits
 
-KEY_CN=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '{$1=""; printf("%s", $0)}' | sed 's/ //g')
+sub_KEY_CN=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '{$1=""; printf("%s", $0)}' | sed 's/ //g')
+
+# create full CN, truncated to 64
+KEY_CN=$(echo "$(cat $D3CK_HOME/public/d3ck.did).$sub_KEY_CN" | cut -b1-64)
+
+# store it in redis, increment counter
+echo -e "incr n_client_keys_issued \n rpush client_keys_issued $KEY_CN" | redis-cli
+
+if [ $? != 0 ] ; then
+    echo "couldn't set either/both n_client_keys_issued and/or client_keys_issued in redis, balin'"
+    exit 2
+fi
+
+
+
 magic="-subj /C=$KEY_COUNTRY/ST=$KEY_PROVINCE/L=$KEY_CITY/O=$KEY_ORG/CN=$KEY_CN"
 
 # client
@@ -54,5 +76,5 @@ cat $storage/$1.{crt,key} > $keystore/$1/_cli3nt.all
 
 rm -f $hell/*.pem
 
-chmod -R 755 $hell $d3ck_home
+chmod -R 755 $hell $client_d3ck_home
 
