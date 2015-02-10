@@ -76,9 +76,10 @@ if [ ! -d $d3ck_keystore -o ! -h $d3ck_keystore ] ; then
         $D3CK_BIN/dump_cert.sh $cert > $cert.info
     done
 
+    # create a json version, link so we can easily find it for browser UI
     ./exe/certitude.sh $d3ck_keystore/d3ck.crt > $d3ck_keystore/d3ck.crt.json
-
-    ln -s $d3ck_keystore/d3ck.crt.json $D3CK_HOME/public/d3ck.crt.json
+    rm -f $D3CK_HOME/public/certz/d3ck.crt.json
+    ln -s $d3ck_keystore/d3ck.crt.json $D3CK_HOME/public/certz/d3ck.crt.json
 
     # current eth0 ip addr
     ip=$(ifconfig eth0 | awk '/inet/ {split($2, ip, ":"); print ip[2]}')

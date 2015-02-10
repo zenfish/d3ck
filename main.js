@@ -190,7 +190,7 @@ function _get_d3ck(d3ck_id) {
             process.exit(9)
         }
     })
-    
+
     return deferred.promise;
 
 }
@@ -282,7 +282,7 @@ function empty_status () {
 
     var d3ck_status     = {}
 
-    var server_magic    = { 
+    var server_magic    = {
                             vpn_status  : "down",
                             start       : "n/a",
                             start_s     : "n/a",
@@ -293,7 +293,7 @@ function empty_status () {
                             client_did  : "unknown"
                           }
 
-    var client_magic    = { 
+    var client_magic    = {
                             vpn_status  : "down",
                             start       : "n/a",
                             start_s     : "n/a",
@@ -304,7 +304,7 @@ function empty_status () {
                             server_did  : "unknown"
                           }
 
-    var file_magic      = { 
+    var file_magic      = {
                             file_name   : "",
                             file_size   : "",
                             file_from   : "",
@@ -317,7 +317,7 @@ function empty_status () {
     var browser_magic   = {}
 
     // till figure out something better... xxx
-    var d3ck_request    = { 
+    var d3ck_request    = {
             knock   : false,
             ip_addr : "",
             did     : ""
@@ -1118,12 +1118,54 @@ function get_client_ip(req) {
 }
 
 // quick bit to get the user's ip addr
-
 function getIP(req, res, next) {
 
     var ip = get_client_ip(req)
-
     res.send(200, '{"ip" : "' + ip + '"}');
+
+}
+
+// dump out iptables data
+function getIPtables(req, res, next) {
+
+    var ipt_data = "";
+
+    //
+    // I'm assuming the output looks something like it does on my own system:
+    //
+    //    # iptables --list
+    //    Chain INPUT (policy ACCEPT)
+    //    target     prot opt source               destination
+    //    ACCEPT     udp  --  anywhere             anywhere             state NEW udp dpt:http
+    //    ACCEPT     all  --  anywhere             anywhere
+    //
+    //    Chain FORWARD (policy ACCEPT)
+    //    target     prot opt source               destination
+    //    ACCEPT     all  --  anywhere             anywhere
+    //    ACCEPT     all  --  anywhere             anywhere             state RELATED,ESTABLISHED
+    //    ACCEPT     all  --  anywhere             anywhere             state RELATED,ESTABLISHED
+    //
+    //    Chain OUTPUT (policy ACCEPT)
+    //    target     prot opt source               destination
+    //    ACCEPT     all  --  anywhere             anywhere
+    //
+
+    // there are many types o tables... who knew?
+    var types_o_tables = ['filter', 'nat', 'mangle', 'raw', 'security']
+
+    var command = 'iptables'
+    var argz    = ['--list', '-n']  // list and use numbers, not svc names (e.g. 25, not "smtp")
+
+    __.each(types_o_tables, function(t) {
+        var tmp_argz = argz.concat('-t ' + t)
+        ipt_data = ipt_data + "<h4>table " + t + "</h4>\n<pre>\n"
+        ipt_data = ipt_data + d3ck_spawn_sync(command, tmp_argz).stdout
+        ipt_data = ipt_data + "\n</pre>\n"
+    })
+
+    console.log('\n' + ipt_data + '\n\n')
+
+    res.send(200, ipt_data)
 
 }
 
@@ -1163,7 +1205,7 @@ function getCapabilities(req, res, next) {
 //   country: 'US',
 //   region: 'CA',
 //   city: 'San Francisco',
-//   ll: [37.7484, -122.4156] 
+//   ll: [37.7484, -122.4156]
 // }
 //
 var geo_cache_threshold = 60 * 60 * 24
@@ -1272,7 +1314,7 @@ function resolveGeo(ip_addr) {
     return deferred.promise;
 
 }
-    
+
 //
 // do a IP-> hostname lookup, cache until restart
 //
@@ -1317,7 +1359,7 @@ function getDNS (req, res, next) {
             console.log('shuxx0r, dns blew a gastket, could be an issue: ' + err.message);
         }
         deferred.reject({ip: ip, fqdn : err } )
-        res.send(200, { ip: ip, fqdn : ip })
+        // res.send(200, { ip: ip, fqdn : ip })
         // res.send(420,   {ip: ip, fqdn : err } )
 
     });
@@ -1326,7 +1368,7 @@ function getDNS (req, res, next) {
         dns.reverse(ip, function (err, fqdn) {
             if (err) {
                 ip2fqdns[ip] = err
-                console.log(err) 
+                console.log(err)
                 deferred.reject({ip: ip, fqdn : err } )
                 res.send(420,   {ip: ip, fqdn : err } )
             }
@@ -1592,11 +1634,11 @@ function create_full_d3ck (data) {
 
     console.log('executing ' + cmd + ' to add locally')
 
-    var argz = [data.D3CK_ID, 
-                data.image, 
-                data.ip_addr, 
-                "\"all_ips\": [\"" + data.all_ips + "\"]", 
-                data.owner.name, 
+    var argz = [data.D3CK_ID,
+                data.image,
+                data.ip_addr,
+                "\"all_ips\": [\"" + data.all_ips + "\"]",
+                data.owner.name,
                 data.owner.email]
 
     d3ck_spawn(cmd, argz)
@@ -2334,7 +2376,7 @@ function stopVPN(req, res, next) {
 
 //
 // This is a check to see if the client-side cert matches up;
-// 
+//
 // when a d3ck is created a set of keys is generated and passed
 // to the remote d3ck; anyone claiming the same d3ckid must have
 // the cert we earlier gave to them. This may be verified by the
@@ -2352,7 +2394,7 @@ function check_CN(cn, did) {
     var cmd  = 'openssl'
 
     var argz = ['x509', '-noout', '-subject', '-in', d3ck_keystore +'/'+ did + "/d3ck.crt"]
-    
+
     var cn   = d3ck_spawn_sync(cmd, argz)
 
     // subject= /C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=8fd983b93ee52e80ddbf457b5ba8f0ec
@@ -2470,7 +2512,7 @@ function knock(req, res, next) {
 
         resolveGeo(ip_addr)
 
-        var d3ck_request    = { 
+        var d3ck_request    = {
             knock       : true,
             ip_addr     : ip_addr,
             from        : from,
@@ -2514,7 +2556,7 @@ function knock(req, res, next) {
 
         console.log(options)
 
-        var d3ck_request    = { 
+        var d3ck_request    = {
             knock       : true,
             ip_addr     : ip_addr,
             'from_d3ck' : bwana_d3ck.D3CK_ID,
@@ -2591,7 +2633,7 @@ function knockReply(req, res, next) {
         res.send(200, { emotion: "^..^" })
 
     }
-    else {                                                                                                                             
+    else {
         if (typeof d3ck2ip[d3ckid] == "undefined") {
             console.log("Can't find IP addr for " + d3ckid)
             res.send(420, { error: "enhance your calm! Can't find IP addr for " + d3ckid })
@@ -2603,7 +2645,7 @@ function knockReply(req, res, next) {
         console.log('answer going to : ' + url)
 
         var d3ck_status     = empty_status()
-        var d3ck_response   = { 
+        var d3ck_response   = {
             knock       : true,
             answer      : answer,
             did         : bwana_d3ck.D3CK_ID
@@ -2689,7 +2731,7 @@ function uploadSchtuff(req, res, next) {
     // yet another hack in a long line of hacks...
     // this time, multipart forms... let's just try to see
     // if I can figure this out; this is only d3ck-2-d3ck
-    // 
+    //
     if (typeof req.files.uppity == 'undefined') {
 
         console.log('another d3ck sending something...?')
@@ -2841,7 +2883,7 @@ function uploadSchtuff(req, res, next) {
                 var options = load_up_cert_by_did(upload_target)
 
                 options.headers = { 'x-filename': target_file, 'x-filesize': target_size, 'x-d3ckID': bwana_d3ck.D3CK_ID }
-                // var file_data = fs.readFileSync(tmpfile) 
+                // var file_data = fs.readFileSync(tmpfile)
 
                 console.log('FN: ' + target_file + '  Opts:')
 
@@ -3271,7 +3313,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
 //         .on('error', function(e) {
 //             // console.log(e)
 //             // console.log(responses + ' v.s. ' + all_ips.length)
-// 
+//
 //             if (responses == all_ips.length && !ping_done) {
 //                 console.log('+++ someday has come... in a bad way for ' + ip + ' ... ping failure')
 //                 ping_done = true
@@ -3585,13 +3627,13 @@ function create_d3ck_by_ip(ip_addr) {
 
         var cmd  = d3ck_bin + '/create_client_d3ck.sh'
 
-        argz = [bwana_d3ck.D3CK_ID, 
-                bwana_d3ck.image, 
-                bwana_d3ck.ip_addr, 
-                "\"all_ips\": [" + my_ips + "]", 
-                bwana_d3ck.owner.name, 
-                bwana_d3ck.owner.email, 
-                ip_addr, 
+        argz = [bwana_d3ck.D3CK_ID,
+                bwana_d3ck.image,
+                bwana_d3ck.ip_addr,
+                "\"all_ips\": [" + my_ips + "]",
+                bwana_d3ck.owner.name,
+                bwana_d3ck.owner.email,
+                ip_addr,
                 data.did]
 
         d3ck_spawn(cmd, argz)
@@ -3615,7 +3657,7 @@ function create_d3ck_by_ip(ip_addr) {
 //  - d3ck ping to see if it's alive and to get its d3ck id
 //  - get the data from the remote system
 //  - save all that stuff it seems valid
-//  
+//
 //
 function create_d3ck_locally(ip_addr) {
 
@@ -3914,7 +3956,7 @@ function gen_somewhat_random(n) {
 // not sure about the store stuff... does passport do the same below (/aaa)?
 // ... so much dox in so little time. Think this will work. Maybe.
 //
-server.use(express.session({ 
+server.use(express.session({
     secret: gen_somewhat_random()
 //  store: new candyStore({
 //      client: rclient
@@ -4056,6 +4098,9 @@ server.post('/form', auth, handleForm);
 // get your ip addr(s)
 server.get('/getip', auth, getIP);
 
+// get iptables dump
+server.get('/getiptables', auth, getIPtables);
+
 // get trust data for a d3ck
 server.get('/capabilities/:deckid', auth, getCapabilities);
 
@@ -4174,6 +4219,7 @@ server.get('/rest', function root(req, res, next) {
         'GET     /logout',
         'GET     /rest',
         'GET     /getip',
+        'GET     /getiptables',
         'GET     /geo',
         'POST    /d3ck',
         'GET     /d3ck',

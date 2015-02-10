@@ -1,13 +1,7 @@
 #!/usr/bin/env node
 
-var __      = require('underscore'),
-    fs      = require('fs'),
-    winston = require('winston');
-
-var types_o_tables = ['filter', 'nat', 'mangle', 'raw', 'security']
-
 //
-// simple iptable output parser... emits
+// someday will be simple iptable output parser... for now, just some test code
 //
 
 // I'm assuming the output looks something like it does on my own system:
@@ -30,11 +24,19 @@ var types_o_tables = ['filter', 'nat', 'mangle', 'raw', 'security']
 //    ACCEPT     all  --  anywhere             anywhere       
 //
 
+var __      = require('underscore'),
+    fs      = require('fs'),
+    winston = require('winston');
+
+
+var types_o_tables = ['filter', 'nat', 'mangle', 'raw', 'security']
+
+
 var config    = JSON.parse(fs.readFileSync('/etc/d3ck/D3CK.json').toString()),
     d3ck_home = config.D3CK.home,
     d3ck_logs = config.D3CK.logs;
 
-console.log(d3ck_home + '/' + d3ck_logs + '/parse_iptables.log')
+// console.log(d3ck_home + '/' + d3ck_logs + '/parse_iptables.log')
 
 // setup simple logging
 winston.add(winston.transports.File, { prettyPrint: true, name: 'parse_iptables', filename: d3ck_home + '/' + d3ck_logs + '/parse_iptables.log', 'timestamp': true}) // needz da timestampies!

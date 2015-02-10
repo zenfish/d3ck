@@ -1,0 +1,10 @@
+{
+"signature algorithm": "sha256WithRSAEncryption",
+"issuer": " C=AQ, ST=White, L=D3cktown, O=D3ckasaurusRex, CN=d75b44681f1e2fbe5ae599afe00760d2",
+"invalid before": "Not Before: Feb 10 02:43:12 2015 GMT",
+"invalid after": "Not After : Feb 10 02:43:12 2016 GMT",
+"subject": "Subject: C=AQ, ST=White, L=D3cktown, O=D3ckasaurusRex, CN=bdb38999b5c769f6561f9c8300fea3bc",
+"public key algorithm" : "Algorithm: rsaEncryption",
+"key strength": "2048",
+"certificate type": "SSL Client"
+}

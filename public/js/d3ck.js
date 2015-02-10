@@ -1434,6 +1434,26 @@ function load_capabilities(d3ck, element) {
 }
 
 
+//
+// load up iptables output for the various tables
+//
+function load_up_iptables() {
+
+    var url = "/getIPtables"
+
+    var jqXHR_iptables = $.ajax({ url: url })
+
+    jqXHR_iptables.done(function (data, textStatus, jqXHR) {
+        console.log('iptables data wootz...')
+        // console.log(data)
+        $('#d3ck_trust_iptables').append(data)
+    }).fail(function(err) {
+        console.log('errz on fetching iptables data... ' + err)
+    })
+
+
+}
+
 
 function panic_button() {
 
@@ -1938,10 +1958,9 @@ function cat_chat() {
 //
 // read in data about our certs
 //
+function crypto_411(d3ck_id, element) {
 
-function crypto_411() {
-
-    var url = '/d3ck.crt.json'
+    var url = '/certz/' + d3ck_id + '.crt.json'
 
     var jqXHR_crypto = $.ajax({
         url: url,
@@ -1967,12 +1986,16 @@ function crypto_411() {
 
         var len_cry = _.keys(data).length
 
+        $(element).append('<tr><td style="color:red">D3CK ID</td><td style="color:red">' + d3ck_id + '</td></tr>\n')
+
         for (var i = 0; i < len_cry; i++) {
             var k = _.keys(data)[i]
             var v = data[k]
 
-            console.log('k:v ', k, v)
-            $('#d3ck_crypto').append('<tr><td>' + k  + '</td><td>' + v  + '</td></tr>\n')
+            // console.log('k:v ', k, v)
+
+            $(element).append('<tr><td>' + k  + '</td><td>' + v.replace(/['"]+/g, '')  + '</td></tr>\n')
+
 
         }
 

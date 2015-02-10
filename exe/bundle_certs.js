@@ -165,6 +165,13 @@ function rip_d3ck (d3ck, remote_did) {
             process.exit(6)
         }
         console.log('...write-success...')
+
+        // for the UI
+        var exe = d3ck_home + '/exe/certitude.sh ' + d3ck_keystore + '/' + remote_did + '/_cli3nt.crt > ' + d3ck_home + '/public/certz/' + remote_did + '.crt.json'
+        console.log(exe)
+
+        var res = sh.exec(exe)
+
         process.exit(0)
     });
 

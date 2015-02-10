@@ -241,150 +241,159 @@ $(document).ready(function () {
 
             // for each d3ck get more detailed data
             $.getJSON('/d3ck/' + val, function(d3ckinfo) {
-                    console.log('v/p')
-                    console.log(val)
+                console.log('v/p')
+                console.log(val)
+                console.log(d3ckinfo)
+
+                // bit of a race condition... figure out how to get the d3ckID of
+                // this D3CK (see above) prior to these so I can not put it up
+                // on the screen... lots of ways to do this....
+                if (my_d3ck.did != val) {
+
+                    var name        = d3ckinfo.name
+                    var owner       = d3ckinfo.owner.name
+                    var email       = d3ckinfo.owner.email
+                    var d3ckid      = d3ckinfo.D3CK_ID
+                    var ipaddr      = d3ckinfo.ip_addr
+                    var all_ips     = d3ckinfo.all_ips
+                    var port        = d3ckinfo.port
+                    var ipaddr_ext  = d3ckinfo.ip_addr_ext
+                    var port_ext    = d3ckinfo.port_ext
+                    var proto       = d3ckinfo.proto
+                    var image       = d3ckinfo.image
+                    var ca          = d3ckinfo.vpn.ca
+                    var key         = d3ckinfo.vpn.key
+                    var cert        = d3ckinfo.vpn.cert
+                    var dh          = d3ckinfo.vpn.dh
+
+                    var vpn_form    = 'vpn_form_' + d3ckid
+
+                    console.log('d3ckasaurus:')
+                    console.log(d3ckinfo)
+                    console.log('d3ck particulars:')
                     console.log(d3ckinfo)
 
-                    // bit of a race condition... figure out how to get the d3ckID of
-                    // this D3CK (see above) prior to these so I can not put it up
-                    // on the screen... lots of ways to do this....
-                    if (my_d3ck.did != val) {
-
-                        var name        = d3ckinfo.name
-                        var owner       = d3ckinfo.owner.name
-                        var email       = d3ckinfo.owner.email
-                        var d3ckid      = d3ckinfo.D3CK_ID
-                        var ipaddr      = d3ckinfo.ip_addr
-                        var all_ips     = d3ckinfo.all_ips
-                        var port        = d3ckinfo.port
-                        var ipaddr_ext  = d3ckinfo.ip_addr_ext
-                        var port_ext    = d3ckinfo.port_ext
-                        var proto       = d3ckinfo.proto
-                        var image       = d3ckinfo.image
-                        var ca          = d3ckinfo.vpn.ca
-                        var key         = d3ckinfo.vpn.key
-                        var cert        = d3ckinfo.vpn.cert
-                        var dh          = d3ckinfo.vpn.dh
-
-                        var vpn_form    = 'vpn_form_' + d3ckid
-
-                        console.log('d3ckasaurus:')
-                        console.log(d3ckinfo)
-                        console.log('d3ck particulars:')
-                        console.log(d3ckinfo)
-
-                        if (typeof port === 'undefined' || port == "") {
-                            // XXXX
-                            port     = 8080
-                            port_ext = port
-                        }
-                        if (typeof ipaddr_ext === 'undefined' || ipaddr_ext == "") {
-                            ipaddr_ext = ipaddr
-                        }
-                        if (typeof proto === 'undefined' || proto == "") {
-                            proto = 'https'
-                        }
-
-                        // var d3ck_url         = proto + '://' + ipaddr_ext + ':' + port_ext
-
-                        // have to kill spaces... die, die, die!
-                        d3ckid = d3ckid.replace(/\s+/g, '');
-
-                        var d3ck = {
-                           d3ckid         : d3ckid,
-                           name           : name,
-                           owner          : owner,
-                           email          : email,
-                           image          : image,
-                           ipaddr         : ipaddr,
-                           all_ips        : all_ips,
-                           // url            : d3ck_url,
-                           vpn_form       : vpn_form,
-                           span_owner     : 'span_' + owner,
-                           span_email     : 'span_' + email
-                           }
-
-                        // keep track of everything
-                        all_d3ck_ids[d3ckid] = d3ckinfo
-
-                        // basic single d3ck layout, 'stache style
-                        var template = 
-                             '<div class="col-md-3">'                                                                  + 
-                              '<div class="thumbnail" style="background-color: #eaf1f1" id="{{d3ckid}}">'              +
-                                 '<div class="polaroid" >'                                                             +
-                                    '<p>{{owner}}</p>'                                                                 +
-                                    '<a href="/d3ck_details.html?d3ckid={{d3ckid}}">'                                  +
-                                    '<img id="img_{{d3ckid}}" class="d3ck_img" src="{{image}}">' +
-                                    '</a>'                                                                             +
-                                 '</div>'                                                                              +
-                                 '<div class="caption">'                                                               +
-                                    '<span>D3CK: </span><span class="d3ckname"><b>{{name}}</b></span> <br />'          +
-                                    '<span class="remote_ip">IP Address: <strong>{{ipaddr}}</strong> </span> <br />'       +
-                                    '<span class="remote_fqdn">Hostname: <strong></strong> </span> <br />'       +
-                                    '<span class="remote_geo">Where: <strong></strong> </span> <br />'       +
-                                    // '<span id="{{ipaddr}}">URL: <strong>{{url}}</strong> </span> <br />'               +
-                                    '<span id="{{email}}"> Email: <strong>{{email}}</strong>   </span> <br />'         +
-                                    '<br />' +
-                                    '<form id="{{vpn_form}}" action="/vpn/start" method="POST">'                       +
-                                    '<input style="display:none" id="d3ckid" name="d3ckid"  value={{d3ckid}}>'         +
-                                    '<input style="display:none" id="ipaddr" name="ipaddr"  value={{ipaddr}}>'         +
-                                    '<input style="display:none" name="vpn_action" value="VPN" />'                     +
-                                    '<button type="submit" id="d3ck_vpn" style="margin: 10px" class="d3ck_vpn meter cherry btn disabled">Call</button>' +
-                                    '</form>'                                                                          +
-                                 '</div>'                                                                              +
-                              '</div>'                                                                                 +
-                            '</div>'
-
-
-                         // let the 'stache go to town!
-                         var d3ck_html = Mustache.to_html(template, d3ck);
-
-                         // $('#d3ck_details').html(html);
-                         $("#d3ck_friends").append(d3ck_html)
-
-                         // console.log('\nMUSTACHE!!!:\n' + d3ck_html + '\n\n')
-
-                         // add the real ID
-                         // CHANGE THE ID!   make the VPN button point to the right D3CK
-                         $('#d3ck_vpn').attr('id', 'd3ck_vpn_' + d3ckid)
-
-                         // check interval
-                         ping_poll = 10000
-
-                         // pingy - check if system is up... do it once, then at regular intervals
-                         d3ck_ping(all_ips, d3ckid)
-                         // args are function, timeout, function (ips, did, and url)
-                         setInterval(d3ck_ping, ping_poll, all_ips, d3ckid)
-
-                         // start images in gray, color (if avail) on mouseover
-                         // console.log('adipoli: ' + d3ckid)
-                         // $('#img_' + d3ckid).adipoli({
-                         //   'startEffect' : 'grayscale',
-                         //   'hoverEffect' : 'normal'
-                         // })
-
-                         $('.thumbnail').addClass('dotdotdot')
-
-                         // load up trust info
-                         load_capabilities(d3ckinfo, '#d3ck_trust_table')
-
-                    } // else ... d3cks other than this one
-                    else {
-                        my_d3ck = d3ckinfo
-                        print_d3ck(d3ckinfo.D3CK_ID, d3ckinfo, ['#d3ck_basics', '#d3ck_vpn_basics', '#d3ck_vpn_client_basics'])
-                        $('#title_name').append(d3ckinfo.owner.name)
-
-                        all_d3ck_ids[d3ckinfo.D3CK_ID] = d3ckinfo
-
-                        // desparation sets in....
-                        rtc_haxx0r_trick()
-
-                        // load up trust defaults
-                        load_capabilities(my_d3ck, '#d3ck_trust_you')
-
+                    if (typeof port === 'undefined' || port == "") {
+                        // XXXX
+                        port     = 8080
+                        port_ext = port
                     }
-                })
+                    if (typeof ipaddr_ext === 'undefined' || ipaddr_ext == "") {
+                        ipaddr_ext = ipaddr
+                    }
+                    if (typeof proto === 'undefined' || proto == "") {
+                        proto = 'https'
+                    }
+
+                    // var d3ck_url         = proto + '://' + ipaddr_ext + ':' + port_ext
+
+                    // have to kill spaces... die, die, die!
+                    d3ckid = d3ckid.replace(/\s+/g, '');
+
+                    var d3ck = {
+                       d3ckid         : d3ckid,
+                       name           : name,
+                       owner          : owner,
+                       email          : email,
+                       image          : image,
+                       ipaddr         : ipaddr,
+                       all_ips        : all_ips,
+                       // url            : d3ck_url,
+                       vpn_form       : vpn_form,
+                       span_owner     : 'span_' + owner,
+                       span_email     : 'span_' + email
+                       }
+
+                   // keep track of everything
+                   all_d3ck_ids[d3ckid] = d3ckinfo
+
+                   // basic single d3ck layout, 'stache style
+                   var template = 
+                        '<div class="col-md-3">'                                                                  + 
+                         '<div class="thumbnail" style="background-color: #eaf1f1" id="{{d3ckid}}">'              +
+                            '<div class="polaroid" >'                                                             +
+                               '<p>{{owner}}</p>'                                                                 +
+                               '<a href="/d3ck_details.html?d3ckid={{d3ckid}}">'                                  +
+                               '<img id="img_{{d3ckid}}" class="d3ck_img" src="{{image}}">' +
+                               '</a>'                                                                             +
+                            '</div>'                                                                              +
+                            '<div class="caption">'                                                               +
+                               '<span>D3CK: </span><span class="d3ckname"><b>{{name}}</b></span> <br />'          +
+                               '<span class="remote_ip">IP Address: <strong>{{ipaddr}}</strong> </span> <br />'       +
+                               '<span class="remote_fqdn">Hostname: <strong></strong> </span> <br />'       +
+                               '<span class="remote_geo">Where: <strong></strong> </span> <br />'       +
+                               // '<span id="{{ipaddr}}">URL: <strong>{{url}}</strong> </span> <br />'               +
+                               '<span id="{{email}}"> Email: <strong>{{email}}</strong>   </span> <br />'         +
+                               '<br />' +
+                               '<form id="{{vpn_form}}" action="/vpn/start" method="POST">'                       +
+                               '<input style="display:none" id="d3ckid" name="d3ckid"  value={{d3ckid}}>'         +
+                               '<input style="display:none" id="ipaddr" name="ipaddr"  value={{ipaddr}}>'         +
+                               '<input style="display:none" name="vpn_action" value="VPN" />'                     +
+                               '<button type="submit" id="d3ck_vpn" style="margin: 10px" class="d3ck_vpn meter cherry btn disabled">Call</button>' +
+                               '</form>'                                                                          +
+                            '</div>'                                                                              +
+                         '</div>'                                                                                 +
+                       '</div>'
+
+
+                    // let the 'stache go to town!
+                    var d3ck_html = Mustache.to_html(template, d3ck);
+
+                    // $('#d3ck_details').html(html);
+                    $("#d3ck_friends").append(d3ck_html)
+
+                    // console.log('\nMUSTACHE!!!:\n' + d3ck_html + '\n\n')
+
+                    // add the real ID
+                    // CHANGE THE ID!   make the VPN button point to the right D3CK
+                    $('#d3ck_vpn').attr('id', 'd3ck_vpn_' + d3ckid)
+
+                    // check interval
+                    ping_poll = 10000
+
+                    // pingy - check if system is up... do it once, then at regular intervals
+                    d3ck_ping(all_ips, d3ckid)
+                    // args are function, timeout, function (ips, did, and url)
+                    setInterval(d3ck_ping, ping_poll, all_ips, d3ckid)
+
+                    // start images in gray, color (if avail) on mouseover
+                    // console.log('adipoli: ' + d3ckid)
+                    // $('#img_' + d3ckid).adipoli({
+                    //   'startEffect' : 'grayscale',
+                    //   'hoverEffect' : 'normal'
+                    // })
+
+                    $('.thumbnail').addClass('dotdotdot')
+
+                    // load up trust info
+                    load_capabilities(d3ckinfo, '#d3ck_trust_table')
+
+                    // paint in the data about our certs
+                    crypto_411(d3ckid, '#d3ck_trust_ccertz_table')
+
+                } // else ... your d3ck!
+                else {
+                    my_d3ck = d3ckinfo
+                    print_d3ck(d3ckinfo.D3CK_ID, d3ckinfo, ['#d3ck_basics', '#d3ck_vpn_basics', '#d3ck_vpn_client_basics'])
+                    $('#title_name').append(d3ckinfo.owner.name)
+
+                    all_d3ck_ids[d3ckinfo.D3CK_ID] = d3ckinfo
+
+                    // desparation sets in....
+                    rtc_haxx0r_trick()
+
+                    // load up trust defaults
+                    load_capabilities(my_d3ck, '#d3ck_trust_you')
+
+                    // paint in the data about our certs
+                    crypto_411('d3ck', '#d3ck_crypto')
+                }
             })
+        })
+
+        // get the iptables data, populate in ui
+        load_up_iptables()
+
     })
 
     // message data
@@ -402,18 +411,15 @@ $(document).ready(function () {
     // setTimeout(get_status,PREGNANT_PAUSE)
 
     // http://stackoverflow.com/questions/16214326/bootstrap-dropdown-with-hover
-    $(function(){               
-        $('.dropdown').hover(function() {
-            $(this).addClass('open');
-        }, function() { 
-            $(this).removeClass('open');
-        });                         
-    }); 
+//  $(function(){               
+//      $('.dropdown').hover(function() {
+//          $(this).addClass('open');
+//      }, function() { 
+//          $(this).removeClass('open');
+//      });                         
+//  }); 
 
     detect_webRTC('d3ck_rtc_health_check')
-
-    // paint in the data about our certs
-    crypto_411()
 
 })
 

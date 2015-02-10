@@ -92,13 +92,15 @@
 
                 <li class="dropdown">
 
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="d3ck_top_love" title="Love -n- Trust" data-content="Loves, friends, enemies, D3CKs...." class="glyphicon glyphicon-heart"></span><b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown"><span id="d3ck_top_love" title="Love, Trust, and Guns" data-content="Loves, friends, enemies, D3CKs...." class="glyphicon glyphicon-heart"></span><b class="caret"></b></a>
 
                     <ul class="dropdown-menu">
                         
-                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_generate"> Generate Authentication Tokens</a> </li>
-                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_you"> Who trusts your D3CK?</a> </li>
-                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_explore"> Whom does your d3ck trust?</a> </li>
+                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_generate">Generate Authentication Tokens</a> </li>
+                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_you">Who trusts your D3CK?</a> </li>
+                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_explore">Whom does your d3ck trust?</a> </li>
+                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_iptables">iptables output </a> </li>
+                        <li> <a tabindex="-1" data-toggle="tab" href="#d3ck_trust_ccertz">Your d3ck's client (e.g. remote) certs</a> </li>
 
                     </ul>
                 </li>
@@ -275,10 +277,11 @@
 
                         <div id="d3ck_cert_details" class="panel-collapse collapse in">
                             <div class="panel-body"> </div>
-                                <table id="d3ck_crypto" class="table table-condensed table-hover table-striped">
+                            <table id="d3ck_crypto" class="table table-condensed table-hover table-striped">
                                 <tr> <th> Aspect </th> <th> Information </th> </tr>
-                                </table>
+                            </table>
                         </div>
+
                     </div>
 
                     <div class="panel panel-default">
@@ -450,6 +453,37 @@
                 </div> <!-- tab pane -->
     
             </div> <!-- tab pane -->
+
+            <div class="tab-pane fade" id="d3ck_trust_iptables">
+                <div class="row-fluid marketing">
+                    <div class="muted">
+                        <h3 style="clear:both">iptable output</h3>
+                        To the skilled eye this shows what ports are open/closed/etc by your firewall.
+                        Good luck trying to figure it out, iptables isn't for the faint of heart....
+                        perhaps someday a reasonable output showing. The <span style="color:red">filter</span>
+                        table is the default table.
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="d3ck_trust_ccertz">
+                <div class="row-fluid marketing">
+                    <div class="muted">
+                        <h3 style="clear:both">Your d3ck's client data</h3>
+                        This is data and certs from remote d3cks; your d3ck uses them to
+                        to authenticate and get authorized to do various things.
+                    </div>
+
+                    <div id="d3ck_cert_details" class="panel-collapse collapse in">
+                        <div class="panel-body"> </div>
+                        <table id="d3ck_trust_ccertz_table" class="table table-condensed table-hover table-striped">
+                            <tr> <th> Aspect </th> <th> Information </th> </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
 
             <!-- message center -->
             <div class="tab-pane fade" id="d3ck_cloud">
