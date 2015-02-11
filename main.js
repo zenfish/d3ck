@@ -601,7 +601,7 @@ function auth(req, res, next) {
     // ... logged in as a user, say, via the web?
     //
     if (req.isAuthenticated()) {
-        log.info('already chex: ' + req.path)
+        // log.info('already chex: ' + req.path)
         auth_type = 'owner'
         return next();
     }

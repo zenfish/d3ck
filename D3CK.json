@@ -76,6 +76,7 @@
         "/knock",
         "/login",
         "/login.html",
+        "/ping",
         "/popup.html",
         "/loginFailure",
         "/cli3nt"
