@@ -555,7 +555,7 @@ function findByUsername(name, fn) {
 //
 function auth(req, res, next) {
 
-    console.log('got auth?')
+    console.log('got auth?  --> ' + req.path)
 
     //
     // I don't care who you are... if you haven't set up your d3ck, there's nothing to auth to... so redirect
