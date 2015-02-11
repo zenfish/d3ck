@@ -47,13 +47,15 @@ mkdir "$client_d3ck_home" 2> /dev/null
 
 echo Client key size will be $KEY_SIZE bits
 
+# sub_KEY_CN=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '{$1=""; printf("%s", $0)}' | sed 's/ //g')
 sub_KEY_CN=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '{$1=""; printf("%s", $0)}' | sed 's/ //g')
 
 # create full CN, truncated to 64
-KEY_CN=$(echo "$(cat $D3CK_HOME/public/d3ck.did).$sub_KEY_CN" | cut -b1-64)
+# KEY_CN=$(echo "$(cat $D3CK_HOME/public/d3ck.did).$sub_KEY_CN" | cut -b1-64)
+KEY_CN=$(echo "$(cat $1.$sub_KEY_CN" | cut -b1-64)
 
 # store in redis - cci = client-keys-issued
-echo "set cci-$1 $KEY_CN" | redis-cli
+echo "set client_cert_$1 $KEY_CN" | redis-cli
 
 if [ $? != 0 ] ; then
     echo "couldn't set either/both n_client_keys_issued and/or client_keys_issued in redis, balin'"

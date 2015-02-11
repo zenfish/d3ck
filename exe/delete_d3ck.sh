@@ -39,6 +39,8 @@ curl -k -v -H "Accept: application/json" -H "Content-type: application/json" -X 
 
 rm -rf /etc/d3ck/d3cks/$d3ck
 
+echo "delete cci-$d3ck" | redis-cli
+
 # not sure how to check success/fail yet....
 
 exit 0
