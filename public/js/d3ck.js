@@ -2350,7 +2350,7 @@ function raise_shields(ip) {
 // is a variable defined or no?  Returns true if it is
 //
 function def(varvar) {
-    console.log('checking ' + varvar)
+    // console.log('checking ' + varvar)
 
     if (typeof varvar === "undefined")
         return false
