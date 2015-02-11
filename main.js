@@ -91,13 +91,22 @@ var d3ck = require('./modules');
 //
 var log = new (winston.Logger)({
     transports: [
-      new (winston.transports.Console)({    // console.log, basically
-          timestamp: true,
+      // console.log, basically
+      new (winston.transports.Console)({
+          timestamp: function() { // put my stamp on the timestamps
+            return moment().format('ddd HH:mm:ss MM-DD-YY')
+            console.log('wtf?')
+          },
+          name:      'main_d3ck_console', 
           colorize:  true
       }),
-      new (winston.transports.File)   ({    // log stuff to a real d3ck log file
-          timestamp: true,
-          name:      'main_d3ck', 
+      // log stuff to a real d3ck log file
+      new (winston.transports.File)   ({
+          timestamp: function() { // put my stamp on the timestamps
+            return moment().format('ddd HH:mm:ss MM-DD-YY')
+            console.log('wtf2?')
+          },
+          name:      'main_d3ck_logfile', 
           filename:  d3ck_logs + '/' + 'd3ck.log',
           handleExceptions: true,
           json:             true
@@ -175,12 +184,10 @@ try {
     d3ck_id = d3ck_id.replace(/\n/, '');
 }
 catch (e) {
-    log.info("no D3CK ID for this potential D3CK... you won't get anywhere w/o it....\n")
-    log.info(e)
+    log.error("no D3CK ID for this potential D3CK... you won't get anywhere w/o it....\n")
+    log.error(e)
     process.exit(2)
 }
-
-
 
 // server internal helper to get d3ck data
 function _get_d3ck(d3ck_id) {
@@ -205,7 +212,7 @@ function _get_d3ck(d3ck_id) {
             }
         }
         else {
-            log.info(err, '\t_get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
+            log.error(err, '\t_get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
             process.exit(9)
         }
     })
@@ -234,7 +241,7 @@ rclient.get(d3ck_id, function (err, reply) {
         }
     }
     else {
-        log.info(err, 'get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
+        log.error(err, 'get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
         sys.exit({ "no": "d3ck"})
     }
 })
@@ -242,7 +249,7 @@ rclient.get(d3ck_id, function (err, reply) {
 // get all known d3cks
 rclient.keys('[A-F0-9]*', function (err, keys) {
     if (err) {
-        log.info(err, 'list_d3ck: unable to retrieve all d3cks');
+        log.error(err, 'list_d3ck: unable to retrieve all d3cks');
         next(err);
     } else {
         log.info('Number of d3cks so far: ', keys.length);
@@ -815,7 +822,7 @@ var init = false
         }
         else {
             // error
-            log.error('Error: ', error);
+            log.error('errorzzz: ', error);
         }
     })
 
@@ -1252,7 +1259,7 @@ function getCapabilities(req, res, next) {
         cap = all_d3cks[d3ck_id].capabilities
     }
     catch (e) {
-        log.info('erk... what we have here is a failure to trust...')
+        log.error('erk... what we have here is a failure to trust...')
     }
 
     res.send(200, { d3ck: d3ck_id, cap: cap })
@@ -1321,8 +1328,8 @@ function getGeo(req, res, next) {
         res.send(200, {ip_addr: ip_addr, geo : ip2geo[ip_addr] })
 
     }).catch(function (error) {
-        log.info('geo err! What or where - is the world coming to?')
-        log.info(error)
+        log.error('geo err! What or where - is the world coming to?')
+        log.error(error)
         deferred.reject(error)
         res.send(420, {ip_addr: ip_addr, geo : ''})
     })
@@ -1369,8 +1376,8 @@ function resolveGeo(ip_addr) {
         deferred.resolve(geo_data)
 
     }).catch(function (error) {
-        log.info('geo err! What or where - is the world coming to?')
-        log.info(error)
+        log.error('geo err! What or where - is the world coming to?')
+        log.error(error)
         deferred.reject(error)
     })
 
@@ -1437,7 +1444,7 @@ function getDNS (req, res, next) {
         dns.reverse(ip, function (err, fqdn) {
             if (err) {
                 ip2fqdns[ip] = ip
-                log.info(err)
+                log.error(err)
                 deferred.reject({ip: ip, fqdn : ip } )
                 res.send(200,   {ip: ip, fqdn : ip } )
             }
@@ -1619,7 +1626,7 @@ function update_d3ck(_d3ck) {
 
     rclient.set(_d3ck.D3CK_ID, JSON.stringify(_d3ck), function(err) {
         if (err) {
-            log.info(err, 'update_d3ck failed ' + JSON.stringify(err));
+            log.error(err, 'update_d3ck failed ' + JSON.stringify(err));
             return(err);
         } else {
             _d3ck_events = { updated_d3ck : '127.0.0.1' }
@@ -1689,7 +1696,7 @@ function create_cli3nt_rest(req, res, next) {
             create_d3ck_locally(ip_addr)
         }
         try       { res.send(200, JSON.stringify(cli3nt_bundle)) }
-        catch (e) { log.info('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
+        catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
 
         return
     }
@@ -1779,7 +1786,7 @@ function create_d3ck(req, res, next) {
 
     rclient.set(d3ck.key, d3ck.value, function(err) {
         if (err) {
-            log.info(err, 'put_d3ck: unable to store in Redis db');
+            log.error(err, 'put_d3ck: unable to store in Redis db');
             next(err);
         } else {
             // log.info({d3ck: req.body}, 'put_d3ck: done');
@@ -1889,7 +1896,7 @@ function create_d3ck_key_store(data) {
     mkdirp.sync(d3ck_dir, function () {
         if(err) {
             // xxx - user error, bail
-            log.info(err);
+            log.error(err);
         }
     })
 
@@ -1909,7 +1916,7 @@ function create_d3ck_key_store(data) {
 
     }
     catch (e) {
-        log.info('missing data...' + JSON.stringify(e))
+        log.error('missing data...' + JSON.stringify(e))
         write_2_file(d3ck_dir + '/d3ckroot.crt', ca)
     }
 
@@ -1939,7 +1946,7 @@ function write_O2_file(file, obj) {
         log.info('...o2-w-success...')
     }
     catch (e) {
-        log.info('err writing to ' + file + '...' + stringy)
+        log.error('err writing to ' + file + '...' + stringy)
     }
 
 }
@@ -1954,7 +1961,7 @@ function write_2_file(file, stringy) {
         log.info('...w-success...')
     }
     catch (e) {
-        log.info('err writing to ' + file + '...' + stringy)
+        log.error('err writing to ' + file + '...' + stringy)
     }
 
 }
@@ -1980,7 +1987,7 @@ function delete_d3ck(req, res, next) {
 
     rclient.del(req.params.key, function (err) {
         if (err) {
-            log.info(err, 'delete_d3ck: unable to delete %s', req.params.key)
+            log.error(err, 'delete_d3ck: unable to delete %s', req.params.key)
             next(err);
         } else {
             log.info('delete_d3ck: success deleting %s', req.params.key)
@@ -2085,7 +2092,7 @@ function createEvent(ip, event_data, ds) {
 
     rclient.set(key, JSON.stringify(event_data), function(err) {
         if (err) {
-            log.info(err, e_type + ' Revent: unable to store in Redis db');
+            log.error(err, e_type + ' Revent: unable to store in Redis db');
             next(err);
         } else {
             log.info({key: event_data}, e_type + ' event : saved');
@@ -2174,7 +2181,7 @@ function listEvents(req, res, next) {
 
     rclient.keys('[^A-Z0-9]*', function (err, keys) {
         if (err) {
-            log.info(err, 'listEvents: unable to retrieve events');
+            log.error(err, 'listEvents: unable to retrieve events');
             next(err);
         } else {
             var len = you_nique.length
@@ -2238,7 +2245,7 @@ function getEvent(req, res, next) {
                         }
                     }
                     else {
-                        log.info(err, 'getEvent: unable to retrieve data from keys matching %s', req.params.key);
+                        log.error(err, 'getEvent: unable to retrieve data from keys matching %s', req.params.key);
                         res.send(418, data);   // 418 I'm a teapot (RFC 2324)
                     }
                 })
@@ -2246,7 +2253,7 @@ function getEvent(req, res, next) {
 
         }
         else {
-            log.info(err, 'getEvent: unable to retrieve %s', req.d3ck);
+            log.error(err, 'getEvent: unable to retrieve %s', req.d3ck);
             res.send(418, reply);   // 418 I'm a teapot (RFC 2324)
         }
     })
@@ -2292,7 +2299,7 @@ function get_d3ck(req, res, next) {
             }
         }
         else {
-            log.info(err, 'get_d3ck: unable to retrieve %s', req.d3ck);
+            log.error(err, 'get_d3ck: unable to retrieve %s', req.d3ck);
             res.send(404, { "no": "d3ck"});
         }
     });
@@ -2304,7 +2311,7 @@ function get_d3ck(req, res, next) {
 function list_d3cks(req, res, next) {
     rclient.keys('[A-F0-9]*', function (err, keys) {
         if (err) {
-            log.info(err, 'list_d3ck: unable to retrieve all d3cks');
+            log.error(err, 'list_d3ck: unable to retrieve all d3cks');
             next(err);
         } else {
             log.info('Number of d3cks found: ', keys.length);
@@ -3008,7 +3015,7 @@ function d3ck_spawn(command, argz) {
         err = fs.openSync(d3ck_logs + '/' + cmd + '.err.log', 'a+')
     }
     catch (e) {
-        log.info("log open error with " + command + ' => ' + e.message)
+        log.error("log open error with " + command + ' => ' + e.message)
     }
 
     try {
@@ -3020,7 +3027,7 @@ function d3ck_spawn(command, argz) {
         spawn_o.unref();
     }
     catch (e) {
-        log.info("exec error with " + command + ' => ' + e.message)
+        log.error("exec error with " + command + ' => ' + e.message)
     }
 
 }
@@ -3128,7 +3135,7 @@ function forward_port(req, res, next) {
         typeof req.query.remote_port == "undefined" ||
         typeof req.query.proto       == "undefined") {
             var err = 'port forwarding requires direction, local_port, remote_ip, remote_port, and proto all to be set'
-            log.info(err)
+            log.error(err)
             next({error: err})
             return
     }
@@ -3376,7 +3383,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
                 response = {status: "ping failure", "error": error }
                 // synchronicity... II... shouting above the din of my rice crispies
                 try       { res.send(408, response) }
-                catch (e) { log.info('sPing error ' + JSON.stringify(e)) }
+                catch (e) { log.error('sPing error ' + JSON.stringify(e)) }
             }
 
         })
@@ -4099,7 +4106,7 @@ async.whilst(
     function (err) {
         if (typeof err != "undefined") {
             log.info('something terrible has happened....?')
-            log.info(err)
+            log.error(err)
         }
         else {
             log.info('whilst terminated normally')
@@ -4203,7 +4210,7 @@ server.post('/login',
         // rclient.set('session_cookie', req.client._httpMessage.req.sessionID, function(err) {
         rclient.set('session_cookie', gen_somewhat_random(), function(err) {
             if (err) {
-                log.info(err, 'session cookie crumbled: ' + JSON.stringify(err));
+                log.error(err, 'session cookie crumbled: ' + JSON.stringify(err));
                 return(err);
             } else {
                 log.info('cookie baking complete')
