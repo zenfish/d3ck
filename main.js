@@ -34,10 +34,11 @@ var Tail       = require('./tail').Tail,
     restler    = require("restler"),
     sleep      = require('sleep'),
     sys        = require('sys'),
-    d3ck       = require('./modules'),
     uuid       = require('node-uuid'),
+    winston    = require('winston'),
     Q          = require('q'),
-    __         = require('underscore');   // note; not one, two _'s, just for node
+    __         = require('underscore'),   // note; not one, two _'s, just for node
+    d3ck       = require('./modules');
 
 
 //
@@ -50,16 +51,12 @@ var Tail       = require('./tail').Tail,
 // ... followed by the server start...
 //
 
-
 //
 // init
 //
 
 // simple conf file...
 var config = JSON.parse(fs.readFileSync('/etc/d3ck/D3CK.json').toString())
-console.log('d3ck conf:')
-console.log(config);
-console.log(config.D3CK)
 
 bwana_d3ck = {}   // the big d3ck, you!
 
@@ -88,6 +85,27 @@ var owner_capabilities = config.owner_capabilities
 var trust              = config.trust
 
 var d3ck = require('./modules');
+
+//
+// fire up logging
+//
+var log = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)({    // console.log, basically
+          timestamp: true,
+          colorize:  true
+      }),
+      new (winston.transports.File)   ({    // log stuff to a real d3ck log file
+          timestamp: true,
+          name:      'main_d3ck', 
+          filename:  d3ck_logs + '/' + 'd3ck.log',
+          handleExceptions: true,
+          json:             true
+      })
+    ],
+    exitOnError: false
+});
+
 
 // firing up the auth engine
 init_capabilities(capabilities)
@@ -141,7 +159,7 @@ public_routes = config.public_routes
 rclient = redis.createClient();
 
 rclient.on("error", function (err) {
-    console.log("Redis client error: " + err);
+    log.error("Redis client error: " + err);
     process.exit(3)
 });
 
@@ -157,8 +175,8 @@ try {
     d3ck_id = d3ck_id.replace(/\n/, '');
 }
 catch (e) {
-    console.log("no D3CK ID for this potential D3CK... you won't get anywhere w/o it....\n")
-    console.log(e)
+    log.info("no D3CK ID for this potential D3CK... you won't get anywhere w/o it....\n")
+    log.info(e)
     process.exit(2)
 }
 
@@ -166,28 +184,28 @@ catch (e) {
 
 // server internal helper to get d3ck data
 function _get_d3ck(d3ck_id) {
-    console.log('\tget d3ck ' + d3ck_id)
+    log.info('\tget d3ck ' + d3ck_id)
 
     var deferred = Q.defer();
 
     rclient.get(d3ck_id, function (err, res) {
 
-        // console.log('\tfinished getting...')
+        // log.info('\tfinished getting...')
 
         if (!err) {
             if (res == null) {
-                // console.log('ERRZ getting d3ck: ' + d3ck_id + ' -> ' + JSON.stringify(err))
-                console.log('\tERRZ getting d3ck: ' + d3ck_id)
+                // log.info('ERRZ getting d3ck: ' + d3ck_id + ' -> ' + JSON.stringify(err))
+                log.info('\tERRZ getting d3ck: ' + d3ck_id)
                 deferred.reject(err)
             }
             else {
-                console.log('setting: ' + d3ck_id + ' to ' + JSON.stringify(res).length + ' bytes')
+                log.info('setting: ' + d3ck_id + ' to ' + JSON.stringify(res).length + ' bytes')
                 all_d3cks[d3ck_id] = JSON.parse(res)
                 deferred.resolve(res)
             }
         }
         else {
-            console.log(err, '\t_get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
+            log.info(err, '\t_get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
             process.exit(9)
         }
     })
@@ -199,24 +217,24 @@ function _get_d3ck(d3ck_id) {
 
 // suck up our own d3ck
 rclient.get(d3ck_id, function (err, reply) {
-    console.log('bwana!')
-    console.log(d3ck_id)
+    log.info('bwana!')
+    log.info(d3ck_id)
 
     if (!err) {
-        // console.log(reply)
+        // log.info(reply)
         if (reply == null) {
-            console.log('unable to retrieve our d3ck; id: %s', d3ck_id)
+            log.error('unable to retrieve our d3ck; id: %s', d3ck_id)
             sys.exit({'error': 'no D3CK Found'})
         }
         else {
-            // console.log(reply)
+            // log.info(reply)
             bwana_d3ck = JSON.parse(reply)
-            console.log('d3ckaroo')
-            // console.log(bwana_d3ck)
+            log.info('d3ckaroo')
+            // log.info(bwana_d3ck)
         }
     }
     else {
-        console.log(err, 'get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
+        log.info(err, 'get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
         sys.exit({ "no": "d3ck"})
     }
 })
@@ -224,13 +242,13 @@ rclient.get(d3ck_id, function (err, reply) {
 // get all known d3cks
 rclient.keys('[A-F0-9]*', function (err, keys) {
     if (err) {
-        console.log(err, 'list_d3ck: unable to retrieve all d3cks');
+        log.info(err, 'list_d3ck: unable to retrieve all d3cks');
         next(err);
     } else {
-        console.log('Number of d3cks so far: ', keys.length);
+        log.info('Number of d3cks so far: ', keys.length);
 
         __.each(keys, function(k) {
-            console.log('grabbing ' + k)
+            log.info('grabbing ' + k)
             _get_d3ck(k)
         })
     }
@@ -344,7 +362,7 @@ function empty_status () {
 //
 function q_status(ds) {
 
-    console.log('adding to status q')
+    log.info('adding to status q')
 
     ds.time = cat_stamp()
 
@@ -363,9 +381,9 @@ function get_d3ck_vital_bits () {
     // if we don't see d3ck owner data, push the user to the install page
     //
     if (fs.existsSync(d3ck_secretz)) {
-        console.log('\nSECRETZ!!!!  Found secret file... does it check out?')
+        log.info('\nSECRETZ!!!!  Found secret file... does it check out?')
         secretz = JSON.parse(fs.readFileSync(d3ck_secretz).toString())
-        console.log(JSON.stringify(secretz))
+        log.info(JSON.stringify(secretz))
 
         // should be a single user, but keep this code in case we support more in future
         secretz.id = 0
@@ -381,12 +399,12 @@ function get_d3ck_vital_bits () {
 var cat_facts = []
 
 // json scrobbled from bits at from - https://user.xmission.com/~emailbox/trivia.htm
-console.log('hoovering up cat facts... look out, tabby!')
+log.info('hoovering up cat facts... look out, tabby!')
 
 fs.readFile(d3ck_home + "/catfacts.json", function (err, data) {
     if (err) {
-        console.log('cant live without cat facts! ' + err)
-        console.log('going down!')
+        log.info('cant live without cat facts! ' + err)
+        log.info('going down!')
         process.exit(code=666)
     }
     else {
@@ -400,11 +418,11 @@ fs.readFile(d3ck_home + "/catfacts.json", function (err, data) {
 // return a fascinating detail about our furry friends
 //
 function random_cat_fact (facts) {
-    // console.log('generating cat fact')
+    // log.info('generating cat fact')
     var max  = facts.length
 
     var fact = facts[Math.floor(Math.random() * (max - 1) + 1)]
-    // console.log('cat fact! ' + fact)
+    // log.info('cat fact! ' + fact)
     return(fact)
 }
 
@@ -466,23 +484,23 @@ function assign_capabilities(_d3ck, new_capabilities) {
     if (typeof _d3ck == "string")
         _d3ck = JSON.parse(_d3ck)
 
-    console.log('assigning capabilities to: ' + _d3ck.D3CK_ID)
+    log.info('assigning capabilities to: ' + _d3ck.D3CK_ID)
 
     if (typeof new_capabilities != "undefined") {
-        console.log('using user-given values...')
+        log.info('using user-given values...')
         _d3ck["capabilities"] = new_capabilities
     }
     else {
         var capz = {}
 
-        console.log('taking from base default trust level: ' + trust.default)
+        log.info('taking from base default trust level: ' + trust.default)
         Object.keys(capabilities).forEach(function(k) {
-            console.log(k + '\t: ' + capabilities[k][trust.default])
+            log.info(k + '\t: ' + capabilities[k][trust.default])
             capz[k] = capabilities[k].trusting
         })
 
-        console.log('CAPZ: ')
-        console.log(capz)
+        log.info('CAPZ: ')
+        log.info(capz)
         _d3ck["capabilities"] = capz
     }
 
@@ -496,15 +514,15 @@ function assign_capabilities(_d3ck, new_capabilities) {
 //
 function init_capabilities(capabilities) {
 
-    console.log('ennumerating capabilities...')
+    log.info('ennumerating capabilities...')
 
-    console.log(__.keys(capabilities))
+    log.info(__.keys(capabilities))
 
     var caps = __.keys(capabilities)
 
     for (var i = 0; i < caps.length; i++) {
-        console.log(caps[i])
-        console.log(capabilities[caps[i]])
+        log.info(caps[i])
+        log.info(capabilities[caps[i]])
     }
 
 // sys.exit(1)
@@ -516,14 +534,14 @@ function init_capabilities(capabilities) {
 //
 function findById(id, fn) {
     if (d3ck_owners[id]) {
-        // console.log('found....')
-        // console.log(d3ck_owners)
-        // console.log(d3ck_owners[0])
+        // log.info('found....')
+        // log.info(d3ck_owners)
+        // log.info(d3ck_owners[0])
         fn(null, d3ck_owners[id]);
     } else {
-        // console.log('User ' + id + ' does not exist');
-        // console.log(d3ck_owners)
-        // console.log(d3ck_owners[0])
+        // log.info('User ' + id + ' does not exist');
+        // log.info(d3ck_owners)
+        // log.info(d3ck_owners[0])
         return fn(null, null);
     }
 }
@@ -555,13 +573,13 @@ function findByUsername(name, fn) {
 //
 function auth(req, res, next) {
 
-    console.log('got auth?  --> ' + req.path)
+    log.info('got auth?  --> ' + req.path)
 
     //
     // I don't care who you are... if you haven't set up your d3ck, there's nothing to auth to... so redirect
     //
     if (redirect_to_quickstart) {
-        console.log('redirecting to qs')
+        log.info('redirecting to qs')
         res.redirect(302, '/quikstart.html')
         return
     }
@@ -576,15 +594,15 @@ function auth(req, res, next) {
     // ... logged in as a user, say, via the web?
     //
     if (req.isAuthenticated()) {
-        console.log('already chex: ' + req.path)
+        log.info('already chex: ' + req.path)
         auth_type = 'owner'
         return next();
     }
 
     // for now... let in localhost... may rethink
-    // console.log('localhost')
+    // log.info('localhost')
     else if (ip == '127.0.0.1') {
-        console.log("you ain't from around here, are ya... wait... yes you are... hi, bobby-sue!  " + req.path)
+        log.info("you ain't from around here, are ya... wait... yes you are... hi, bobby-sue!  " + req.path)
         auth_type = 'local'
         return next();
     }
@@ -603,22 +621,17 @@ function auth(req, res, next) {
     //
     else if (typeof req.headers['x-ssl-client-verify'] != "undefined" && req.headers['x-ssl-client-verify'] == "SUCCESS") {
 
-        // console.log(req.headers)
-        console.log('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
-        console.log('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
-        console.log('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
+        // log.info('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
 
         var loc_cn    = req.headers['x-ssl-client-s-dn'].indexOf('/CN=') + 4
         var cn        = req.headers['x-ssl-client-s-dn'].substr(loc_cn)
-
         var c_d3ck_id = cn.split('.')[0]
 
-        console.log('CN = ' + cn)
-        console.log('CN->d3ckid = ' + c_d3ck_id)
+        // log.info('CN->d3ckid = ' + c_d3ck_id)
 
         // this should be unneccessary....
         if (typeof all_d3cks[c_d3ck_id] == "undefined") {
-            console.log('err: this should never happen... but... d3ck with cert wasnt in the all_d3cks data structure...')
+            log.info('err: this should never happen... but... d3ck with cert wasnt in the all_d3cks data structure...')
             process.exit(55)
         }
         else if (c_d3ck_id != bwana_d3ck) {
@@ -633,32 +646,44 @@ function auth(req, res, next) {
     // you're a real nowhere man, living in a nowhere....
     //
     else {
+        log.info("greetings, lumpy proletarian!")
+
+        var open_sesame = false
         auth_type = 'anon'
-        if (__.contains(public_routes, url_bits[1])) {
-            console.log("public property, anyone can go....")
+        // if (__.contains(public_routes, url_bits[1])) {
+        __.each(public_routes, function(r) {
+            // log.info(r + ' vs. ' + req.path)
+            if (r == req.path) {
+                open_sesame = true;
+                return
+            }
+        })
+
+        if (open_sesame) {
+            log.info("public property, anyone can go....")
             return next();
         }
     }
 
 
 
-    // console.log('x-forw')
+    // log.info('x-forw')
 //  if (typeof req.headers['x-forwarded-for'] != 'undefined' && typeof client_vpn_ip != 'undefined') {
 //
-//      console.log('... ok... trying x-forw....')
+//      log.info('... ok... trying x-forw....')
 //
 //      if (ip == client_vpn_ip) {
-//          console.log('... if I let you (' + client_ip + ') vpn, I let you...' + req.path)
+//          log.info('... if I let you (' + client_ip + ') vpn, I let you...' + req.path)
 //          return next();
 //      }
 //      else {
-//          console.log('not client ip: ' + client_vpn_ip + ' != ' + ip)
+//          log.info('not client ip: ' + client_vpn_ip + ' != ' + ip)
 //      }
 //  }
 
-    // console.log(req.headers)
+    // log.info(req.headers)
 
-    console.log('I pity da fool who tries to sneak by me!  ' + req.path, ip)
+    log.info('I pity da fool who tries to sneak by me!  ' + req.path, ip)
     res.redirect(302, '/login.html')
 
 }
@@ -677,15 +702,15 @@ passport.deserializeUser(function(id, done) {
 // return hash of password on N rounds
 function hashit(password, N_ROUNDS) {
 
-    // console.log('hashing ' + password)
+    // log.info('hashing ' + password)
 
     var hash = bcrypt.hashSync(password, N_ROUNDS, function(err, _hash) {
         if (err) {
-            console.log("hash error: " + err)
+            log.info("hash error: " + err)
             return("")
         }
         else {
-            // console.log('hashing ' + password + ' => ' + _hash);
+            // log.info('hashing ' + password + ' => ' + _hash);
             return(_hash)
         }
     })
@@ -700,23 +725,23 @@ passport.use(new l_Strategy(
         // var _hash = hashit(password, N_ROUNDS)
 
         // XXXXXX - uncomment this if you want to see what the user typed for a password!
-        // console.log('checking password ' + password + ' for user ' + name)
+        // log.info('checking password ' + password + ' for user ' + name)
 
         process.nextTick(function () {
             findByUsername(name, function(err, user) {
-                if (err)   { console.log("erzz in pass: " + err);  return done(err); }
-                if (!user) { console.log("unknown user: " + name); return done(null, false, { message: 'Unknown user ' + name }); }
+                if (err)   { log.info("erzz in pass: " + err);  return done(err); }
+                if (!user) { log.info("unknown user: " + name); return done(null, false, { message: 'Unknown user ' + name }); }
 
                 // if (_hash == d3ck_owners[0].hash) {
-                console.log('tick....')
-                console.log(d3ck_owners[0].hash)
+                log.info('tick....')
+                log.info(d3ck_owners[0].hash)
 
                 if (bcrypt.compareSync(password, d3ck_owners[0].hash)) {
-                    console.log('password matches, successsssss....!')
+                    log.info('password matches, successsssss....!')
                     return done(null, user)
                     }
                 else {
-                    console.log('password failzor')
+                    log.info('password failzor')
                     return done(null, false)
                 }
             })
@@ -743,7 +768,7 @@ watch_logs("client_vpn", "OpenVPN Client")
 // trigger on.
 //
 
-console.log('pulling in d3ck data for the server itself')
+log.info('pulling in d3ck data for the server itself')
 
 // wait for the first d3ck to be loaded in
 events    = require('events');
@@ -764,24 +789,24 @@ var init = false
 // xxx null for now...?
 // while (init) {
 
-    console.log('suckit, d3ck!')
+    log.info('suckit, d3ck!')
 
     var url = 'https://localhost:' + d3ck_port_int + '/d3ck/' + d3ck_id
 
-    console.log('requesting d3ck from: ' + url)
+    log.info('requesting d3ck from: ' + url)
 
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             // success
-            console.log('finally got server response...')
-            // console.log(body)
+            log.info('finally got server response...')
+            // log.info(body)
 
             if (body.indexOf("was not found") != -1) {
-                console.log('no woman no d3ck: ' + body)
+                log.info('no woman no d3ck: ' + body)
             }
             else {
-                console.log('d3ckarrific!')
-                // console.log(body)
+                log.info('d3ckarrific!')
+                // log.info(body)
                 bwana_d3ck = JSON.parse(body)
 
                 createEvent('internal server', {event_type: "create", d3ck_id: bwana_d3ck.D3CK_ID})
@@ -790,7 +815,7 @@ var init = false
         }
         else {
             // error
-            console.log('Error: ', error);
+            log.error('Error: ', error);
         }
     })
 
@@ -815,7 +840,7 @@ for (var dev in ifaces) {
         if (details.family=='IPv4') {
 
             my_net[details.address] = dev+(alias?':'+alias:'')
-            console.log(dev+(alias?':'+alias:''),details.address)
+            log.info(dev+(alias?':'+alias:''),details.address)
             ++alias
             my_ips[n]    = '"' + details.address + '"'
             my_devs[dev] = details.address
@@ -831,7 +856,7 @@ cat_fact_server = my_devs["tun0"]
 // write the IP addr to a file
 write_2_file(d3ck_remote_vpn, cat_fact_server)
 
-// console.log(my_ips)
+// log.info(my_ips)
 
 //
 // log file watcher
@@ -844,14 +869,14 @@ function watch_logs(logfile, log_type) {
 
     // create if doesn't exist...?
     if (!fs.existsSync(logfile)) {
-        console.log('creating ' + logfile)
+        log.info('creating ' + logfile)
         write_2_file(logfile, "")
     }
     else {
-        console.log('watching ' + logfile)
+        log.info('watching ' + logfile)
     }
 
-    console.log('watching logs from ' + log_type)
+    log.info('watching logs from ' + log_type)
 
     var tail = new Tail(logfile)
 
@@ -859,7 +884,7 @@ function watch_logs(logfile, log_type) {
 
         if (line == "" || line == null || typeof line == "undefined") return
 
-        // console.log("got line from " + logfile + ":" + line)
+        // log.info("got line from " + logfile + ":" + line)
 
         // xxx - for client openvpn - config... which ones to choose?  Another method?
         var magic_client_up     = "Initialization Sequence Completed",
@@ -880,7 +905,7 @@ function watch_logs(logfile, log_type) {
             client_remote_ip = "",
             server_remote_ip = "";
 
-        // console.log('moment: ' + moment_in_time + ' : ' + line)
+        // log.info('moment: ' + moment_in_time + ' : ' + line)
 
         if (log_type.indexOf("Server") > -1) {
 
@@ -894,8 +919,8 @@ function watch_logs(logfile, log_type) {
                 // client_remote_ip = line.match(/((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]){3})/)[0]
                 client_remote_ip = line.match(/((([0-9]+\.){3}([0-9]+){1}))/)[0]
                 // client_remote_ip = line.match(/ip_regexp/)[1]
-                console.log('incoming call from ' + client_remote_ip)
-                console.log(line)
+                log.info('incoming call from ' + client_remote_ip)
+                log.info(line)
 
             }
 
@@ -913,14 +938,14 @@ function watch_logs(logfile, log_type) {
                 catch (e) {
                     client_vpn_ip = '???'
                 }
-                console.log('\n------> ' + client_vpn_ip + '<--- openvpn client IP\n\n')
+                log.info('\n------> ' + client_vpn_ip + '<--- openvpn client IP\n\n')
             }
 
             // various states of up-id-ness and down-o-sity
             if (line.indexOf(magic_server_up) > -1) {
-                console.log('\n\n\n++++++++++++' + logfile + ' \n\n Openvpn server up:\n\n')
-                console.log(line)
-                console.log('\n\n')
+                log.info('\n\n\n++++++++++++' + logfile + ' \n\n Openvpn server up:\n\n')
+                log.info(line)
+                log.info('\n\n')
 
 
                 server_magic = {
@@ -947,9 +972,9 @@ function watch_logs(logfile, log_type) {
             }
             // down
             else if (line.indexOf(magic_server_down1) > -1 || line.indexOf(magic_server_down2) > -1) {
-                console.log('\n\n\n++++++++++++' + logfile + ' \n\n Openvpn server down:\n\n')
-                console.log(line)
-                console.log('\n\n')
+                log.info('\n\n\n++++++++++++' + logfile + ' \n\n Openvpn server down:\n\n')
+                log.info(line)
+                log.info('\n\n')
 
                 var v_duration = 0
 
@@ -988,10 +1013,10 @@ function watch_logs(logfile, log_type) {
             if (line.indexOf(magic_client_up) == 0) {
                 server_remote_ip = line.match(/^Server : ((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))/)[1]
 
-                console.log('\n\n\n++++++++++++' + logfile + ' \n\n Openvpn client up!\n\n')
-                console.log(line)
-                console.log('outgoing call to ' + server_remote_ip)
-                console.log('\n\n')
+                log.info('\n\n\n++++++++++++' + logfile + ' \n\n Openvpn client up!\n\n')
+                log.info(line)
+                log.info('outgoing call to ' + server_remote_ip)
+                log.info('\n\n')
 
                 // reset to remote
                 cat_fact_server = server_remote_ip
@@ -1025,9 +1050,9 @@ function watch_logs(logfile, log_type) {
             }
             // down
             else if (line.indexOf(magic_client_down) > -1) {
-                console.log('\n\n\n++++++++++++' + logfile + ' \n\n Openvpn client Down!\n\n')
-                console.log(line)
-                console.log('\n\n')
+                log.info('\n\n\n++++++++++++' + logfile + ' \n\n Openvpn client Down!\n\n')
+                log.info(line)
+                log.info('\n\n')
 
                 var v_duration = 0
 
@@ -1066,12 +1091,12 @@ function watch_logs(logfile, log_type) {
    })
 
    tail.on('error', function(err) {
-      console.log("\n\n\n*** error tailing *** :", err)
-      console.log("stopping the watch of " + logfile)
+      log.error("\n\n\n*** error tailing *** :", err)
+      log.error("stopping the watch of " + logfile)
       tail.unwatch()
    })
 
-   console.log('trigger set')
+   log.info('trigger set')
    // Quis custodiet ipsos custodes?
    tail.watch()
 
@@ -1125,6 +1150,12 @@ function NotImplementedError() {
 // who is talking to us?
 function get_client_ip(req) {
 
+    // log.info('REQ: - ' + JSON.stringify(req.headers))
+
+    // something like....
+
+    // {"x-ssl-client-verify":"SUCCESS","x-ssl-client-s-dn":"/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=A5A9EDFA9B0E17470B0232B3AF90462CCED1A657.e149ad89f27ae09d26a6e48","x-ssl-client-i-dn":"/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=d75b44681f1e2fbe5ae599afe00760d2","host":"63.225.191.45","x-real-ip":"54.203.255.17","x-forwarded-for":"54.203.255.17","x-forwarded-proto":"https","connection":"close"}
+
     if (typeof req.headers != "undefined" && typeof req.headers['x-real-ip'] != "undefined")
         client_ip = req.headers['x-real-ip']
     else if (typeof req.headers != "undefined" && typeof req.headers['x-forwarded-for'] != "undefined")
@@ -1138,11 +1169,11 @@ function get_client_ip(req) {
     else if (typeof req.connection.socket.remoteAddress != "undefined")
         client_ip = req.connection.socket.remoteAddress
     else {
-        console.log('no IP here...')
+        log.info('no IP here...')
         return("")
     }
 
-    // console.log("C-ip: " + client_ip)
+    // log.info("C-ip: " + client_ip)
 
     return client_ip
 
@@ -1152,6 +1183,7 @@ function get_client_ip(req) {
 function getIP(req, res, next) {
 
     var ip = get_client_ip(req)
+    log.info('getIP: ' + ip)
     res.send(200, '{"ip" : "' + ip + '"}');
 
 }
@@ -1194,7 +1226,7 @@ function getIPtables(req, res, next) {
         ipt_data = ipt_data + "\n</pre>\n"
     })
 
-    // console.log('\n' + ipt_data + '\n\n')
+    // log.info('\n' + ipt_data + '\n\n')
 
     res.send(200, ipt_data)
 
@@ -1207,12 +1239,12 @@ function getCapabilities(req, res, next) {
 
     var d3ck_id = req.params.deckid
 
-    // console.log(req)
-    console.log(req.params)
+    // log.info(req)
+    log.info(req.params)
 
-    console.log('get cap for: ' + d3ck_id)
+    log.info('get cap for: ' + d3ck_id)
 
-    // console.log(all_d3cks[d3ck_id])
+    // log.info(all_d3cks[d3ck_id])
 
     var cap   = {}
 
@@ -1220,7 +1252,7 @@ function getCapabilities(req, res, next) {
         cap = all_d3cks[d3ck_id].capabilities
     }
     catch (e) {
-        console.log('erk... what we have here is a failure to trust...')
+        log.info('erk... what we have here is a failure to trust...')
     }
 
     res.send(200, { d3ck: d3ck_id, cap: cap })
@@ -1245,12 +1277,12 @@ var ip2geo   = []
 
 function getGeo(req, res, next) {
 
-    console.log('get geo')
+    log.info('get geo')
 
     var deferred = Q.defer();
 
     if (typeof req.query.ip == "undefined") {
-        console.log('bad dog, no IP')
+        log.info('bad dog, no IP')
         res.send(400, { error: 'bad dog, no IP, no dog treat!' })
         return
     }
@@ -1259,23 +1291,23 @@ function getGeo(req, res, next) {
 
     var url     = 'https://freegeoip.net/json/' + ip_addr
 
-    console.log('resolving geo stuff from: ' + url)
+    log.info('resolving geo stuff from: ' + url)
 
     // cache until can't cache no more (restart)
     if (typeof ip2geo[ip_addr] !== "undefined") {
-        console.log('returning cached geo result')
-        console.log(ip2geo[ip_addr])
+        log.info('returning cached geo result')
+        log.info(ip2geo[ip_addr])
         res.send(200, {ip_addr: ip_addr, geo : ip2geo[ip_addr] } )
         return
     }
 
     get_https(url, ip_addr).then(function (geo_data) {
 
-        console.log('geo hmmm....')
+        log.info('geo hmmm....')
 
         geo_data = JSON.parse(geo_data)
 
-        console.log(JSON.stringify(geo_data))
+        log.info(JSON.stringify(geo_data))
 
         // ip2geo[ip_addr] = JSON.stringify(geo_data)
         ip2geo[ip_addr] = geo_data
@@ -1284,13 +1316,13 @@ function getGeo(req, res, next) {
         // return geo_data
         // res.send(200, geo_data )
 
-        console.log("fucking send something, geo!")
+        log.info("fucking send something, geo!")
         deferred.resolve({ip_addr: ip_addr, geo : ip2geo[ip_addr] })
         res.send(200, {ip_addr: ip_addr, geo : ip2geo[ip_addr] })
 
     }).catch(function (error) {
-        console.log('geo err! What or where - is the world coming to?')
-        console.log(error)
+        log.info('geo err! What or where - is the world coming to?')
+        log.info(error)
         deferred.reject(error)
         res.send(420, {ip_addr: ip_addr, geo : ''})
     })
@@ -1300,8 +1332,8 @@ function getGeo(req, res, next) {
 }
 
 //  get_https(url).then(function (geo_data) {
-//      console.log('geo hmmm....')
-//      console.log( { geo: geo_data } )
+//      log.info('geo hmmm....')
+//      log.info({ geo: geo_data } )
 //      // ip2geo[ip_addr] = JSON.stringify(geo_data)
 //      ip2geo[ip_addr] = geo_data
 //      d3ck_queue.push({type: 'info', event: 'geo', ip_addr: ip_addr, geodata: geo_data })
@@ -1315,14 +1347,14 @@ function resolveGeo(ip_addr) {
     // free geo service
     var url = 'https://freegeoip.net/json/' + ip_addr
 
-    console.log('in resolve_geo: ' + url)
+    log.info('in resolve_geo: ' + url)
 
     var deferred = Q.defer();
 
     get_https(url, ip2d3ck[ip_addr]).then(function (geo_data) {
 
-        console.log('geo hmmm....')
-        console.log( { geo: geo_data } )
+        log.info('geo hmmm....')
+        log.info({ geo: geo_data } )
 
         geo_data = JSON.parse(geo_data)
 
@@ -1333,12 +1365,12 @@ function resolveGeo(ip_addr) {
         // return geo_data
         // res.send(200, geo_data )
 
-        console.log("fucking send something, geo!")
+        log.info("fucking send something, geo!")
         deferred.resolve(geo_data)
 
     }).catch(function (error) {
-        console.log('geo err! What or where - is the world coming to?')
-        console.log(error)
+        log.info('geo err! What or where - is the world coming to?')
+        log.info(error)
         deferred.reject(error)
     })
 
@@ -1356,12 +1388,12 @@ var ip2fqdns = [];
 
 function getDNS (req, res, next) {
 
-    console.log('dns lookup...?')
+    log.info('dns lookup...?')
 
     var deferred = Q.defer();
 
     if (typeof req.query.ip === 'undefined') {
-        console.log('need an IP to resolve it')
+        log.error('need an IP to resolve it')
         res.json(400, { "error" : "?"})
     }
 
@@ -1369,7 +1401,7 @@ function getDNS (req, res, next) {
 
     var fqdn = []
 
-    console.log(ip)
+    log.info(ip)
 
     var question = dns.Question({
         address: ip,
@@ -1378,8 +1410,8 @@ function getDNS (req, res, next) {
 
     // cache until can't cache no more (restart)
     if (typeof ip2fqdns[ip] !== "undefined") {
-        console.log('returning cached ip2fqdns result')
-        console.log(ip2fqdns[ip])
+        log.info('returning cached ip2fqdns result')
+        log.info(ip2fqdns[ip])
         res.send(200,    {ip: ip, fqdn : ip2fqdns[ip] } )
         return
     }
@@ -1387,7 +1419,7 @@ function getDNS (req, res, next) {
     // xxx - yeah, bad... will figure out a better dns call later
     var d = require('domain').create();
     d.on('error', function(err) {
-        // if (err.message != 'connect ECONNREFUSED') { console.log('shuxx0r, dns blew a gastket, could be an issue: ' + err.message); }
+        // if (err.message != 'connect ECONNREFUSED') { log.info('shuxx0r, dns blew a gastket, could be an issue: ' + err.message); }
         ip2fqdns[ip] = ip
         deferred.reject({ip: ip, fqdn : ip } )
 
@@ -1401,11 +1433,11 @@ function getDNS (req, res, next) {
 
     });
     d.run(function() {
-        console.log("lookin' up " + ip)
+        log.info("lookin' up " + ip)
         dns.reverse(ip, function (err, fqdn) {
             if (err) {
                 ip2fqdns[ip] = ip
-                console.log(err)
+                log.info(err)
                 deferred.reject({ip: ip, fqdn : ip } )
                 res.send(200,   {ip: ip, fqdn : ip } )
             }
@@ -1413,7 +1445,7 @@ function getDNS (req, res, next) {
                 fqdn         = fqdn.join()
                 ip2fqdns[ip] = fqdn
 
-                console.log('reverse for ' + ip + ': ' + fqdn);
+                log.info('reverse for ' + ip + ': ' + fqdn);
 
                 deferred.resolve({ip: ip, fqdn : fqdn } )
                 res.send(200,    {ip: ip, fqdn : fqdn } )
@@ -1433,20 +1465,20 @@ all_p33rs = [];
 //
 function cat_power(msg) {
 
-    console.log('kitty Powa!  => ' + JSON.stringify(msg))
+    log.info('kitty Powa!  => ' + JSON.stringify(msg))
 
 // used to use sockets to communicate this...
 
 //    if (msg.type != "openvpn_server") {
 //
 //        try {
-//            console.log('catpower writez:  catFax, ' + JSON.stringify(msg))
+//            log.info('catpower writez:  catFax, ' + JSON.stringify(msg))
 //            // cat_sock.write(JSON.stringify(msg))
 //            cat_sock.emit('catFax', JSON.stringify(msg))
 //        }
 //        catch (e) {
 //            // need a browser...
-//            console.log('channel not up yet....? ' + e)
+//            log.info('channel not up yet....? ' + e)
 //        }
 //    }
 
@@ -1484,14 +1516,14 @@ function cat_stamp() {
 //
 function d3ckQueue(req, res, next) {
 
-    // console.log('d3ck Q query')
+    // log.info('d3ck Q query')
 
     // the usual usualness
     if (d3ck_queue.length > 0) {
-        console.log('clearing out the queue (' + d3ck_queue.length + ')....')
+        log.info('clearing out the queue (' + d3ck_queue.length + ')....')
     }
     else {
-        // console.log('empty queue...')
+        // log.info('empty queue...')
         res.send(200, [])
         return
     }
@@ -1500,7 +1532,7 @@ function d3ckQueue(req, res, next) {
 
     d3ck_queue = [] // not to be confused with quo
 
-    console.log('sending quo... ' + JSON.stringify(quo))
+    log.info('sending quo... ' + JSON.stringify(quo))
 
     res.send(200, quo)
 
@@ -1514,7 +1546,7 @@ function d3ckStatus(req, res, next) {
 
     // if the magic flag... sent when client first connects
     if (typeof req.query.first_blood != "undefined") {
-        console.log('They drew first blood, not me....')
+        log.info('They drew first blood, not me....')
         var _status = empty_status()
 
         _status.openvpn_server = vpn_server_status
@@ -1527,18 +1559,18 @@ function d3ckStatus(req, res, next) {
     else {
 
         if (status_queue.length > 0) {
-            console.log('clearing out the status (' + status_queue.length + ')....')
+            log.info('clearing out the status (' + status_queue.length + ')....')
         }
         else {
-            //console.log('empty queue...')
+            //log.info('empty queue...')
             res.send(200, [])
         }
 
-        // console.log('d3ck status check... ' + JSON.stringify(status_queue))
+        // log.info('d3ck status check... ' + JSON.stringify(status_queue))
 
         //tmp_status = JSON.parse(JSON.stringify(status_queue))
 
-        //console.log(status_queue)
+        //log.info(status_queue)
 
         var quo = []
         for (var i = 0; i < status_queue.length; i++) {
@@ -1547,7 +1579,7 @@ function d3ckStatus(req, res, next) {
 
         status_queue = [] // not to be confused with quo
 
-        // console.log('sending quo... ' + JSON.stringify(quo))
+        // log.info('sending quo... ' + JSON.stringify(quo))
 
         res.send(200, quo)
 
@@ -1582,12 +1614,12 @@ function format_d3ck(req, res, body) {
 //
 function update_d3ck(_d3ck) {
 
-    console.log('updating data for ' + _d3ck.D3CK_ID)
-    console.log(_d3ck)
+    log.info('updating data for ' + _d3ck.D3CK_ID)
+    log.info(_d3ck)
 
     rclient.set(_d3ck.D3CK_ID, JSON.stringify(_d3ck), function(err) {
         if (err) {
-            console.log(err, 'update_d3ck failed ' + JSON.stringify(err));
+            log.info(err, 'update_d3ck failed ' + JSON.stringify(err));
             return(err);
         } else {
             _d3ck_events = { updated_d3ck : '127.0.0.1' }
@@ -1597,7 +1629,7 @@ function update_d3ck(_d3ck) {
             // create_d3ck_image(_d3ck)
 
             createEvent('127.0.0.1', {event_type: "update", "d3ck_id": _d3ck.D3CK_ID})
-            console.log('redis update_d3ck success')
+            log.info('redis update_d3ck success')
 
         }
     })
@@ -1621,28 +1653,28 @@ function create_cli3nt_rest(req, res, next) {
     //
     // url
     //
-    console.log('who are ya, punk?  ' + ip_addr)
+    log.info('who are ya, punk?  ' + ip_addr)
 
     if (typeof req.query.did == "undefined") {
-        console.log('bad dog, no DiD!')
+        log.info('bad dog, no DiD!')
         res.send(400, { error: 'bad dog, no DiD, no tasty bites!' })
         return
     }
 
     var did = req.query.did
 
-    console.log('DiD: ' + did)
+    log.info('DiD: ' + did)
 
     var keyout = d3ck_spawn_sync(command, [did])
 
     if (keyout.code) {
-        console.log("error!\n\n\n")
+        log.error("error in create_cli3nt_rest!")
         res.send(420, { error: "couldn't retrieve client certificates" } )
         return
     }
     else {
-        console.log('looks good...')
-        console.log(d3ck_keystore +'/'+ did + "/_cli3nt.all")
+        log.info('looks good...')
+        log.info(d3ck_keystore +'/'+ did + "/_cli3nt.all")
 
         var cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ did + "/_cli3nt.json").toString())
 
@@ -1653,11 +1685,11 @@ function create_cli3nt_rest(req, res, next) {
         // if !exist, create their d3ck locally as well
         //
         if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
-            console.log("Hmm, we don't have their data... try to get it")
+            log.info("Hmm, we don't have their data... try to get it")
             create_d3ck_locally(ip_addr)
         }
         try       { res.send(200, JSON.stringify(cli3nt_bundle)) }
-        catch (e) { console.log('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
+        catch (e) { log.info('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
 
         return
     }
@@ -1670,10 +1702,10 @@ function create_cli3nt_rest(req, res, next) {
 //
 function create_full_d3ck (data) {
 
-    //console.log(certz)
+    //log.info(certz)
     var cmd  = d3ck_bin + '/create_server_d3ck.sh'
 
-    console.log('executing ' + cmd + ' to add locally')
+    log.info('executing ' + cmd + ' to add locally')
 
     var argz = [data.D3CK_ID,
                 data.image,
@@ -1694,13 +1726,13 @@ function create_full_d3ck (data) {
 //
 function create_d3ck(req, res, next) {
 
-    console.log ('creating d3ck')
+    log.info('creating d3ck')
 
-    // console.log(req.body)
-    // console.log(req.body.value)
+    // log.info(req.body)
+    // log.info(req.body.value)
 
     if (!req.body.value) {
-        console.log('create_d3ck: missing value');
+        log.info('create_d3ck: missing value');
         next(new MissingValueError());
         return;
     }
@@ -1721,17 +1753,17 @@ function create_d3ck(req, res, next) {
     // says it has... add it in; they may be coming from a NAT or
     // something weird
     if (client_ip != '127.0.0.1') {
-        console.log('looking to see if your current ip (' + client_ip  +') is in your pool')
+        log.info('looking to see if your current ip (' + client_ip  +') is in your pool')
         var found = false
         for (var i = 0; i < all_client_ips.length; i++) {
             if (all_client_ips[i] == client_ip) {
-                console.log('found it!')
+                log.info('found it!')
                 found = true
                 break
             }
         }
         if (! found) {
-            console.log("[create_d3ck] You're coming from an IP that isn't in your stated IPs... adding [" + client_ip + "] to your IP pool just in case")
+            log.info("[create_d3ck] You're coming from an IP that isn't in your stated IPs... adding [" + client_ip + "] to your IP pool just in case")
             data.all_ips[all_client_ips.length] = client_ip
         }
     }
@@ -1742,20 +1774,20 @@ function create_d3ck(req, res, next) {
     }
 
     // TODO: Check if d3ck exists using EXISTS and fail if it does
-    // console.log("key: " + d3ck.key);
-    // console.log("value: " + d3ck.value);
+    // log.info("key: " + d3ck.key);
+    // log.info("value: " + d3ck.value);
 
     rclient.set(d3ck.key, d3ck.value, function(err) {
         if (err) {
-            console.log(err, 'put_d3ck: unable to store in Redis db');
+            log.info(err, 'put_d3ck: unable to store in Redis db');
             next(err);
         } else {
-            // console.log({d3ck: req.body}, 'put_d3ck: done');
+            // log.info({d3ck: req.body}, 'put_d3ck: done');
 
             //
             // if it's from a remote system, wake up local UI and tell user
             //
-            console.log('redis saved data from: ' + data.name)
+            log.info('redis saved data from: ' + data.name)
 
             d3ck_events = { new_d3ck_ip : client_ip, new_d3ck_name: data.name }
 
@@ -1783,18 +1815,18 @@ function create_d3ck_image(data) {
         data = JSON.parse(data)
     }
 
-    console.log('create d3ck img')
-    // console.log(data)
+    log.info('create d3ck img')
+    // log.info(data)
 
-    console.log(typeof data.image_b64)
+    log.info(typeof data.image_b64)
 
     var image = b64_decode(data.image_b64)
 
-    console.log('trying to decode: ' + data.image)
-    // console.log(data.image_b64)
+    log.info('trying to decode: ' + data.image)
+    // log.info(data.image_b64)
 
     if (image == "") {
-        console.log("Couldn't decode " + data.image)
+        log.info("Couldn't decode " + data.image)
         return
     }
 
@@ -1820,7 +1852,7 @@ function create_d3ck_image(data) {
     full_d3ck_image = d3ck_public + '/img/' + data.D3CK_ID + suffix
 
     if (msg) {
-        console.log('err in processing remote image: ' + msg)
+        log.info('err in processing remote image: ' + msg)
     }
     else {
         write_2_file(full_d3ck_image, image)
@@ -1834,12 +1866,12 @@ function create_d3ck_image(data) {
 //
 function create_d3ck_key_store(data) {
 
-    console.log('PUUUUUUCKKKKKK!')
+    log.info('PUUUUUUCKKKKKK!')
 
     var client_key  = ""
     var client_cert = ""
 
-    // console.log(data)
+    // log.info(data)
 
     if (typeof data != 'object') {
          data = JSON.parse(data)
@@ -1851,13 +1883,13 @@ function create_d3ck_key_store(data) {
     var tls         = data.vpn.tlsauth.join('\n')
     var d3ck_dir    = d3ck_keystore + '/' + data.D3CK_ID
 
-    console.log('... news certs are going to live in: ' + d3ck_dir)
+    log.info('... news certs are going to live in: ' + d3ck_dir)
 
     // has to exist before the below will work...
     mkdirp.sync(d3ck_dir, function () {
         if(err) {
             // xxx - user error, bail
-            console.log(err);
+            log.info(err);
         }
     })
 
@@ -1877,7 +1909,7 @@ function create_d3ck_key_store(data) {
 
     }
     catch (e) {
-        console.log('missing data...' + JSON.stringify(e))
+        log.info('missing data...' + JSON.stringify(e))
         write_2_file(d3ck_dir + '/d3ckroot.crt', ca)
     }
 
@@ -1900,14 +1932,14 @@ function write_O2_file(file, obj) {
 
     var stringy = JSON.stringify(obj)
 
-    console.log('trying to write ' + stringy.length + ' bytes to ' + file)
+    log.info('trying to write ' + stringy.length + ' bytes to ' + file)
 
     try {
         fs.writeFileSync(file, stringy)
-        console.log('...o2-w-success...')
+        log.info('...o2-w-success...')
     }
     catch (e) {
-        console.log('err writing to ' + file + '...' + stringy)
+        log.info('err writing to ' + file + '...' + stringy)
     }
 
 }
@@ -1915,14 +1947,14 @@ function write_O2_file(file, obj) {
 // non-obj version
 function write_2_file(file, stringy) {
 
-    console.log('trying to write string ' + stringy.length + ' bytes to ' + file)
+    log.info('trying to write string ' + stringy.length + ' bytes to ' + file)
 
     try {
         fs.writeFileSync(file, stringy)
-        console.log('...w-success...')
+        log.info('...w-success...')
     }
     catch (e) {
-        console.log('err writing to ' + file + '...' + stringy)
+        log.info('err writing to ' + file + '...' + stringy)
     }
 
 }
@@ -1944,14 +1976,14 @@ function isEmpty(obj) {
  */
 function delete_d3ck(req, res, next) {
 
-    console.log('NUKE it from orbit!')
+    log.info('NUKE it from orbit!')
 
     rclient.del(req.params.key, function (err) {
         if (err) {
-            console.log(err, 'delete_d3ck: unable to delete %s', req.params.key)
+            log.info(err, 'delete_d3ck: unable to delete %s', req.params.key)
             next(err);
         } else {
-            console.log('delete_d3ck: success deleting %s', req.params.key)
+            log.info('delete_d3ck: success deleting %s', req.params.key)
 
             createEvent(get_client_ip(req), {event_type: "delete", d3ck_id: req.params.key})
             d3ck_queue.push( {type: 'info', event: 'd3ck_delete', d3ck: req.params.key} )
@@ -1970,7 +2002,7 @@ function delete_d3ck(req, res, next) {
  * Deletes all d3cks (in parallel)
  */
 function deleteAll(req, res, next) {
-        console.log({params: req.params}, 'deleteAll: not implemented');
+        log.info({params: req.params}, 'deleteAll: not implemented');
         next(new NotImplementedError());
         return;
 }
@@ -1983,14 +2015,14 @@ function deleteAll(req, res, next) {
 //
 function webProxy(req, res, next) {
 
-    console.log('proxie!' + '\n' + JSON.stringify(req.headers, true, 2))
+    log.info('proxie!' + '\n' + JSON.stringify(req.headers, true, 2))
 
     if (typeof req.query.url == "undefined") {
-        console.log('bad dog, no URL')
+        log.info('bad dog, no URL')
         res.send(400, { error: 'bad dog, no URL, no biscuit!' })
     }
     else {
-        console.log('... trying... ' + req.query.url)
+        log.info('... trying... ' + req.query.url)
         req.pipe(request(req.query.url)).pipe(res)
     }
 }
@@ -2005,12 +2037,12 @@ function webProxy(req, res, next) {
 //
 function setTCPProxy(req, res, next) {
 
-    console.log('set proxy')
+    log.info('set proxy')
 
     if (typeof req.query.proxy_remote_host == "undefined" ||
         typeof req.query.proxy_remote_port == "undefined" ||
         typeof req.query.proxy_local_port  == "undefined") {
-            console.log('requires both remote & local ports and remote host to be defined')
+            log.error('requires both remote & local ports and remote host to be defined')
             next({"error": "proxy_remote_host, proxy_remote_port, and proxy_local_port must all be defined"})
     }
 
@@ -2027,7 +2059,7 @@ function setTCPProxy(req, res, next) {
 
     tcp_proxy.listen(proxy_local_port)
 
-    console.log('set proxy to listen on port ' + proxy_local_port)
+    log.info('set proxy to listen on port ' + proxy_local_port)
 
     res.send(200, {"d3ck_local_port": proxy_local_port, "proxy_remote_port": proxy_remote_port, "proxy_remote_host": proxy_remote_host})
 
@@ -2041,9 +2073,9 @@ function setTCPProxy(req, res, next) {
 //
 function createEvent(ip, event_data, ds) {
 
-    console.log('in createEvent - ' + ip + ', ' + JSON.stringify(event_data))
+    log.info('in createEvent - ' + ip + ', ' + JSON.stringify(event_data))
 
-    console.log(event_data)
+    log.info(event_data)
 
     event_data.from  = ip
     event_data.time  = Date()
@@ -2053,17 +2085,17 @@ function createEvent(ip, event_data, ds) {
 
     rclient.set(key, JSON.stringify(event_data), function(err) {
         if (err) {
-            console.log(err, e_type + ' Revent: unable to store in Redis db');
+            log.info(err, e_type + ' Revent: unable to store in Redis db');
             next(err);
         } else {
-            console.log({key: event_data}, e_type + ' event : saved');
+            log.info({key: event_data}, e_type + ' event : saved');
         }
     })
 
     // eventually this will go to client... if we have any status along
     // with the event, toss it in the queue
     if (typeof ds != "undefined") {
-        console.log('adding ds: ' + JSON.stringify(ds))
+        log.info('adding ds: ' + JSON.stringify(ds))
         q_status(ds)
     }
 
@@ -2074,25 +2106,25 @@ function createEvent(ip, event_data, ds) {
 //
 function red_getAsync(lists, cb) {
 
-    console.log('redasy')
+    log.info('redasy')
 
     var keys  = Object.keys(lists)
 
     keys.forEach(function (k) {
 
-        console.log(keys)
+        log.info(keys)
 
         var data = {}
 
         rclient.lrange(lists[k], 0, -1, function(err, objs) {
             if (err) {
-                console.log('listing errz')
-                console.log(err)
+                log.error('listing errz')
+                log.error(err)
                 cb({})
             }
             else {
-                console.log('all ' + key)
-                console.log(objs)
+                log.info('all ' + key)
+                log.info(objs)
                 cb(objs)
                 // data.push(objs);
             }
@@ -2107,7 +2139,7 @@ function red_getAsync(lists, cb) {
  */
 function _old_listEvents(req, res, next) {
 
-    console.log('listEvents')
+    log.info('listEvents')
 
     var data = []
 
@@ -2117,15 +2149,15 @@ function _old_listEvents(req, res, next) {
         var keys  = Object.keys(lists)
         var i     = 0
 
-        console.log('all lists...')
-        // console.log(lists)
-        // console.log(keys)
+        log.info('all lists...')
+        // log.info(lists)
+        // log.info(keys)
 
         red_getAsync(lists, function(resu) {
-            console.log('done!')
+            log.info('done!')
             // reply = { events: JSON.stringify(resu) }
             reply = { events: JSON.parse(resu) }
-            console.log(reply)
+            log.info(reply)
             res.send(200, reply);
         })
     })
@@ -2142,14 +2174,14 @@ function listEvents(req, res, next) {
 
     rclient.keys('[^A-Z0-9]*', function (err, keys) {
         if (err) {
-            console.log(err, 'listEvents: unable to retrieve events');
+            log.info(err, 'listEvents: unable to retrieve events');
             next(err);
         } else {
             var len = you_nique.length
             you_nique = __.uniq(__.map(keys, function(p){ return p.substr(0,p.indexOf(":"))}))
         }
 
-        console.log('Number of Events found: ', len)
+        log.info('Number of Events found: ', len)
         res.send(200, JSON.stringify(you_nique));
     })
 
@@ -2161,10 +2193,10 @@ function listEvents(req, res, next) {
  */
 function getEvent(req, res, next) {
 
-    console.log('getting event')
+    log.info('getting event')
 
     if (typeof req.params.key == "undefined") {
-        console.log('type of event required')
+        log.info('type of event required')
         var reply = {error: "missing required event type"}
         res.send(200, reply);
     }
@@ -2174,39 +2206,39 @@ function getEvent(req, res, next) {
 
     rclient.keys(req.params.key + '*', function (err, replies) {
         if (!err) {
-            // console.log(replies)
+            // log.info(replies)
             if (replies == null) {
-                console.log(err, 'getEvent: unable to retrieve keys matching %s', req.params.key);
+                log.error(err, 'getEvent: unable to retrieve keys matching %s', req.params.key);
                 // next(new d3ckNotFoundError(req.params.key));
                 next({'error': 'Event Not Found'})
                 res.send(418, replies)  // 418 I'm a teapot (RFC 2324)
             }
             else {
-                // console.log("keys retrieved: ")
-                // console.log(replies)
+                // log.info("keys retrieved: ")
+                // log.info(replies)
 
                 // get data that matches the keys we just matched
                 rclient.mget(replies, function (err, data) {
 
                     if (!err) {
-                        // console.log(data)
+                        // log.info(data)
                         if (data == null) {
-                            console.log('no data returned with key ', req.params.key);
+                            log.error('no data returned with key ', req.params.key);
                             // next(new d3ckNotFoundError(req.params.key));
                             next({'error': 'Event data not found'})
                             res.send(418, data)  // 418 I'm a teapot (RFC 2324)
                         }
                         else {
-                            // console.log("event data fetched: " + data.toString());
+                            // log.info("event data fetched: " + data.toString());
                             jdata = data.toString()
                             // hack it into a json string
                             jdata = JSON.parse('[{' + jdata.substr(1,jdata.length-1) + ']')
-                            // console.log(jdata)
+                            // log.info(jdata)
                             res.send(200, jdata)
                         }
                     }
                     else {
-                        console.log(err, 'getEvent: unable to retrieve data from keys matching %s', req.params.key);
+                        log.info(err, 'getEvent: unable to retrieve data from keys matching %s', req.params.key);
                         res.send(418, data);   // 418 I'm a teapot (RFC 2324)
                     }
                 })
@@ -2214,7 +2246,7 @@ function getEvent(req, res, next) {
 
         }
         else {
-            console.log(err, 'getEvent: unable to retrieve %s', req.d3ck);
+            log.info(err, 'getEvent: unable to retrieve %s', req.d3ck);
             res.send(418, reply);   // 418 I'm a teapot (RFC 2324)
         }
     })
@@ -2226,41 +2258,41 @@ function getEvent(req, res, next) {
  */
 function get_d3ck(req, res, next) {
 
-    console.log('get_d3ck: ' + req.params.key)
+    log.info('get_d3ck: ' + req.params.key)
 
-    // console.log(req.params)
+    // log.info(req.params)
 
     rclient.get(req.params.key, function (err, reply) {
 
         if (!err) {
             if (reply == null) {
-                console.log(err, 'get_d3ck: unable to retrieve %s', req.d3ck);
+                log.error(err, 'get_d3ck: unable to retrieve %s', req.d3ck);
                 // next(new d3ckNotFoundError(req.params.key));
                 next({'error': 'D3CK Not Found'})
             }
             else {
-                // console.log("Value retrieved: " + reply.toString());
-                console.log("data retrieved...")
+                // log.info("Value retrieved: " + reply.toString());
+                log.info("data retrieved...")
 
                 res.send(200, reply)
 
                 // var obj_reply = JSON.parse(reply)
 
-                // console.log('\n\n\nbefore...')
-                // console.log(obj_reply.vpn.key)
+                // log.info('\n\n\nbefore...')
+                // log.info(obj_reply.vpn.key)
 
                 // kill things you don't want others knowing
                 // obj_reply.vpn.key = obj_reply.vpn_client.key
                 // obj_reply.vpn.crt = obj_reply.vpn_client.crt
-                // console.log(obj_reply.vpn)
+                // log.info(obj_reply.vpn)
 
-                // console.log('\n\nafter...')
-                // console.log(obj_reply.vpn.key)
-                // console.log('\n\n\n')
+                // log.info('\n\nafter...')
+                // log.info(obj_reply.vpn.key)
+                // log.info('\n\n\n')
             }
         }
         else {
-            console.log(err, 'get_d3ck: unable to retrieve %s', req.d3ck);
+            log.info(err, 'get_d3ck: unable to retrieve %s', req.d3ck);
             res.send(404, { "no": "d3ck"});
         }
     });
@@ -2272,10 +2304,10 @@ function get_d3ck(req, res, next) {
 function list_d3cks(req, res, next) {
     rclient.keys('[A-F0-9]*', function (err, keys) {
         if (err) {
-            console.log(err, 'list_d3ck: unable to retrieve all d3cks');
+            log.info(err, 'list_d3ck: unable to retrieve all d3cks');
             next(err);
         } else {
-            console.log('Number of d3cks found: ', keys.length);
+            log.info('Number of d3cks found: ', keys.length);
             res.send(200, JSON.stringify(keys));
         }
     });
@@ -2283,7 +2315,6 @@ function list_d3cks(req, res, next) {
 
 /**
  * Echo reply
- * TODO: Return actual d3ck ID
  */
 function echoReply(req, res, next) {
 
@@ -2293,14 +2324,14 @@ function echoReply(req, res, next) {
     // looks like host: '192.168.0.250:12034',
     d3ck_server_ip = req.headers.host.split(':')[0]
 
-    // console.log('pingasaurus from ' + client_ip + ' hitting us at ' + d3ck_server_ip)
+    // log.info('is there an echo in here?  ' + client_ip + ' hitting us at ' + d3ck_server_ip)
 
     if (typeof bwana_d3ck == "undefined") {
-        console.log('no echo here...')
+        log.info('no echo here...')
         var response = {status: "bad"}
     }
     else {
-        // console.log('echo, echo, echo....')
+        // log.info('echo, echo, echo....')
         var response = {status: "OK", "name": bwana_d3ck.name, "did": d3ck_id}
     }
 
@@ -2323,12 +2354,12 @@ function echoStatus(req, res, next) {
  */
 function stopVPN(req, res, next) {
 
-    console.log('stop VPN!')
+    log.info('stop VPN!')
 
     var cmd = d3ck_bin + '/stop_vpn.sh';
 
     if (typeof req.query.did == "undefined") {
-        console.log('local server dying...')
+        log.info('local server dying...')
         d3ck_spawn(cmd, [])
 
         createEvent(client_ip, {event_type: "vpn_stop" })
@@ -2344,18 +2375,18 @@ function stopVPN(req, res, next) {
         // pass it along to the other side!
         if (did != bwana_d3ck.D3CK_ID) {
 
-            console.log('pass the stop along...')
+            log.info('pass the stop along...')
 
             var url = 'https://' + d3ck2ip[did] + ':' + d3ck_port_ext + '/vpn/stop?host=' + did
 
-            console.log(url)
+            log.info(url)
 
             // use client-side certz
             var options = load_up_cert_by_did(did)
 
             options.headers = { 'x-d3ckID': bwana_d3ck.D3CK_ID }
 
-            console.log(options)
+            log.info(options)
 
 
             // request.get(url, options, function cb (err, resp) {
@@ -2366,7 +2397,7 @@ function stopVPN(req, res, next) {
                     res.send(200, {"errz": "vpn stop request failed"});
                     }
                 else {
-                    console.log('vpn stop request successful...?')
+                    log.info('vpn stop request successful...?')
 
                     // this is done by watching logs
                     // createEvent(client_ip, {event_type: "vpn_client_disconnected" })
@@ -2375,8 +2406,8 @@ function stopVPN(req, res, next) {
                     res.send(200, {"status": "vpn down"});
                 }
             }).catch(function (error) {
-                console.log('vpn-stop err')
-                console.log(error)
+                log.error('vpn-stop err')
+                log.error(error)
                 res.send(420, {"error": "error brining down vpn"});
             })
             .done();
@@ -2387,18 +2418,18 @@ function stopVPN(req, res, next) {
 
             // validate they're who they say they are
 
-            console.log('hmm... why should I believe you...?')
+            log.info('hmm... why should I believe you...?')
 
             // so headers will look like -
             //  req.headers['x-ssl-client-verify'] == "SUCCESS"
-            //          console.log(req.headers)
+            //          log.info(req.headers)
 
             // and this one has the CN:
             // 'x-ssl-client-s-dn': '/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=43a1299fa24e22afb28bb624f3308332',
 
             // kill local vpn!
             if (check_CN(req.headers['x-ssl-client-s-dn'], did)) {
-                console.log('local server dying via remote control')
+                log.info('local server dying via remote control')
                 d3ck_spawn(cmd, [])
 
                 // this is done by watching logs
@@ -2430,7 +2461,7 @@ function stopVPN(req, res, next) {
 //
 function check_CN(cn, did) {
 
-    console.log('verifying CN matches the d3ck ID')
+    log.info('verifying CN matches the d3ck ID')
 
     var cmd  = 'openssl'
 
@@ -2442,7 +2473,7 @@ function check_CN(cn, did) {
 
     var disk_cn = substring(cn.indexOf('/CN=')+4)
 
-    console.log('cn vs. cn on disk: ' + cn + ' <=> ' + disk_cn)
+    log.info('cn vs. cn on disk: ' + cn + ' <=> ' + disk_cn)
 
     if (cn == disk_cn)
         return true
@@ -2453,7 +2484,7 @@ function check_CN(cn, did) {
 
 function mrSulu(req, res, next) {
 
-    console.log("For god's sake, Mr. Sulu!")
+    log.info("For god's sake, Mr. Sulu!")
 
     var direction = req.params.key
 
@@ -2470,7 +2501,7 @@ function mrSulu(req, res, next) {
 
 function load_up_cc_cert(did) {
 
-    // console.log('loading up cert for cs-auth ' + did)
+    // log.info('loading up cert for cs-auth ' + did)
 
     var certz = {
         // ca      : fs.readFileSync(d3ck_keystore +'/'+ ip2d3ck[ip] + "/d3ckroot.crt").toString(),
@@ -2483,9 +2514,9 @@ function load_up_cc_cert(did) {
 
 function load_up_cert_by_ip(ip) {
 
-    console.log('loading up client cert for ' + ip)
+    log.info('loading up client cert for ' + ip)
 
-    console.log(ip)
+    log.info(ip)
     var certz = {
         // ca      : fs.readFileSync(d3ck_keystore +'/'+ ip2d3ck[ip] + "/d3ckroot.crt").toString(),
         key     : fs.readFileSync(d3ck_keystore +'/'+ ip2d3ck[ip] + "/d3ck.key").toString(),
@@ -2496,7 +2527,7 @@ function load_up_cert_by_ip(ip) {
 
 function load_up_cert_by_did(d3ck) {
 
-    console.log('loading up client cert for ' + d3ck)
+    log.info('loading up client cert for ' + d3ck)
     var certz = {
         // ca      : fs.readFileSync(d3ck_keystore +'/'+ d3ck + "/d3ckroot.crt").toString(),
         key     : fs.readFileSync(d3ck_keystore +'/'+ d3ck + "/d3ck.key").toString(),
@@ -2515,10 +2546,10 @@ function load_up_cert_by_did(d3ck) {
 */
 function knock(req, res, next) {
 
-    console.log('knock knock')
+    log.info('knock knock')
 
-    //console.log(req.params)
-    // console.log(req)
+    //log.info(req.params)
+    // log.info(req)
 
     // bail if we don't get ID
     // var ip_addr  = req.body.ip_addr
@@ -2531,25 +2562,25 @@ function knock(req, res, next) {
     // bwana_d3ck.owner.name  = name
 
 
-    console.log(ip_addr, d3ckid)
+    log.info(ip_addr, d3ckid)
 
     if (typeof d3ckid == "undefined") {
       var bad_dog = "No ID, no love";
-      console.log(bad_dog)
+      log.info(bad_dog)
       res.send(403, { "bad": "dog"});
       return
     }
     else {
-        console.log("you've passed the first test...", d3ckid)
+        log.info("you've passed the first test...", d3ckid)
     }
 
-    console.log('moving on...')
+    log.info('moving on...')
 
 
     // is it for us, or are we passing it on?
     if (d3ckid == bwana_d3ck.D3CK_ID) {
 
-        console.log("for me? You shouldn't have!")
+        log.info("for me? You shouldn't have!")
 
         resolveGeo(ip_addr)
 
@@ -2568,7 +2599,7 @@ function knock(req, res, next) {
         createEvent(client_ip, {event_type: "knock", "ip_addr": ip_addr, "from_d3ck": from_d3ck, "d3ck_id": d3ckid}, d3ck_status)
         d3ck_queue.push({type: 'request', event: 'knock' , 'd3ck_status': d3ck_status })
 
-        console.log('sending back... <3!!!')
+        log.info('sending back... <3!!!')
 
         res.send(200, { emotion: "<3" })
 
@@ -2577,10 +2608,10 @@ function knock(req, res, next) {
     }
 
     else {
-        console.log('... you want the next door down....')
+        log.info('... you want the next door down....')
 
         if (typeof d3ck2ip[d3ckid] == "undefined") {
-            console.log("Can't find IP addr for " + d3ckid)
+            log.info("Can't find IP addr for " + d3ckid)
             res.send(420, { error: "enhance your calm! Can't find IP addr for " + d3ckid })
         }
 
@@ -2588,14 +2619,14 @@ function knock(req, res, next) {
 
         var url = 'https://' + ip + ':' + d3ck_port_ext + '/knock'
 
-        console.log(url)
+        log.info(url)
 
         var options = load_up_cc_cert(d3ckid)
 
         options.url  = url
         options.form = { 'ip_addr' : ip_addr, 'd3ckid'  : d3ckid, from_d3ck: bwana_d3ck.D3CK_ID, from: bwana_d3ck.owner.name }
 
-        console.log(options)
+        log.info(options)
 
         var d3ck_request    = {
             knock       : true,
@@ -2618,18 +2649,18 @@ function knock(req, res, next) {
                 res.send(200, {"err" : err});
                 }
             else {
-                console.log('knock returned... something - RC: ' + res.statusCode)
+                log.info('knock returned... something - RC: ' + res.statusCode)
 
-                // console.log(res)
+                // log.info(res)
 
                 if (resp.statusCode != 200) {
                     d3ck_queue.push({type: 'info', event: 'remote_knock_return', statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
-                    console.log(resp.body)
+                    log.info(resp.body)
                     res.send(resp.statusCode, resp.body)
                 }
                 else {
                     d3ck_queue.push({type: 'info', event: 'remote_knock_success','d3ck_status': d3ck_status })
-                    console.log(resp.body)
+                    log.info(resp.body)
                     res.send(200, resp.body)
                 }
             }
@@ -2643,8 +2674,8 @@ function knock(req, res, next) {
 
 function knockReply(req, res, next) {
 
-    console.log("who is it going to...? " + req.params.d3ckid)
-    console.log("you say... " + req.params.answer)
+    log.info("who is it going to...? " + req.params.d3ckid)
+    log.info("you say... " + req.params.answer)
 
     answer = req.params.answer
     d3ckid = req.params.d3ckid
@@ -2653,8 +2684,8 @@ function knockReply(req, res, next) {
 
     // is it for us, or are we passing it on?
     if (d3ckid == bwana_d3ck.D3CK_ID) {
-        console.log("about time you answered, I've been knocking!")
-        console.log(req.body)
+        log.info("about time you answered, I've been knocking!")
+        log.info(req.body)
 
         // mark it as an event, which will be picked up by the client
         var d3ck_response   = {
@@ -2676,14 +2707,14 @@ function knockReply(req, res, next) {
     }
     else {
         if (typeof d3ck2ip[d3ckid] == "undefined") {
-            console.log("Can't find IP addr for " + d3ckid)
+            log.info("Can't find IP addr for " + d3ckid)
             res.send(420, { error: "enhance your calm! Can't find IP addr for " + d3ckid })
         }
 
         var ip  = d3ck2ip[d3ckid]
         var url = 'https://' + ip + ':' + d3ck_port_ext + '/knockReply/' + d3ckid + '/' + answer
 
-        console.log('answer going to : ' + url)
+        log.info('answer going to : ' + url)
 
         var d3ck_status     = empty_status()
         var d3ck_response   = {
@@ -2708,8 +2739,8 @@ function knockReply(req, res, next) {
                 res.send(200, {"err" : err});
                 }
             else {
-                console.log('knock answer success...!')
-                console.log(resp.body)
+                log.info('knock answer success...!')
+                log.info(resp.body)
                 res.send(200, resp.body)
             }
         })
@@ -2722,13 +2753,13 @@ function knockReply(req, res, next) {
 // upload and download some content from the vaults
 function downloadStuff (req, res, next) {
 
-    console.log('in DL stuff')
+    log.info('in DL stuff')
 
     var uploadz = d3ck_public + "/uploads"
 
     var files = fs.readdirSync(uploadz)
 
-    console.log(files)
+    log.info(files)
 
     res.send(200, {"files" : files });
 
@@ -2744,12 +2775,12 @@ function downloadStuff (req, res, next) {
 
 function uploadSchtuff(req, res, next) {
 
-    console.log('uploadz!')
+    log.info('uploadz!')
 
     var d3ck_status = empty_status()
 
     if (typeof req.params.key == "undefined") {
-        console.log('correct type of upload required')
+        log.info('correct type of upload required')
         var reply = {error: "type of upload required"}
         res.send(200, reply);
     }
@@ -2757,15 +2788,15 @@ function uploadSchtuff(req, res, next) {
     // currently local & remote
     var upload_target = req.params.key
 
-    console.log('striving to upload....' + upload_target)
+    log.info('striving to upload....' + upload_target)
 
-    // console.log(req)
+    // log.info(req)
 
     client_ip = get_client_ip(req)
 
-    console.log('from : ' + client_ip)
+    log.info('from : ' + client_ip)
 
-    // console.log(req)
+    // log.info(req)
 
 
     //
@@ -2775,10 +2806,10 @@ function uploadSchtuff(req, res, next) {
     //
     if (typeof req.files.uppity == 'undefined') {
 
-        console.log('another d3ck sending something...?')
+        log.info('another d3ck sending something...?')
 
         // req.setBodyEncoding("binary");
-        console.log(req.headers)
+        log.info(req.headers)
 
 
         var file_name   = req.headers['x-filename']
@@ -2797,12 +2828,12 @@ function uploadSchtuff(req, res, next) {
         req.pipe(ws)
 
         ws.on('error', function (err) {
-            console.log('ws writing error: ' + JSON.stringify(err))
+            log.error('ws writing error: ' + JSON.stringify(err))
         });
 
         req.on('end', function() {
 
-            console.log('someday has come for upload....?')
+            log.info('someday has come for upload....?')
 
             var file_magic = {
                 file_name : file_name,
@@ -2830,7 +2861,7 @@ function uploadSchtuff(req, res, next) {
 
     else {
 
-        console.log('normal stuff')
+        log.info('normal stuff')
 
         for (var i=0; i<req.files.uppity.length; i++) {
 
@@ -2843,23 +2874,23 @@ function uploadSchtuff(req, res, next) {
             // skip if too big
             if (target_size > MAX_UPLOAD_SIZE) {
                 // XXX-errz to user
-                console.log('upload size (' + target_size + ') exceeds limit: ' + target_size)
+                log.error('upload size (' + target_size + ') exceeds limit: ' + target_size)
                 continue
             }
 
 
-            console.log('trying ' + tmpfile + ' -> ' + target_path)
+            log.info('trying ' + tmpfile + ' -> ' + target_path)
 
             //
             // LOCAL or remote?
             //
-            console.log('moment of truth.. local or no?  => ' + upload_target)
+            log.info('moment of truth.. local or no?  => ' + upload_target)
 
             //
             // LOCAL - file still stashed here for now
             //
             if (upload_target == "local") {
-                console.log('local...')
+                log.info('local...')
 
                 var file_magic = {
                     file_name : target_file,
@@ -2874,18 +2905,18 @@ function uploadSchtuff(req, res, next) {
                 //
                 // also... slight race condition.  Life goes on.
 
-                console.log('trying to rename....')
+                log.info('trying to rename....')
 
                 // XXX if on different FS, have to copy
                 // also check to see if exists!
                 fs.rename(tmpfile, target_path, function (err) {
                     if (err)  {
-                        console.log('errz - ')
-                        console.log(err)
+                        log.error('errz - ')
+                        log.error(err)
                     }
                     else {
-                        console.log('rename complete');
-                        console.log('woohoo')
+                        log.info('rename complete');
+                        log.info('woohoo')
                     }
                 })
 
@@ -2907,7 +2938,7 @@ function uploadSchtuff(req, res, next) {
             // client-side certs for auth
             //
             else {
-                console.log("going to push it to the next in line: " + upload_target)
+                log.info("going to push it to the next in line: " + upload_target)
 
                 var file_magic = {
                     file_name  : target_file,
@@ -2919,24 +2950,24 @@ function uploadSchtuff(req, res, next) {
 
                 var url = 'https://' + d3ck2ip[upload_target] + ':' + d3ck_port_ext + '/up/' + upload_target
 
-                console.log(url)
+                log.info(url)
 
                 var options = load_up_cert_by_did(upload_target)
 
                 options.headers = { 'x-filename': target_file, 'x-filesize': target_size, 'x-d3ckID': bwana_d3ck.D3CK_ID }
                 // var file_data = fs.readFileSync(tmpfile)
 
-                console.log('FN: ' + target_file + '  Opts:')
+                log.info('FN: ' + target_file + '  Opts:')
 
-                console.log(options)
+                log.info(options)
 
                 fs.createReadStream(tmpfile).pipe(request.post(url, options, function cb (err, resp) {
                     if (err) {
                         console.error('upload failed:', err);
                         }
                     else {
-                        console.log('Upload successful...?')
-                        console.log(resp)
+                        log.info('Upload successful...?')
+                        log.info(resp)
 
                         var browser_magic          = { "notify_add":false, "notify_ring":false, "notify_file":true}
                         d3ck_status.browser_events = browser_magic
@@ -2968,7 +2999,7 @@ function d3ck_spawn(command, argz) {
 
     cmd = command.split('/')[command.split('/').length -1]
 
-    console.log('a spawn o d3ck emerges... ' + ' (' + cmd + ')\n\n\t' + command + ' ' + argz.join(' ') + '\n')
+    log.info('a spawn o d3ck emerges... ' + ' (' + cmd + ')\n\n\t' + command + ' ' + argz.join(' ') + '\n')
 
     var spawn   = require('child_process').spawn
 
@@ -2977,7 +3008,7 @@ function d3ck_spawn(command, argz) {
         err = fs.openSync(d3ck_logs + '/' + cmd + '.err.log', 'a+')
     }
     catch (e) {
-        console.log("log open error with " + command + ' => ' + e.message)
+        log.info("log open error with " + command + ' => ' + e.message)
     }
 
     try {
@@ -2989,7 +3020,7 @@ function d3ck_spawn(command, argz) {
         spawn_o.unref();
     }
     catch (e) {
-        console.log("exec error with " + command + ' => ' + e.message)
+        log.info("exec error with " + command + ' => ' + e.message)
     }
 
 }
@@ -2999,23 +3030,23 @@ function d3ck_spawn(command, argz) {
 //
 function d3ck_spawn_sync(command, argz) {
 
-    console.log('a sync emerges... ' + ' (' + command + ')\n\n\t')
+    log.info('a sync emerges... ' + ' (' + command + ')\n\n\t')
 
     var cmd_string = command + ' ' + argz.join(' ')
 
-    console.log("-->" + cmd_string + "<---\n\n\n")
+    log.info("-->" + cmd_string + "<---\n\n\n")
 
     var result = sh.exec(cmd_string)
 
-    console.log('return code ' + result.code);
-    console.log('stdout + stderr ' + result.stdout);
+    log.info('return code ' + result.code);
+    log.info('stdout + stderr ' + result.stdout);
 
     try {
         out = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.out.log', result.stdout)
         err = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.err.log', result.stdout)
     }
     catch (e) {
-        console.log("error writing log file with " + command + ' => ' + e.message)
+        log.error("error writing log file with " + command + ' => ' + e.message)
     }
 
     return(result)
@@ -3027,32 +3058,32 @@ function d3ck_spawn_sync(command, argz) {
  */
 function startVPN(req, res, next) {
 
-    console.log('start vpn2')
-    console.log(req.body)
+    log.info('start vpn2')
+    log.info(req.body)
 
     var home  = "/"
 
     // bail if we don't get ID
     if (typeof req.body.d3ckid === 'undefined' || req.body.d3ckid == "") {
-        console.log("error... requires a D3CK ID!");
+        log.error("error... requires a D3CK ID!");
         res.redirect(302, home)
     }
 
-    console.log('onto the execution...')
+    log.info('onto the execution...')
 
     var d3ckid = req.body.d3ckid
     var ipaddr = req.body.ip_addr
 
-    console.log(d3ckid, ipaddr)
+    log.info(d3ckid, ipaddr)
 
     // this means you're trying to do it despite ping not working
     if (typeof d3ck2ip[d3ckid] == 'undefined') {
-        console.log("hmmm... trying to VPN when ping couldn't reach it... good luck!")
+        log.info("hmmm... trying to VPN when ping couldn't reach it... good luck!")
         args = [d3ckid, ipaddr]
     }
 
     else {
-        console.log("using pinged IP addr to VPN: " + d3ck2ip[d3ckid])
+        log.info("using pinged IP addr to VPN: " + d3ck2ip[d3ckid])
         args = [d3ckid, d3ck2ip[d3ckid]]
     }
 
@@ -3089,7 +3120,7 @@ function startVPN(req, res, next) {
 //
 function forward_port(req, res, next) {
 
-    console.log('forwarding portz...')
+    log.info('forwarding portz...')
 
     if (typeof req.query.direction   == "undefined" ||
         typeof req.query.local_port  == "undefined" ||
@@ -3097,7 +3128,7 @@ function forward_port(req, res, next) {
         typeof req.query.remote_port == "undefined" ||
         typeof req.query.proto       == "undefined") {
             var err = 'port forwarding requires direction, local_port, remote_ip, remote_port, and proto all to be set'
-            console.log(err)
+            log.info(err)
             next({error: err})
             return
     }
@@ -3108,7 +3139,7 @@ function forward_port(req, res, next) {
     remote_port = req.query.remote_port
     proto       = req.query.proto
 
-    console.log(direction, local_port, remote_ip, remote_port, proto)
+    log.info(direction, local_port, remote_ip, remote_port, proto)
 
     // flush the past away and then add iptables rules
     var cmd = d3ck_bin + '/forward_port_n_flush.sh'
@@ -3135,10 +3166,10 @@ function forward_port(req, res, next) {
 //
 function forward_port_and_flush(local_port, remote_ip, remote_port, proto) {
 
-    console.log('... skipping iptables for now... using proxy here instead...')
+    log.info('... skipping iptables for now... using proxy here instead...')
     return
 
-    console.log('flushing iptables+routes, adding... ', local_port, remote_ip, remote_port, proto)
+    log.info('flushing iptables+routes, adding... ', local_port, remote_ip, remote_port, proto)
 
     // flush the past away and then add iptables rules
     var cmd  = d3ck_bin + '/forward_port_n_flush.sh'
@@ -3156,19 +3187,19 @@ function forward_port_and_flush(local_port, remote_ip, remote_port, proto) {
  */
 function put_d3ck(req, res, next) {
     if (!req.params.value) {
-        console.log({params: req.params}, 'put_d3ck: missing value');
+        log.info({params: req.params}, 'put_d3ck: missing value');
         next(new MissingValueError());
         return;
     }
 
-    console.log({params: req.params}, 'put_d3ck: not implemented');
+    log.info({params: req.params}, 'put_d3ck: not implemented');
     next(new NotImplementedError());
     return;
 }
 
 
 function back_to_home (res) {
-    console.log('on my way home')
+    log.info('on my way home')
     var home = "/"
     // res.redirect(302, home)
     res.redirect(303, home)
@@ -3180,13 +3211,13 @@ function back_to_home (res) {
 
 function handleForm(req, res, next) {
 
-    console.log('handle form called with')
-    console.log(req.body)
+    log.info('handle form called with')
+    log.info(req.body)
 
-    // console.log(req.params)
+    // log.info(req.params)
 
     if (typeof req.body.d3ck_action === 'undefined' || req.body.d3ck_action == "") {
-        console.log("error... unrecognized action: " + req.body.d3ck_action);
+        log.error("error... unrecognized action: " + req.body.d3ck_action);
     }
 
     var action = req.body.d3ck_action
@@ -3195,7 +3226,7 @@ function handleForm(req, res, next) {
         var ip_addr  = req.body.ip_addr
 
         create_d3ck_by_ip(ip_addr).then( function () {
-            console.log('... suck... sess...?')
+            log.info('... suck... sess...?')
         })
     }
 
@@ -3205,7 +3236,7 @@ function handleForm(req, res, next) {
 
     // errror
     else {
-        console.log("error... unrecognized action: " + action);
+        log.error("error... unrecognized action: " + action);
     }
 
     back_to_home(res)
@@ -3214,9 +3245,9 @@ function handleForm(req, res, next) {
 
 function formDelete(req, res, next) {
 
-    console.log("deleting d3ck...")
-    console.log(req.body)
-    console.log(req.body.d3ckid)
+    log.info("deleting d3ck...")
+    log.info(req.body)
+    log.info(req.body.d3ckid)
 
     // script below needs: d3ck-id
 
@@ -3251,7 +3282,7 @@ var ping_done = false
 
 function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
-    // console.log("++++pinging... " + ping_d3ckid + ' / ' + ipaddr)
+    // log.info("++++pinging... " + ping_d3ckid + ' / ' + ipaddr)
 
     ping_done = false
 
@@ -3273,41 +3304,41 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
         // skip loopback
         if (ip == "127.0.0.1") {
-            // console.log('skipping ' + ip);
+            // log.info('skipping ' + ip);
             responses++
             return;
         }
 
         var url = 'https://' + ip + ':' + d3ck_port_ext + '/ping'
 
-        console.log('pinging  ' + url);
+        log.info('pinging  ' + url);
 
         // var req = https.get(url, function(response) {
         get_https_certified(url, ping_d3ckid).then(function (ping_data) {
-            // console.log('+++ someday has come for ' + ip + ' ... ping response back')
-            // console.log(ping_data)
+            // log.info('+++ someday has come for ' + ip + ' ... ping response back')
+            // log.info(ping_data)
             try {
                 ping_data = JSON.parse(ping_data)
             }
             catch (e) {
                 if (JSON.stringify(e) != "{}") {
-                    console.log('errz socket parsing: ' + JSON.stringify(e))
+                    log.error('errz socket parsing: ' + JSON.stringify(e))
                     response = {status: "ping failure", "error": e}
                     // synchronicity... II... shouting above the din of my rice crispies
                     try { res.send(408, response) }
-                    catch (e) { console.log('sPing error ' + e) }
+                    catch (e) { log.info('sPing error ' + e) }
                 }
                 return
             }
 
             // data.ip = ip
-            // console.log('ip: ' + ip + ', data: ' + JSON.stringify(ping_data))
+            // log.info('ip: ' + ip + ', data: ' + JSON.stringify(ping_data))
 
             ping_data.ip = ip
 
             if (ping_data.did != ping_d3ckid) {
-                console.log("ID mismatch - the ping you d3cked doesn't match the d3ck-id you gave")
-                console.log(ping_data.did + ' != ' + ping_d3ckid)
+                log.info("ID mismatch - the ping you d3cked doesn't match the d3ck-id you gave")
+                log.info(ping_data.did + ' != ' + ping_d3ckid)
                 response = {status: "mismatch", "name": 'mismatched PID'}
                 // res.send(420, response) // enhance your calm!
                 res.send(420, { error: "ID mismatch - the ping you d3cked doesn't match the d3ck-id you gave" })
@@ -3318,7 +3349,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
                 d3ck2ip[ping_d3ckid] = all_ips[i]
                 ip2d3ck[all_ips[i]] = ping_d3ckid
 
-                // console.log('ping cool: ' + ping_d3ckid + ' -> ' + all_ips[i] + ' -> ' + ip2d3ck[all_ips[i]])
+                // log.info('ping cool: ' + ping_d3ckid + ' -> ' + all_ips[i] + ' -> ' + ip2d3ck[all_ips[i]])
 
                 res.send(200, ping_data)
             }
@@ -3327,7 +3358,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
             if ((responses+1) == all_ips.length && !ping_done) {
                 ping_done = true
-                console.log('ran out of pings for ' + ip)
+                log.info('ran out of pings for ' + ip)
                 response = {status: "no answer"}
                 res.send(408, response)
             }
@@ -3335,33 +3366,33 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
         }).catch(function (error) {
 
                 // res.send(420, {"error": "error ring a ping ping"});
-                // console.log("ping ping err err " + JSON.stringify(error))
+                // log.info("ping ping err err " + JSON.stringify(error))
 
             responses++
 
             if (responses == all_ips.length && !ping_done) {
-                // console.log('+++ someday has come... in a bad way for ' + ip + ' ... ping failure')
+                // log.info('+++ someday has come... in a bad way for ' + ip + ' ... ping failure')
                 ping_done = true
                 response = {status: "ping failure", "error": error }
                 // synchronicity... II... shouting above the din of my rice crispies
                 try       { res.send(408, response) }
-                catch (e) { console.log('sPing error ' + JSON.stringify(e)) }
+                catch (e) { log.info('sPing error ' + JSON.stringify(e)) }
             }
 
         })
         .done();
 
 //         .on('error', function(e) {
-//             // console.log(e)
-//             // console.log(responses + ' v.s. ' + all_ips.length)
+//             // log.info(e)
+//             // log.info(responses + ' v.s. ' + all_ips.length)
 //
 //             if (responses == all_ips.length && !ping_done) {
-//                 console.log('+++ someday has come... in a bad way for ' + ip + ' ... ping failure')
+//                 log.info('+++ someday has come... in a bad way for ' + ip + ' ... ping failure')
 //                 ping_done = true
 //                 response = {status: "ping failure", "error": e}
 //                 // synchronicity... II... shouting above the din of my rice crispies
 //                 try { res.send(408, response) }
-//                 catch (e) { console.log('sPing error ' + e) }
+//                 catch (e) { log.info('sPing error ' + e) }
 //             }
 //         })
 
@@ -3383,53 +3414,53 @@ function quikStart(req, res, next) {
         d3ck_image = ""
 
 
-    console.log('quicky!')
+    log.info('quicky!')
 
-    console.log(req.body)
+    log.info(req.body)
 
     if (typeof req.body.user_name == "undefined") {
-        console.log('user name is required, but using defaults')
+        log.info('user name is required, but using defaults')
     }
     else {
         name = req.body.user_name
     }
 
     if (typeof req.body.email_address == "undefined") {
-        console.log('user name is required, but using defaults')
+        log.info('user name is required, but using defaults')
     }
     else {
         email = req.body.email_address
     }
 
     if (typeof req.body.d3ck_name == "undefined") {
-        console.log('d3ck name is required, but using defaults')
+        log.info('d3ck name is required, but using defaults')
     }
     else {
         d3ck = req.body.d3ck_name
     }
 
     if (typeof req.body.d3ck_password == "undefined") {
-        console.log('password is required, but using defaults (can ... we...?)')
+        log.info('password is required, but using defaults (can ... we...?)')
     }
     else {
         password = req.body.d3ck_password
     }
 
     if (typeof req.body.radio_free_d3ck == "undefined") {
-        console.log('security stance is required, but using default')
+        log.info('security stance is required, but using default')
     }
     else {
         stance = req.body.radio_free_d3ck
     }
 
-    // console.log(name, email, d3ck, password, stance)
+    // log.info(name, email, d3ck, password, stance)
 
     bwana_d3ck.name        = d3ck
     bwana_d3ck.owner.name  = name
     bwana_d3ck.owner.email = email
     bwana_d3ck.stance      = stance
 
-    console.log(req.files)
+    log.info(req.files)
     // grab the file from whereever it's stashed, write it
     // if (req.files.d3ck_image.path != "" && typeof req.files.d3ck_image.type != "undefined") {
     if (req.files.d3ck_image.path != "" && typeof req.files.d3ck_image.type != "undefined") {
@@ -3454,9 +3485,9 @@ function quikStart(req, res, next) {
         var iname = req.files.d3ck_image.name.replace(new RegExp("jpeg$"),'jpg')
         var suffix = iname.substr(iname.length-4, iname.length).toLowerCase()
 
-        console.log('real img name: ' + req.files.d3ck_image.name + '<-')
-        console.log('new  img name: ' + iname + '<-')
-        console.log('suffix       : ' + suffix + '<-')
+        log.info('real img name: ' + req.files.d3ck_image.name + '<-')
+        log.info('new  img name: ' + iname + '<-')
+        log.info('suffix       : ' + suffix + '<-')
 
         d3ck_image      = '/img/' + d3ck_id + suffix
         full_d3ck_image = d3ck_public + '/img/' + d3ck_id + suffix
@@ -3465,7 +3496,7 @@ function quikStart(req, res, next) {
 
         if (msg) {
             data = fs.readFileSync(default_image)
-            console.log('reading... ' + default_image)
+            log.info('reading... ' + default_image)
         }
         else {
             data = fs.readFileSync(req.files.d3ck_image.path)
@@ -3475,33 +3506,33 @@ function quikStart(req, res, next) {
 
         // in case someone tries some monkey biz...
         if (suffix != '.png' && suffix != '.gif' && suffix != '.jpg') {
-            console.log('err: filename suffix borked: ' + suffix)
+            log.info('err: filename suffix borked: ' + suffix)
         }
         else {
-            console.log('trying to write... ' + d3ck_image)
+            log.info('trying to write... ' + d3ck_image)
             // weirdness... writefile returns nada
             try {
                 fs.writeFileSync(full_d3ck_image, data, 'utf8')
-                console.log('updating d3ck image on disk')
+                log.info('updating d3ck image on disk')
 
                 bwana_d3ck.image     = d3ck_image
                 bwana_d3ck.image_b64 = image_b64
 
-                console.log(JSON.stringify(bwana_d3ck))
+                log.info(JSON.stringify(bwana_d3ck))
 
             }
             catch (err) {
-                console.log('error writing image file "' + full_d3ck_image + '": ' + JSON.stringify(err))
+                log.error('error writing image file "' + full_d3ck_image + '": ' + JSON.stringify(err))
             }
         }
 
     }
     else {
-        console.log('error uploading: ' + msg)
+        log.error('error uploading: ' + msg)
     }
 
     if (typeof bwana_d3ck.image == undefined || bwana_d3ck.image == "" || bwana_d3ck.image == "img") {
-        console.log('no image found... setting it to the default')
+        log.info('no image found... setting it to the default')
 
         var data             = fs.readFileSync(default_image)
         var image_b64        = b64_encode(data)
@@ -3528,10 +3559,10 @@ function quikStart(req, res, next) {
 
     secretz.hash     = hashit(password, N_ROUNDS)
 
-    // console.log(name, email, d3ck, stance, password, secretz.hash, d3ck_image)
+    // log.info(name, email, d3ck, stance, password, secretz.hash, d3ck_image)
 
-    console.log('SZ: ' + JSON.stringify(secretz))
-    console.log(secretz.hash)
+    log.info('SZ: ' + JSON.stringify(secretz))
+    log.info(secretz.hash)
 
     write_O2_file(d3ck_secretz, secretz)
 
@@ -3548,7 +3579,7 @@ function quikStart(req, res, next) {
 //
 function get_https(url) {
 
-    // console.log('getting... ' + url)
+    // log.info('getting... ' + url)
 
     var deferred = Q.defer();
     var str      = ""
@@ -3558,17 +3589,17 @@ function get_https(url) {
     var d = require('domain').create();
 
     d.run(function() {
-        console.log("https snaggin' " + url)
+        log.info("https snaggin' " + url)
 
         request(url, function (err, res, body) {
             if (!err) {
                 // success
-                // console.log("we're going home, ma!")
-                // console.log(body)
+                // log.info("we're going home, ma!")
+                // log.info(body)
                 deferred.resolve(body)
             }
             if (err) {
-                // console.log('errz on snags: ' + JSON.stringify(err) )
+                // log.info('errz on snags: ' + JSON.stringify(err) )
                 deferred.reject(err)
             }
         });
@@ -3577,11 +3608,11 @@ function get_https(url) {
 
     d.on('error', function(err) {
         if (err.code == 'ECONNREFUSED' || err.code == 'EHOSTUNREACH') {
-            console.log('https.get !lucky: ' + JSON.stringify(err));
+            log.error('https.get !lucky: ' + JSON.stringify(err));
             deferred.reject(err)
         }
         else {
-            console.log('https.get (' + url + ') cronked on some weird/bad shit: ' + JSON.stringify(err.message));
+            log.info('https.get (' + url + ') cronked on some weird/bad shit: ' + JSON.stringify(err.message));
             deferred.reject(err)
         }
     });
@@ -3596,7 +3627,7 @@ function get_https(url) {
 //
 function get_https_certified(url, d3ckid) {
 
-    // console.log('getting... ' + url)
+    // log.info('getting... ' + url)
 
     var deferred = Q.defer();
     var str      = ""
@@ -3605,13 +3636,13 @@ function get_https_certified(url, d3ckid) {
 
     options.url  = url
 
-    // console.log(options)
+    // log.info(options)
 
     // xxx - yeah, yeah....
     var d = require('domain').create();
 
     d.run(function() {
-        // console.log("snaggin' " + url)
+        // log.info("snaggin' " + url)
 
         request(options, function cb (err, resp, body) {
             if (err) {
@@ -3619,7 +3650,7 @@ function get_https_certified(url, d3ckid) {
                 deferred.reject(err)
                 }
             else {
-                // console.log('CSC https got... something - RC: ' + resp.statusCode)
+                // log.info('CSC https got... something - RC: ' + resp.statusCode)
                 deferred.resolve(body)
                 }
         })
@@ -3627,11 +3658,11 @@ function get_https_certified(url, d3ckid) {
 
     d.on('error', function(err) {
         if (err.code == 'ECONNREFUSED' || err.code == 'EHOSTUNREACH') {
-            console.log('CSC https.get !lucky: ' + JSON.stringify(err));
+            log.error('CSC https.get !lucky: ' + JSON.stringify(err));
             deferred.reject(err)
         }
         else {
-            console.log('CSC https.get (' + url + ') cronked on some weird/bad shit: ' + JSON.stringify(err.message));
+            log.info('CSC https.get (' + url + ') cronked on some weird/bad shit: ' + JSON.stringify(err.message));
             deferred.reject(err)
         }
     });
@@ -3647,15 +3678,15 @@ function get_https_certified(url, d3ckid) {
 //
 function create_d3ck_by_ip(ip_addr) {
 
-    console.log("creating d3ck by " + ip_addr)
-    // console.log(req.body)
+    log.info("creating d3ck by " + ip_addr)
+    // log.info(req.body)
 
     var deferred = Q.defer();
 
     // do all the create stuff
     create_d3ck_locally(ip_addr).then(function(data) {
 
-        console.log('created local -> ' + JSON.stringify(data))
+        log.info('created local -> ' + JSON.stringify(data))
 
         if (typeof data.did == "undefined" || typeof data.owner.name == "undefined") {
             deferred.reject({ error: "couldnt get remote d3ck ID or owner name"} )
@@ -3664,7 +3695,7 @@ function create_d3ck_by_ip(ip_addr) {
         //
         // get client keys
         //
-        console.log("posting our d3ck data to the d3ck we just added with create_d3ck.sh....")
+        log.info("posting our d3ck data to the d3ck we just added with create_d3ck.sh....")
 
         var cmd  = d3ck_bin + '/create_client_d3ck.sh'
 
@@ -3702,13 +3733,13 @@ function create_d3ck_by_ip(ip_addr) {
 //
 function create_d3ck_locally(ip_addr) {
 
-    console.log('create_d3ck_locally ' + ip_addr)
+    log.info('create_d3ck_locally ' + ip_addr)
 
     var deferred = Q.defer();
 
     var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/ping'
 
-    console.log('ping get_https ' + url)
+    log.info('ping get_https ' + url)
 
     var data = ""
 
@@ -3719,22 +3750,22 @@ function create_d3ck_locally(ip_addr) {
 
         ping_data = JSON.parse(ping_data)
 
-        console.log(ping_data)
+        log.info(ping_data)
 
-        console.log(url + ' nabbed')
+        log.info(url + ' nabbed')
 
         if (typeof ping_data.did == "undefined") {
-            console.log('not a d3ck...?')
+            log.error('not a d3ck...?')
             p_deferred.reject({'error': "not a d3ck...?"})
         }
 
         if (typeof all_d3cks[ping_data.did] != "undefined") {
-            console.log('duplicate... pass.')
+            log.error('duplicate... pass.')
             p_deferred.reject({'error': "duplicate... alreadydone"})
         }
 
         else {
-            console.log('ping seemz ok')
+            log.info('ping seemz ok')
             p_deferred.resolve(ping_data)
         }
 
@@ -3742,14 +3773,14 @@ function create_d3ck_locally(ip_addr) {
 
     }).then(function (data) {
 
-        console.log('post ping')
+        log.info('post ping')
 
         //
         // now get client certs
         //
         c_url      = 'https://' + ip_addr + ':' + d3ck_port_ext + '/cli3nt?did=' + bwana_d3ck.D3CK_ID
 
-        console.log("getting cli3nt data we'll use from: " + c_url)
+        log.info("getting cli3nt data we'll use from: " + c_url)
 
         var c_data = ""
 
@@ -3758,10 +3789,10 @@ function create_d3ck_locally(ip_addr) {
 
             var c_deferred = Q.defer();
 
-            console.log('\ncheckin client data from ' + c_url + ' nabz => ' + c_data.substring(0,1024))
+            log.info('\ncheckin client data from ' + c_url + ' nabz => ' + c_data.substring(0,1024))
 
             if (c_data.indexOf("was not found") != -1) {
-                console.log('no certy love: ' + c_data)
+                log.error('no certy love: ' + c_data)
                 c_deferred.reject({'error': "other side didn't cough up our certz"})
             }
             else {
@@ -3770,26 +3801,26 @@ function create_d3ck_locally(ip_addr) {
 
                 c_data = JSON.parse(c_data)
 
-                console.log('remote client d3ck info in...!')
+                log.info('remote client d3ck info in...!')
 
-                console.log(c_data.all_ips)
+                log.info(c_data.all_ips)
 
                 // if the IP we get the add from isn't in the ips the other d3ck
                 // says it has... add it in; they may be coming from a NAT or
                 // something weird
-                console.log('looking 2 see if your current ip is in your pool')
+                log.info('looking 2 see if your current ip is in your pool')
 
                 var found = false
 
                 for (var i = 0; i < c_data.all_ips.length; i++) {
                     if (c_data.all_ips[i] == ip_addr) {
-                        console.log('remote ip found in d3ck data')
+                        log.info('remote ip found in d3ck data')
                         found = true
                         break
                     }
                 }
                 if (! found) {
-                    console.log("You're coming from an IP that isn't in your stated IPs... adding [" + ip_addr + "] to your IP pool just in case")
+                    log.info("You're coming from an IP that isn't in your stated IPs... adding [" + ip_addr + "] to your IP pool just in case")
                     c_data.all_ips[all_client_ips.length] = ip_addr
                 }
 
@@ -3812,9 +3843,9 @@ function create_d3ck_locally(ip_addr) {
                 all_d3cks[c_data.D3CK_ID] = c_data.D3CK_ID
 
                 // write image
-                console.log('image...')
+                log.info('image...')
 
-                // console.log(c_data.image_b64)
+                // log.info(c_data.image_b64)
                 write_2_file(d3ck_public + c_data.image, b64_decode(c_data.image_b64))
 
                 // self added
@@ -3825,12 +3856,12 @@ function create_d3ck_locally(ip_addr) {
             }
 
         }).fail(function (error) {
-            console.log("in c-form error occured: " + error);
+            log.error("in c-form error occured: " + error);
             r_deferred.reject({ "error": JSON.stringify(error)})
         });
 
     }).fail(function (error) {
-        console.log("in create d3ck errz: " + error);
+        log.error("in create d3ck errz: " + error);
         r_deferred.reject({ "error": error })
     });
 
@@ -3844,7 +3875,7 @@ function create_d3ck_locally(ip_addr) {
 //
 function serverStatus(req, res, next) {
 
-    console.log('status masta?')
+    log.info('status masta?')
 
     var response = {status: "still kicking", version: server.version}
     res.send(200, response)
@@ -3859,7 +3890,7 @@ function serverStatus(req, res, next) {
 //
 function serverDie(req, res, next) {
 
-    console.log('et tu, zen?')
+    log.info('et tu, zen?')
 
     var command = "/etc/init.d/d3ck"
     var argz    = ["stop"]
@@ -3878,7 +3909,7 @@ function serverDie(req, res, next) {
 //
 function serverRestart(req, res, next) {
 
-    console.log('laying my hands upon the server, killin it, and bringing it back from the abys')
+    log.info('laying my hands upon the server, killin it, and bringing it back from the abys')
 
     var cmd  = "/etc/init.d/d3ck"
     var argz = ["restart"]
@@ -3981,13 +4012,13 @@ function gen_somewhat_random(n) {
 
     if (typeof n == "undefined") n = 16
 
-    console.log('generating ' + n + ' bytes for the secret secret.')
+    log.info('generating ' + n + ' bytes for the secret secret.')
 
     // when you get lemons... ah, you know the drill
     var lemons   = d3ck_bin + "/gen_randish.sh " + n
     var lemonade = sh.exec(lemons)
 
-    console.log('squeezing the lemons, they reveal their secrets! ' + JSON.stringify(lemonade))
+    log.info('squeezing the lemons, they reveal their secrets! ' + JSON.stringify(lemonade))
 
     return(lemonade.stdout)
 
@@ -4034,7 +4065,7 @@ server.get('/loginFailure', function(req, res, next) {
 });
 
 // before this really don't answer to much other than the user startup
-console.log('adding routes')
+log.info('adding routes')
 //fire_up_server_routes()
 
 
@@ -4044,14 +4075,14 @@ console.log('adding routes')
 async.whilst(
     function () {
         if (fs.existsSync(d3ck_secretz)) {
-            console.log('ready to rock-n-roll')
+            log.info('ready to rock-n-roll')
             // means the startup has run and the D3CK has an ID, which must be done before anything else
 
-            console.log('get user data')
+            log.info('get user data')
             get_d3ck_vital_bits()
 
             // before this really don't answer to much other than the user startup
-            // console.log('adding routes')
+            // log.info('adding routes')
             // fire_up_server_routes()
 
             return false
@@ -4067,17 +4098,17 @@ async.whilst(
 
     function (err) {
         if (typeof err != "undefined") {
-            console.log('something terrible has happened....?')
-            console.log(err)
+            log.info('something terrible has happened....?')
+            log.info(err)
         }
         else {
-            console.log('whilst terminated normally')
+            log.info('whilst terminated normally')
         }
     }
 )
 
 // Ping action - no auth
-server.get('/ping', echoReply)
+server.get('/ping', auth, echoReply)
 
 // get a new client key pair
 server.get('/cli3nt', auth, create_cli3nt_rest)
@@ -4172,13 +4203,13 @@ server.post('/login',
         // rclient.set('session_cookie', req.client._httpMessage.req.sessionID, function(err) {
         rclient.set('session_cookie', gen_somewhat_random(), function(err) {
             if (err) {
-                console.log(err, 'session cookie crumbled: ' + JSON.stringify(err));
+                log.info(err, 'session cookie crumbled: ' + JSON.stringify(err));
                 return(err);
             } else {
-                console.log('cookie baking complete')
-                // console.log('houston, we have a go, prepare for liftoff')
+                log.info('cookie baking complete')
+                // log.info('houston, we have a go, prepare for liftoff')
                 // these aren't the droids you're looking for
-                // console.log("these *are* the droids you're looking for, arrest them!")
+                // log.info("these *are* the droids you're looking for, arrest them!")
             }
         })
         res.redirect('/');
@@ -4187,13 +4218,13 @@ server.post('/login',
 
 // get peerjs peers
 server.get('/p33rs', auth, function(req, res, next) {
-    console.log('returning peers...')
+    log.info('returning peers...')
     return res.json(all_p33rs);
 })
 
 // cuz ajax doesn't like to https other sites...
 server.get('/sping/:key1/:key2', auth, function (req, res, next) {
-    // console.log('spinging')
+    // log.info('spinging')
     httpsPing(req.params.key1, req.params.key2, res, next)
 })
 
@@ -4274,7 +4305,7 @@ var io_sig = {}
 
 var cool_cats = {}
 
-console.log('\n\nfiring up sockets... trying... to set up... on port ' + d3ck_port_forward + '\n\n')
+log.info('\n\nfiring up sockets... trying... to set up... on port ' + d3ck_port_forward + '\n\n')
 
 io_sig = require('socket.io').listen(d3cky)
 
@@ -4311,8 +4342,8 @@ io_sig.set('log level', 1);
 
 io_sig.sockets.on('connection', function (ss_client) {
 
-    console.log("CONNEEEEECTION.....!")
-    // console.log(ss_client)
+    log.info("CONNEEEEECTION.....!")
+    // log.info(ss_client)
 
     ss_client.resources = {
         screen: false,
@@ -4322,20 +4353,20 @@ io_sig.sockets.on('connection', function (ss_client) {
 
     // pass a message to another id
     ss_client.on('message', function (details) {
-        // console.log('mess: ' + JSON.stringify(details))
+        // log.info('mess: ' + JSON.stringify(details))
 
         if (!details) return;
 
         var otherClient = io_sig.sockets.sockets[details.to];
 
-        // console.log(io_sig.sockets.sockets)
+        // log.info(io_sig.sockets.sockets)
 
         if (!otherClient) return;
 
         // ... well...
         cool_cats[otherClient] = otherClient
 
-        // console.log(otherClient)
+        // log.info(otherClient)
 
         details.from = ss_client.id;
         otherClient.emit('message', details);
@@ -4345,20 +4376,20 @@ io_sig.sockets.on('connection', function (ss_client) {
     // all import cat chat!
     ss_client.on('cat_chat', function (kitten) {
 
-        console.log('A kitten? For me? ' + JSON.stringify(kitten))
+        log.info('A kitten? For me? ' + JSON.stringify(kitten))
 
         // if (!kitten) return;
         // if (!otherClient) return;
 
         kitten.from = ss_client.id;
 
-        console.log('sending free kittens from... ' + ss_client.id)
+        log.info('sending free kittens from... ' + ss_client.id)
 
-        // console.log(ss_client)
+        // log.info(ss_client)
 
         for (var cat_client in io_sig.sockets.sockets) {
-            console.log('sending to... ' + JSON.stringify(cat_client))
-            // console.log('sending to... ' )
+            log.info('sending to... ' + JSON.stringify(cat_client))
+            // log.info('sending to... ' )
             // var c = io_sig.sockets.sockets[
             io_sig.sockets.sockets[cat_client].emit('cat_chat', kitten);
         }
@@ -4378,7 +4409,7 @@ io_sig.sockets.on('connection', function (ss_client) {
     ss_client.on('join', join);
 
     function removeFeed(type) {
-        console.log('ss-remove-feed')
+        log.info('ss-remove-feed')
         if (ss_client.room) {
             io_sig.sockets.in(ss_client.room).emit('remove', {
                 id: ss_client.id,
@@ -4392,7 +4423,7 @@ io_sig.sockets.on('connection', function (ss_client) {
     }
 
     function join(name, cb) {
-        console.log('joining... ' + name)
+        log.info('joining... ' + name)
 
         // sanity check
         if (typeof name !== 'string') return;
@@ -4407,16 +4438,16 @@ io_sig.sockets.on('connection', function (ss_client) {
     // we don't want to pass "leave" directly because the
     // event type string of "socket end" gets passed too.
     ss_client.on('disconnect', function () {
-        console.log('ss-D/C')
+        log.info('ss-D/C')
         removeFeed();
     });
     ss_client.on('leave', function () {
-        console.log('ss-leave')
+        log.info('ss-leave')
         removeFeed();
     });
 
     ss_client.on('create', function (name, cb) {
-        console.log('ss-create')
+        log.info('ss-create')
         if (arguments.length == 2) {
             cb = (typeof cb == 'function') ? cb : function () {};
             name = name || uuid();
@@ -4449,7 +4480,6 @@ Object.size = function(obj) {
     return size;
 }
 
-
 //
 //
 // and... relax and listen....
@@ -4459,6 +4489,6 @@ Object.size = function(obj) {
 //
 // promise her anything... buy her a chicken.  A json chicken, of course.
 d3cky.listen(d3ck_port_int, function() {
-        console.log('[+] server listening at %s', d3ck_port_int)
+    log.info('[+] server listening at %s', d3ck_port_int)
 })
 

@@ -78,18 +78,7 @@
         "/login.html",
         "/popup.html",
         "/loginFailure",
-        "/cli3nt",
-        "css",
-        "favicon.ico",
-        "img",
-        "images",
-        "js",
-        "knock",
-        "login",
-        "login.html",
-        "popup.html",
-        "loginFailure",
-        "cli3nt"
+        "/cli3nt"
     ],
 
     "routes2caps": {

@@ -49,6 +49,7 @@
     "wait.for": "0.6.4",
     "websocket": "1.0.8",
     "when": "3.4.4",
+    "winston": "^0.9.0",
     "ws": "0.4.31"
   },
   "author": "dan f with some very early help from the mighty Markus Fix",
