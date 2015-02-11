@@ -379,9 +379,6 @@ $(document).ready(function () {
 
                     all_d3ck_ids[d3ckinfo.D3CK_ID] = d3ckinfo
 
-                    // desparation sets in....
-                    rtc_haxx0r_trick()
-
                     // load up trust defaults
                     load_capabilities(my_d3ck, '#d3ck_trust_you')
 

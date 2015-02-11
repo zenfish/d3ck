@@ -22,6 +22,7 @@ var Tail       = require('./tail').Tail,
     _static    = require('node-static'),
     os         = require('os'),
     passport   = require('passport'),
+    passportIO = require("passport.socketio"),
     l_Strategy = require('passport-local').Strategy,
     path       = require('path'),
     tcpProxy   = require('tcp-proxy'),
@@ -539,91 +540,121 @@ function findByUsername(name, fn) {
 
 
 //
-//
-//
-//
 // authenticated or no?
 //
+// 4 situations:
 //
+//  local     - coming from 127.0.0.1. Probably server. If it's an attacker, we're in trouble...
+//  
+//  logged in via login/passwd - probably the owner of the d3ck.
+//
+//  authenticated via client side cert. This will map the IP to the D3CK ID associated with the certificate.
+//
+//  anonymous - e.g. not authenticated
 //
 //
 function auth(req, res, next) {
 
-    // console.log(req)
+    console.log('got auth?')
 
-    var ip = get_client_ip(req)
-
-    var url_bits = req.path.split('/')
-
-    // console.log('contains...')
-    if (__.contains(public_routes, url_bits[1])) {
-        if (redirect_to_quickstart && url_bits[1] == "login.html") {
-            console.log('almost let you go to login.html, but nothing to login to')
-        }
-        else {
-            return next();
-        }
-    }
-
-    // console.log('qs...')
-    // I don't care if you are auth'd or not, you don't get much but quickstart until
-    // you've set up your d3ck....
+    //
+    // I don't care who you are... if you haven't set up your d3ck, there's nothing to auth to... so redirect
+    //
     if (redirect_to_quickstart) {
         console.log('redirecting to qs')
         res.redirect(302, '/quikstart.html')
         return
-        // return next({ redirecting: 'quikstart.html'});
     }
 
-    //
-    // are you certifiable?
-    //
-    // hmm... is this safe?
-    //
-    // console.log('cert...?')
-    // console.log(req.headers)
-    if (typeof req.headers['x-ssl-client-verify'] != "undefined" && req.headers['x-ssl-client-verify'] == "SUCCESS"){
-        console.log('authentication check for... ' + req.path)
-        console.log(req.headers)
-        console.log('my cert homie...?!!?!')
-        //
-        // xxx - need to check not only if valid, but start tracking to see if they
-        // don't try to change their d3ck ID or something
-        //
-        return next();
-    }
+    var ip        = get_client_ip(req),
+        url_bits  = req.path.split('/'),
+        auth_type = ''
+
+    // OK - which of the 4 types above are you?
 
     //
-    // are you logged in as a user, say, via the web?
+    // ... logged in as a user, say, via the web?
     //
-
-    // console.log('auth...?')
-
     if (req.isAuthenticated()) {
-        // console.log('already chex: ' + req.path)
+        console.log('already chex: ' + req.path)
+        auth_type = 'owner'
         return next();
     }
 
     // for now... let in localhost... may rethink
     // console.log('localhost')
-    if (ip == '127.0.0.1') {
+    else if (ip == '127.0.0.1') {
         console.log("you ain't from around here, are ya... wait... yes you are... hi, bobby-sue!  " + req.path)
+        auth_type = 'local'
         return next();
     }
 
-    // console.log('x-forw')
-    if (typeof req.headers['x-forwarded-for'] != 'undefined' && typeof client_vpn_ip != 'undefined') {
+    //
+    // are you client-side certifiable?
+    //
+    // it's going to look something like:
+    //
+    //  'x-ssl-client-verify': 'SUCCESS',
+    //  'x-ssl-client-s-dn': '/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=BBB46ECE741BA56C4EF84DC5710D2D060CD86AF2.4ca0d9de10f01745420cceb',
+    //
+    // Normally... I trust as little as possible... but since we issued this cert, 
+    // I think it's pretty safe to assume that it's actually the real deal, and
+    // we can extract their d3ck id from it.
+    //
+    else if (typeof req.headers['x-ssl-client-verify'] != "undefined" && req.headers['x-ssl-client-verify'] == "SUCCESS") {
 
-        console.log('... ok... trying x-forw....')
+        // console.log(req.headers)
+        console.log('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
+        console.log('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
+        console.log('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
 
-        if (ip == client_vpn_ip) {
-            console.log('... if I let you (' + client_ip + ') vpn, I let you...' + req.path)
+        var loc_cn    = req.headers['x-ssl-client-s-dn'].indexOf('/CN=') + 4
+        var cn        = req.headers['x-ssl-client-s-dn'].substr(loc_cn)
+
+        var c_d3ck_id = cn.split('.')[0]
+
+        console.log('CN = ' + cn)
+        console.log('CN->d3ckid = ' + c_d3ck_id)
+
+        // this should be unneccessary....
+        if (typeof all_d3cks[c_d3ck_id] == "undefined") {
+            console.log('err: this should never happen... but... d3ck with cert wasnt in the all_d3cks data structure...')
+            process.exit(55)
+        }
+        else if (c_d3ck_id != bwana_d3ck) {
             return next();
         }
-        else {
-            console.log('not client ip: ' + client_vpn_ip + ' != ' + ip)
+    }
+
+    //
+    // is it public property... e.g. can anon go?
+    //
+    //
+    // you're a real nowhere man, living in a nowhere....
+    //
+    else {
+        auth_type = 'anon'
+        if (__.contains(public_routes, url_bits[1])) {
+            console.log("public property, anyone can go....")
+            return next();
         }
     }
+
+
+
+    // console.log('x-forw')
+//  if (typeof req.headers['x-forwarded-for'] != 'undefined' && typeof client_vpn_ip != 'undefined') {
+//
+//      console.log('... ok... trying x-forw....')
+//
+//      if (ip == client_vpn_ip) {
+//          console.log('... if I let you (' + client_ip + ') vpn, I let you...' + req.path)
+//          return next();
+//      }
+//      else {
+//          console.log('not client ip: ' + client_vpn_ip + ' != ' + ip)
+//      }
+//  }
 
     // console.log(req.headers)
 
@@ -1163,7 +1194,7 @@ function getIPtables(req, res, next) {
         ipt_data = ipt_data + "\n</pre>\n"
     })
 
-    console.log('\n' + ipt_data + '\n\n')
+    // console.log('\n' + ipt_data + '\n\n')
 
     res.send(200, ipt_data)
 
@@ -1590,11 +1621,12 @@ function create_cli3nt_rest(req, res, next) {
     //
     // url
     //
-    console.log('doing it the hard way, from IP: ' + ip_addr)
+    console.log('who are ya, punk?  ' + ip_addr)
 
     if (typeof req.query.did == "undefined") {
         console.log('bad dog, no DiD!')
         res.send(400, { error: 'bad dog, no DiD, no tasty bites!' })
+        return
     }
 
     var did = req.query.did
@@ -1606,6 +1638,7 @@ function create_cli3nt_rest(req, res, next) {
     if (keyout.code) {
         console.log("error!\n\n\n")
         res.send(420, { error: "couldn't retrieve client certificates" } )
+        return
     }
     else {
         console.log('looks good...')
@@ -1625,6 +1658,8 @@ function create_cli3nt_rest(req, res, next) {
         }
         try       { res.send(200, JSON.stringify(cli3nt_bundle)) }
         catch (e) { console.log('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
+
+        return
     }
 
 }
@@ -3243,9 +3278,9 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
             return;
         }
 
-        // console.log('pinging  ' + ip);
-
         var url = 'https://' + ip + ':' + d3ck_port_ext + '/ping'
+
+        console.log('pinging  ' + url);
 
         // var req = https.get(url, function(response) {
         get_https_certified(url, ping_d3ckid).then(function (ping_data) {
@@ -3959,16 +3994,12 @@ function gen_somewhat_random(n) {
 }
 
 //
-// not sure about the store stuff... does passport do the same below (/aaa)?
-// ... so much dox in so little time. Think this will work. Maybe.
+// not sure about this... so much dox in so little time. Think this will work. Seems to. Maybe.
 //
 server.use(express.session({
-    secret: gen_somewhat_random()
-//  store: new candyStore({
-//      client: rclient
-//  })
+    secret: gen_somewhat_random(),
+    store:  new candyStore({ client: rclient })
 }));
-
 
 server.use(flash());
 server.use(passport.initialize());
@@ -3988,37 +4019,6 @@ server.use(auth)
 
 // have we seen them before this login session?  True/false
 cookie = ""
-
-server.get('/aaa', function(req, res) {
-
-    console.log('AAA? ')
-
-    cookie = req.client._httpMessage.req.sessionID
-
-    rclient.get('session_cookie', function (err, scookie) {
-        // failzor getting cookie
-        if (err) {
-            console.log(err, 'no cookie, no fun');
-            next(err);
-            // res.send(200, {session_cookie: req.client._httpMessage.req.sessionID})
-            res.send(200, {session_cookie: false })
-        }
-        else {
-            if (cookie == scookie) {
-                console.log('seen this cookie before... stale... old... used up... but still good...')
-                res.send(200, { session_cookie: true } )
-            }
-            // no dice
-            else {
-                cookie = scookie
-                console.log('fresh cookie, mon: ', cookie)
-                res.send(200, { session_cookie: false } )
-            }
-        }
-    });
-
-});
-
 
 // initial starting form - no auth
 server.post('/quik', quikStart)
@@ -4277,6 +4277,14 @@ var cool_cats = {}
 console.log('\n\nfiring up sockets... trying... to set up... on port ' + d3ck_port_forward + '\n\n')
 
 io_sig = require('socket.io').listen(d3cky)
+
+// socketz
+io_sig.set('authorization', passportIO.authorize({
+    cookieParser: express.cookieParser,
+    secret:       gen_somewhat_random(),
+    store:        new candyStore({ client: rclient })
+}))
+
 
 // xxx?
 // io_sig.disable('browser client cache');

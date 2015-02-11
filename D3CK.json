@@ -68,7 +68,17 @@
     },
 
     "public_routes": [
-        "d3ck",
+        "/css",
+        "/favicon.ico",
+        "/img",
+        "/images",
+        "/js",
+        "/knock",
+        "/login",
+        "/login.html",
+        "/popup.html",
+        "/loginFailure",
+        "/cli3nt",
         "css",
         "favicon.ico",
         "img",
@@ -79,11 +89,18 @@
         "login.html",
         "popup.html",
         "loginFailure",
-        "quikstart.html",
-        "quik",
-        "qs",
-        "sping",
         "cli3nt"
-    ]
+    ],
+
+    "routes2caps": {
+        "friend request": [],
+        "VPN": ["/vpn"],
+        "webRTC": [],
+        "file transfer": ["/up"],
+        "messages": [],
+        "command execution": [],
+        "SIP": [],
+        "Geo-translocation": []
+    }
 
 }
