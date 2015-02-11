@@ -52,7 +52,7 @@ sub_KEY_CN=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '{$1="";
 
 # create full CN, truncated to 64
 # KEY_CN=$(echo "$(cat $D3CK_HOME/public/d3ck.did).$sub_KEY_CN" | cut -b1-64)
-KEY_CN=$(echo "$(cat $1.$sub_KEY_CN" | cut -b1-64)
+KEY_CN=$(echo "$(cat $1.$sub_KEY_CN)" | cut -b1-64)
 
 # store in redis - cci = client-keys-issued
 echo "set client_cert_$1 $KEY_CN" | redis-cli
