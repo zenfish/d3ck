@@ -1093,6 +1093,11 @@ function queue_or_die(queue) {
         return
     }
 
+    else if (queue.type == "error") {
+        console.log('error: ' + JSON.stringify(queue))
+        inform_user('error', queue.message, 'error')
+        return
+    }
     else {
         console.log(':???: ' + JSON.stringify(queue))
         return
@@ -1806,6 +1811,12 @@ function inform_user(title, message, level, element) {
 
     }
 
+    if (level == 'error') {
+        console.log('errz from server...')
+        opts.type    = 'error'
+        PNotify.prototype.options.delay = PNOTIFY_HIGH;
+    }
+
     // big bold baddass label
     else if (level == 'vpn') {
 
@@ -1835,7 +1846,6 @@ function inform_user(title, message, level, element) {
        (level != 'danger'     &&
         level != 'success'    &&
         level != 'info'       &&
-        level != 'error'      &&
         level != 'warning')) {
             console.log(level + " isn't a recognized level... setting to default/null")
             opts.type = 'info'     // default

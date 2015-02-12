@@ -86,6 +86,9 @@ var trust              = config.trust
 
 var d3ck = require('./modules');
 
+
+var time_format = 'MMMM Do YYYY, h:mm:ss a'     // used by moment.js
+
 //
 // fire up logging
 //
@@ -94,19 +97,17 @@ var log = new (winston.Logger)({
       // console.log, basically
       new (winston.transports.Console)({
           timestamp: function() { // put my stamp on the timestamps
-            return moment().format('ddd HH:mm:ss MM-DD-YY')
-            console.log('wtf?')
+            return moment().format(time_format)
           },
-          name:      'main_d3ck_console', 
+          name:      'd3ck_console', 
           colorize:  true
       }),
       // log stuff to a real d3ck log file
       new (winston.transports.File)   ({
           timestamp: function() { // put my stamp on the timestamps
-            return moment().format('ddd HH:mm:ss MM-DD-YY')
-            console.log('wtf2?')
+            return moment().format(time_format)
           },
-          name:      'main_d3ck_logfile', 
+          name:      'd3ck_logfile', 
           filename:  d3ck_logs + '/' + 'd3ck.log',
           handleExceptions: true,
           json:             true
@@ -114,6 +115,18 @@ var log = new (winston.Logger)({
     ],
     exitOnError: false
 });
+
+//
+// bubble up to user
+//
+log.on('logging', function (transport, level, msg, meta) {
+    if (level == 'error' && transport.name == 'd3ck_console') {
+        console.log('\terrz --> ' + msg)
+        d3ck_queue.push({type: 'error', event: 'error', 'message': msg, time: moment().format(time_format)})
+        createEvent(client_ip, {event_type: "error", message: msg})
+    }
+})
+
 
 
 // firing up the auth engine
@@ -796,39 +809,35 @@ var init = false
 // xxx null for now...?
 // while (init) {
 
-    log.info('suckit, d3ck!')
+log.info('suckit, d3ck!')
 
-    var url = 'https://localhost:' + d3ck_port_int + '/d3ck/' + d3ck_id
+var url = 'https://localhost:' + d3ck_port_int + '/d3ck/' + d3ck_id
 
-    log.info('requesting d3ck from: ' + url)
+log.info('requesting d3ck from: ' + url)
 
-    request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            // success
-            log.info('finally got server response...')
-            // log.info(body)
+request(url, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+        // success
+        log.info('finally got server response...')
+        // log.info(body)
 
-            if (body.indexOf("was not found") != -1) {
-                log.info('no woman no d3ck: ' + body)
-            }
-            else {
-                log.info('d3ckarrific!')
-                // log.info(body)
-                bwana_d3ck = JSON.parse(body)
-
-                createEvent('internal server', {event_type: "create", d3ck_id: bwana_d3ck.D3CK_ID})
-                init = true
-            }
+        if (body.indexOf("was not found") != -1) {
+            log.info('no woman no d3ck: ' + body)
         }
         else {
-            // error
-            log.error('errorzzz: ', error);
+            log.info('d3ckarrific!')
+            // log.info(body)
+            bwana_d3ck = JSON.parse(body)
+
+            createEvent('internal server', {event_type: "create", d3ck_id: bwana_d3ck.D3CK_ID})
+            init = true
         }
-    })
-
-//  sleep.sleep(sleepy_time)
-
-// }
+    }
+    else {
+        // error
+        // log.error('errorzzz: ', error);
+    }
+})
 
 
 //
@@ -907,7 +916,7 @@ function watch_logs(logfile, log_type) {
             magic_server_remote = "Peer Connection Initiated",
             magic_server_rvpn   = "Client Connect :",
 
-            moment_in_time = moment().format('ddd  HH:mm:ss MM-DD-YY'),
+            moment_in_time = moment().format(time_format)
             moment_in_secs =  (new Date).getTime(),
             client_remote_ip = "",
             server_remote_ip = "";
@@ -1524,6 +1533,7 @@ function cat_stamp() {
 function d3ckQueue(req, res, next) {
 
     // log.info('d3ck Q query')
+    // log.info(d3ck_queue)
 
     // the usual usualness
     if (d3ck_queue.length > 0) {
@@ -2080,12 +2090,10 @@ function setTCPProxy(req, res, next) {
 //
 function createEvent(ip, event_data, ds) {
 
-    log.info('in createEvent - ' + ip + ', ' + JSON.stringify(event_data))
-
-    log.info(event_data)
+    // log.info('in createEvent - ' + ip + ', ' + JSON.stringify(event_data))
 
     event_data.from  = ip
-    event_data.time  = moment().format('MM-DD-YY ddd HH:mm:ss')
+    event_data.time  = moment().format(time_format)
 
     var e_type       = event_data.event_type
     var key          = e_type + ":" + event_data.time
@@ -2095,7 +2103,7 @@ function createEvent(ip, event_data, ds) {
             log.error(err, e_type + ' Revent: unable to store in Redis db');
             next(err);
         } else {
-            log.info({key: event_data}, e_type + ' event : saved');
+            // log.info({key: event_data}, e_type + ' event : saved');
         }
     })
 
