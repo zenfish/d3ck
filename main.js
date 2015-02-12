@@ -1645,7 +1645,7 @@ function format_d3ck(req, res, body) {
 function update_d3ck(_d3ck) {
 
     log.info('updating data for ' + _d3ck.D3CK_ID)
-    log.info(_d3ck)
+    // log.info(_d3ck)
 
     rclient.set(_d3ck.D3CK_ID, JSON.stringify(_d3ck), function(err) {
         if (err) {
@@ -3508,7 +3508,7 @@ function quikStart(req, res, next) {
                 bwana_d3ck.image     = d3ck_image
                 bwana_d3ck.image_b64 = image_b64
 
-                log.info(JSON.stringify(bwana_d3ck))
+                // log.info(JSON.stringify(bwana_d3ck))
 
             }
             catch (err) {
