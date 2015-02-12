@@ -93,6 +93,7 @@ tmp/*
 
 # some key stuff
 *.req
+*.pem
 *.key
 keys
 f-u-openssl/keys
