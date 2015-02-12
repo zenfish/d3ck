@@ -68,22 +68,22 @@
     },
 
     "public_routes": [
-        "/css",
-        "/favicon.ico",
-        "/img",
-        "/images",
-        "/js",
-        "/knock",
-        "/login",
-        "/login.html",
-        "/ping",
-        "/popup.html",
-        "/loginFailure",
-        "/cli3nt"
+        "^/css/.*",
+        "^/favicon.ico",
+        "^/img/.*",
+        "^/images/.*",
+        "^/js/.*",
+        "^/knock",
+        "^/login",
+        "^/login.html",
+        "^/ping",
+        "^/popup.html",
+        "^/loginFailure",
+        "^/cli3nt"
     ],
 
     "routes2caps": {
-        "friend request": ['/ping'],
+        "friend request": ["/ping"],
         "VPN": ["/vpn"],
         "file transfer": ["/up"],
         "webRTC": [],

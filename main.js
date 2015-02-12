@@ -155,7 +155,17 @@ var PID_POLLING_TIME = config.misc.did_polling_time
 // users must run quickstart if they haven't already
 var redirect_to_quickstart = true
 if (fs.existsSync(d3ck_secretz)) {
+    console.log("---> NO QS!")
+    console.log("---> NO QS!")
+    console.log("---> NO QS!")
+    console.log("---> NO QS!")
     redirect_to_quickstart = false
+}
+else {
+    console.log("<--- QS!")
+    console.log("<--- QS!")
+    console.log("<--- QS!")
+    console.log("<--- QS!")
 }
 
 // owner user array
@@ -591,15 +601,45 @@ function findByUsername(name, fn) {
 //  anonymous - e.g. not authenticated
 //
 //
+
 function auth(req, res, next) {
 
     // log.info('got auth?  --> ' + req.path)
 
     //
+    // is it public property... e.g. can anon go?
+    //
+    //
+    // you're a real nowhere man, living in a nowhere....
+    //
+    // log.info("greetings, lumpy proletarian!")
+
+    var open_sesame = false
+    // if (__.contains(public_routes, url_bits[1])) {
+    __.each(public_routes, function(r) {
+        // log.info(r + ' vs. ' + req.path)
+        // if (r == req.path) {
+        if (req.path.search(r) > -1) {
+            // console.log('WIN! -> ' + r + ' vs. ' + req.path)
+            auth_type = 'anon'
+            open_sesame = true
+        }
+    })
+
+    if (open_sesame) {
+        log.info('public property, anyone can go => ' + req.path)
+        return next();
+    }
+
+    //
     // I don't care who you are... if you haven't set up your d3ck, there's nothing to auth to... so redirect
     //
     if (redirect_to_quickstart) {
-        log.info('redirecting to qs')
+        if (req.path == '/quikstart.html') {
+            log.info('you want quickstart, you got it')
+            return next() 
+        }
+        log.info('redirecting to qs from ' + req.path)
         res.redirect(302, '/quikstart.html')
         return
     }
@@ -659,34 +699,6 @@ function auth(req, res, next) {
             return next();
         }
     }
-
-    //
-    // is it public property... e.g. can anon go?
-    //
-    //
-    // you're a real nowhere man, living in a nowhere....
-    //
-    else {
-        log.info("greetings, lumpy proletarian!")
-
-        var open_sesame = false
-        auth_type = 'anon'
-        // if (__.contains(public_routes, url_bits[1])) {
-        __.each(public_routes, function(r) {
-            // log.info(r + ' vs. ' + req.path)
-            if (r == req.path) {
-                open_sesame = true;
-                return
-            }
-        })
-
-        if (open_sesame) {
-            log.info("public property, anyone can go....")
-            return next();
-        }
-    }
-
-
 
     // log.info('x-forw')
 //  if (typeof req.headers['x-forwarded-for'] != 'undefined' && typeof client_vpn_ip != 'undefined') {
