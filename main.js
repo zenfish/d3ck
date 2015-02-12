@@ -3219,44 +3219,6 @@ function back_to_home (res) {
     res.redirect(303, home)
 }
 
-//
-// create and delete form handlers
-//
-
-function handleForm(req, res, next) {
-
-    log.info('handle form called with')
-    log.info(req.body)
-
-    // log.info(req.params)
-
-    if (typeof req.body.d3ck_action === 'undefined' || req.body.d3ck_action == "") {
-        log.error("error... unrecognized action: " + req.body.d3ck_action);
-    }
-
-    var action = req.body.d3ck_action
-
-    if (action == 'CREATE') {
-        var ip_addr  = req.body.ip_addr
-
-        create_d3ck_by_ip(ip_addr).then( function () {
-            log.info('... suck... sess...?')
-        })
-    }
-
-    else if (action == 'DELETE') {
-        formDelete(req, res, next)
-    }
-
-    // errror
-    else {
-        log.error("error... unrecognized action: " + action);
-    }
-
-    back_to_home(res)
-
-}
-
 function formDelete(req, res, next) {
 
     log.info("deleting d3ck...")
@@ -3277,6 +3239,7 @@ function formDelete(req, res, next) {
     // want to use a reasonable d3ck home here!
     d3ck_spawn(d3ck_bin + '/delete_d3ck.sh', [d3ckid])
 
+    back_to_home(res)
 
 }
 
@@ -3690,10 +3653,11 @@ function get_https_certified(url, d3ckid) {
 // take the ip/data pushed to us from the UI and create something... beautiful!
 // a virtual butterfly, no less
 //
-function create_d3ck_by_ip(ip_addr) {
+function create_d3ck_by_ip(req, res, next) {
+
+    var ip_addr  = req.body.ip_addr
 
     log.info("creating d3ck by " + ip_addr)
-    // log.info(req.body)
 
     var deferred = Q.defer();
 
@@ -3731,6 +3695,7 @@ function create_d3ck_by_ip(ip_addr) {
         deferred.resolve();
     })
 
+    back_to_home(res)
     return deferred.promise;
 
 }
@@ -4127,9 +4092,19 @@ server.get('/ping', auth, echoReply)
 // get a new client key pair
 server.get('/cli3nt', auth, create_cli3nt_rest)
 
-// get or list d3cks
+// creation
 server.post('/d3ck', auth, create_d3ck)
 
+// create by UI
+server.post('/form-create', auth, create_d3ck_by_ip);
+
+// delete
+server.post('/form-delete', auth, formDelete);
+
+// server.post('/form', auth, handleForm);
+
+
+// get or list d3cks
 server.get('/d3ck', auth, list_d3cks)
 
 // Return a d3ck by key
@@ -4142,9 +4117,6 @@ server.del('/d3ck/:key', auth, delete_d3ck);
 server.del('/d3ck', auth, deleteAll, function respond(req, res, next) {
     res.send(204);
 });
-
-
-server.post('/form', auth, handleForm);
 
 // get your ip addr(s)
 server.get('/getip', auth, getIP);
@@ -4319,7 +4291,7 @@ var io_sig = {}
 
 var cool_cats = {}
 
-log.info('\n\nfiring up sockets... trying... to set up... on port ' + d3ck_port_forward + '\n\n')
+log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_port_forward + '\n\n')
 
 io_sig = require('socket.io').listen(d3cky)
 
