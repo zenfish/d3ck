@@ -1729,15 +1729,24 @@ function detect_webRTC(element) {
     $.getScript( "/js/DetectRTC.js" )
     .done(function( script, textStatus ) {
         console.log( textStatus );
+        var hasMicrophone               = (DetectRTC.hasMicrophone || false)
+        var hasMicrophone               = (DetectRTC.hasMicrophone || false)
+        var hasWebcam                   = (DetectRTC.hasWebcam || false)
+        var isScreenCapturingSupported  = (DetectRTC.isScreenCapturingSupported || false)
+        var isWebRTCSupported           = (DetectRTC.isWebRTCSupported || false)
+        var isAudioContextSupported     = (DetectRTC.isAudioContextSupported || false)
+        var isSctpDataChannelsSupported = (DetectRTC.isSctpDataChannelsSupported || false)
+        var isRtpDataChannelsSupported  = (DetectRTC.isRtpDataChannelsSupported || false)
+
         // ~ two per row
         $('#' + element).append('' +
-                '<tr><td>Microphone    </td><td>'     + DetectRTC.hasMicrophone               + '</td>' +
-                    '<td>Webcam        </td><td>'     + DetectRTC.hasWebcam                   + '</td></tr>' +
-                '<tr><td>Screen Capture</td><td>'     + DetectRTC.isScreenCapturingSupported  + '</td>' +
-                    '<td>WebRTC</td><td>'             + DetectRTC.isWebRTCSupported           + '</td></tr>' +
-                '<tr><td>WebAudio API</td><td>'       + DetectRTC.isAudioContextSupported     + '</td>' +
-                '    <td>SCTP Data Channels</td><td>' + DetectRTC.isSctpDataChannelsSupported + '</td></tr>' +
-                '<tr><td>RTP Data Channels</td><td>'  + DetectRTC.isRtpDataChannelsSupported  + '</td></tr>')
+                '<tr><td>Microphone    </td><td>'     + hasMicrophone               + '</td>' +
+                    '<td>Webcam        </td><td>'     + hasWebcam                   + '</td></tr>' +
+                '<tr><td>Screen Capture</td><td>'     + isScreenCapturingSupported  + '</td>' +
+                    '<td>WebRTC</td><td>'             + isWebRTCSupported           + '</td></tr>' +
+                '<tr><td>WebAudio API</td><td>'       + isAudioContextSupported     + '</td>' +
+                '    <td>SCTP Data Channels</td><td>' + isSctpDataChannelsSupported + '</td></tr>' +
+                '<tr><td>RTP Data Channels</td><td>'  + isRtpDataChannelsSupported  + '</td></tr>')
 
     })
     .fail(function( jqxhr, settings, exception ) {
@@ -2114,7 +2123,6 @@ function ask_user_4_response(data) {
                     var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
                                           '<h2 style="position: relative;">Connecting...</h2></span><br />'
 
-
                     alertify.set({
                         buttonReverse   : true,
                         labels          : { ok: 'Answer', cancel: 'Decline' }
@@ -2140,7 +2148,7 @@ function ask_user_4_response(data) {
 
 
                     $('#alertify-ok').hide()
-                    inform_user('request', 'lowering shields to ' + req.ip_addr)
+                    inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
                     lower_shields(req.ip_addr)
 
                 }
@@ -2303,7 +2311,7 @@ function lower_shields(ip) {
 
         if (shields.result) {
             console.log('Shields down, VPN may commence...')
-            inform_user('VPN', 'Shields down, VPN may commence...')
+            inform_user('VPN', 'Shields down, VPN may commence...', 'info')
         }
         else {
             console.log('Shield down command failed')
@@ -2328,11 +2336,11 @@ function raise_shields(ip) {
 
     jqXHR_shields.done(function (shields, textStatus, jqXHR) {
 
-        console.log('result of shield lowering request: ' + JSON.stringify(shields))
+        console.log('result of shield raising request: ' + JSON.stringify(shields))
 
         if (shields.result) {
             console.log('Shields up!')
-            inform_user('VPN', 'Shields up!')
+            inform_user('VPN', 'Shields up!', 'info')
         }
         else {
             console.log('Shields up command failed, we may be vulnerable...')

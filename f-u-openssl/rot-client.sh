@@ -5,10 +5,11 @@
 #
 
 #
-# the client's key CN will be the issuing d3ck's ID + .rand() TRUNCATED TO 64 CHARS, where
+# the client's key CN will be the issuing d3ck's ID + .rand() TRUNCATED TO 63 CHARS, where
 # ".rand()" uses the same function that generates the normal d3ck ID. I'm only truncating
 # it because RFC 3280 - Internet X.509 Public Key Infrastructure - defines the upper bound
-# length limit as "INTEGER ::= 64". Various reports seem to say various things... but this
+# length limit as "INTEGER ::= 64"... but openvpn has a bug where it will only accept 63...
+# don't ask me how I know... various reports seem to say various things... but this
 # seems relatively safe.
 #
 
@@ -40,6 +41,8 @@ cd $hell
 
 . d3ck-vars
 
+MAX_CN=63
+
 client_d3ck_home="$keystore/$1"
 storage="$hell/clients"
 
@@ -50,9 +53,9 @@ echo Client key size will be $KEY_SIZE bits
 # sub_KEY_CN=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '{$1=""; printf("%s", $0)}' | sed 's/ //g')
 sub_KEY_CN=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '{$1=""; printf("%s", $0)}' | sed 's/ //g')
 
-# create full CN, truncated to 64
+# create full CN, truncated to $MAX_CN
 # KEY_CN=$(echo "$(cat $D3CK_HOME/public/d3ck.did).$sub_KEY_CN" | cut -b1-64)
-KEY_CN=$(echo "$1.$sub_KEY_CN" | cut -b1-64)
+KEY_CN=$(echo "$1.$sub_KEY_CN" | cut -b1-$MAX_CN)
 
 # store in redis - cci = client-keys-issued
 echo "set client_cert_$1 $KEY_CN" | redis-cli

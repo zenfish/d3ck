@@ -22,7 +22,7 @@ var Tail       = require('./tail').Tail,
     _static    = require('node-static'),
     os         = require('os'),
     passport   = require('passport'),
-    passportIO = require("passport.socketio"),
+    //passportIO = require("passport.socketio"),
     l_Strategy = require('passport-local').Strategy,
     path       = require('path'),
     tcpProxy   = require('tcp-proxy'),
@@ -580,7 +580,7 @@ function findByUsername(name, fn) {
 //
 function auth(req, res, next) {
 
-    log.info('got auth?  --> ' + req.path)
+    // log.info('got auth?  --> ' + req.path)
 
     //
     // I don't care who you are... if you haven't set up your d3ck, there's nothing to auth to... so redirect
@@ -3045,8 +3045,8 @@ function d3ck_spawn_sync(command, argz) {
 
     var result = sh.exec(cmd_string)
 
-    log.info('return code ' + result.code);
-    log.info('stdout + stderr ' + result.stdout);
+    // log.info('return code ' + result.code);
+    // log.info('stdout + stderr ' + result.stdout);
 
     try {
         out = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.out.log', result.stdout)
@@ -4317,11 +4317,11 @@ log.info('\n\nfiring up sockets... trying... to set up... on port ' + d3ck_port_
 io_sig = require('socket.io').listen(d3cky)
 
 // socketz
-io_sig.set('authorization', passportIO.authorize({
-    cookieParser: express.cookieParser,
-    secret:       gen_somewhat_random(),
-    store:        new candyStore({ client: rclient })
-}))
+//io_sig.set('authorization', passportIO.authorize({
+//    cookieParser: express.cookieParser,
+//    secret:       gen_somewhat_random(),
+//    store:        new candyStore({ client: rclient })
+//}))
 
 
 // xxx?
