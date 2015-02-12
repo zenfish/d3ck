@@ -37,6 +37,10 @@ echo "using curl to nuke D3CK..."
 
 curl -k -v -H "Accept: application/json" -H "Content-type: application/json" -X DELETE "$d3ck_url/$d3ck"
 
+# slight bootstrapping problem... fix someday...?
+cd /etc/d3ck/f-u-openssl
+. /etc/d3ck/config.sh
+openssl ca -config stupid.conf -revoke /etc/d3ck/d3cks/d3ck/_cli3nt.cert 
 rm -rf /etc/d3ck/d3cks/$d3ck
 
 echo "delete cci-$d3ck" | redis-cli

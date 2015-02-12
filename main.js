@@ -651,9 +651,10 @@ function auth(req, res, next) {
 
         // this should be unneccessary....
         if (typeof all_d3cks[c_d3ck_id] == "undefined") {
-            log.info('err: this should never happen... but... d3ck with cert wasnt in the all_d3cks data structure...')
-            process.exit(55)
+            log.error("d3ck with cert wasnt in the all_d3cks data structure... " + c_d3ck_id)
+            // process.exit(55)
         }
+
         else if (c_d3ck_id != bwana_d3ck) {
             return next();
         }
