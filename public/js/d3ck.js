@@ -295,7 +295,7 @@ function state_vpn(state, browser_ip, queue) {
         console.log('\t[+] fire up the alarms')
 
         // ensure video button is enabled if a call is in progress
-        $('#d3ck_video').addClass('green').addClass('pulse')
+        $('#d3ck_video').addClass('green').addClass('d3_pulse')
         // $('button:contains("connecting")').text('connected from')
 
         console.log(queue.d3ck_status.openvpn_server)
@@ -327,7 +327,7 @@ function state_vpn(state, browser_ip, queue) {
 
         console.log('\t[+] fire up the outbound signs')
 
-        $('#d3ck_video').addClass('green').addClass('pulse')
+        $('#d3ck_video').addClass('green').addClass('d3_pulse')
         // $('button:contains("connecting"),button:contains("Call")').text('End').addClass("hang_up").removeClass('btn-danger').addClass('btn-warning')
         $('button:contains("connecting")').text('End').addClass("hang_up").removeClass('btn-danger').addClass('btn-warning')
         // ... setup bye bye
@@ -1041,7 +1041,7 @@ function queue_or_die(queue) {
 
         else if (queue.event == 'vpn_client_disconnected') {
             inform_user('VPN', 'remote d3ck disconnected from your d3ck', 'success')
-            // event_hang_up()
+            event_hang_up()
         }
 
         else if (queue.event == 'vpn_server_connected') {
@@ -1345,7 +1345,7 @@ function remove_signs_of_call() {
         $('.hang_up').text("Call").removeClass("btn-warning").removeClass("hang_up")
         $('.d3ck_vpn').text("Call").removeClass("btn-danger").removeClass('btn-success')
         $('#d3ck_video').addClass('disabled')
-        $('#d3ck_video').removeClass('green').removeClass('pulse')
+        $('#d3ck_video').removeClass('green').removeClass('d3_pulse')
         state_ring(false)
         // fire_d3ck_status(d3ck_status)
 
@@ -2001,7 +2001,7 @@ function inform_user(title, message, level, element) {
     // big bold baddass label
     else if (level == 'vpn') {
 
-        console.log('VPN starting... sticky & desktop if it can...')
+        console.log('VPN starting/stopping... sticky & desktop if it can...')
 
         $('#alertify-ok').click()
 
@@ -2013,7 +2013,6 @@ function inform_user(title, message, level, element) {
         if (title == 'VPN') {
             opts.type    = 'warning'
         }
-
 
         opts.addclass    = 'stack-bar-bottom'
         opts.cornerclass = ''
