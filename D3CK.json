@@ -83,10 +83,10 @@
     ],
 
     "routes2caps": {
-        "friend request": [],
+        "friend request": ['/ping'],
         "VPN": ["/vpn"],
-        "webRTC": [],
         "file transfer": ["/up"],
+        "webRTC": [],
         "messages": [],
         "command execution": [],
         "SIP": [],
