@@ -92,6 +92,7 @@ dump.rdb
 tmp/*
 
 # some key stuff
+*.req
 *.key
 keys
 f-u-openssl/keys
