@@ -438,18 +438,15 @@ function event_hang_up(did) {
     jqXHR_stopVPN.done(function (data, textStatus, jqXHR) {
         console.log('jxq hangup wootz')
         console.log(data)
+        // kill the CSS UI signs
+        remove_signs_of_call()
+        $('body').append("<span class='dead_center animated fadeOut'><h1>Disconnected!</h1></span>")
+        // xxx?
+        go_d3ck_or_go_home()
     }).fail(function(err) {
         console.log('errz on hangup' + JSON.stringify(err))
         alert('error on hangup!')
     })
-
-    // kill the CSS UI signs
-    remove_signs_of_call()
-
-    $('body').append("<span class='dead_center animated fadeOut'><h1>Disconnected!</h1></span>")
-
-    // xxx?
-    go_d3ck_or_go_home()
 
 }
 
@@ -856,7 +853,6 @@ function get_status() {
 
             d3ck_status = queue[i]
             console.log('got status? ...' + JSON.stringify(d3ck_status.events) + '...')
-            status_or_die()
 
         }
                 // if something is new, do something!
@@ -912,7 +908,6 @@ function get_q() {
 function isEmpty(obj) {
     return Object.keys(obj).length === 0;
 }
-
 
 //
 // rip apart queue, figure out what to do
@@ -1106,193 +1101,6 @@ function queue_or_die(queue) {
 
 }
 
-
-
-
-
-
-// this stuff deprecated
-
-/*
-
-states and desired implications
-
-Basics:
-
-incoming call -
-
-    if (first notice) ring, say who from
-
-    else    keep ring indicator on UNLESS user has turned it off
-
-
-outgoing call -
-
-    if (first notice) ring, say who to
-
-    else    keep ring indicator on UNLESS user has turned it off
-
-
-Two other states exist - setting up or tearing down a call/connection.
-With both:
-
-    indicate this intermediate state
-
-    freeze all other UI changes
-
-*/
-
-//
-// get events, status... or... well....
-//
-// this processes missives from the server and potentially says something about it
-//
-function status_or_die() {
-
-    return
-
-//     console.log('sailing on the sneeze of cheeze... when I hear something... from... ' + browser_ip)
-// 
-//     console.log(JSON.stringify(d3ck_status))
-// 
-//     console.log('knocked up?')
-//     if (d3ck_status.d3ck_requests.knock) {
-// 
-//         // answer to our knock
-//         if (typeof d3ck_status.d3ck_requests.answer != "undefined") {
-//             // alert('KNOCK, KNOCK, MOFO! ' + d3ck_status.d3ck_requests.answer)
-//             if (d3ck_status.d3ck_requests.answer) {
-//                 alertify.success("starting the VPN connection...", "", 0)
-// 
-//                 var ip = $('#' + d3ck_status.d3ck_requests.did + ' .remote_ip strong:eq(1)').text()
-//                 console.log('to... ' + ip)
-// 
-//                 event_connect('outgoing', $(this).parent().parent().find('.d3ckname').text())
-// 
-//                 d3ck_vpn($('#d3ck_vpn_' + d3ck_status.d3ck_requests.did), d3ck_status.d3ck_requests.did, ip)
-// 
-//             }
-//             else {
-//                 alertify.reject("remote d3ck refused your request...", "", 0)
-//             }
-//         }
-//         // knocking
-//         else {
-//             console.log('knock knock!')
-//             // alert(d3ck_status.d3ck_requests.ip_addr + '/' + d3ck_status.d3ck_requests.did)
-//             var friend = d3ck_status.d3ck_requests.from
-//             ask_user_4_response({qtype: 'knock', 'from': friend, 'ip_addr': d3ck_status.d3ck_requests.ip_addr, 'did': d3ck_status.d3ck_requests.from_d3ck})
-//         }
-//     }
-// 
-//     // if someone has added you, create a modest sized bit of text that tells you
-//     // and hopefully won't fuck up anything you're doing
-// 
-//     if (d3ck_status.events.new_d3ck_ip.length && ! d3ck_status.browser_events[browser_ip].notify_add) {
-//         remote_ip   = d3ck_status.events.new_d3ck_ip
-//         remote_name = d3ck_status.events.new_d3ck_name
-//         console.log(remote_ip + ' added as friend')
-// 
-//         // a bit down from the top, and stay until wiped away or refreshed
-// 
-//         if (typeof remote_name == "undefined" || remote_name != "")
-//             // $.bootstrapGrowl('"' + remote_name + '" added your D3CK as a friend (you may have to refresh page to see details)', {offset: {from: 'top', amount: 70}, delay: -1})
-//             inform_user('"' + remote_name + '" added your D3CK as a friend (you may have to refresh page to see details)')
-// 
-//         d3ck_status.browser_events[browser_ip].notify_add = true
-//     }
-// 
-//     //
-//     // did santa, er, filez come?
-//     //
-//     else if (d3ck_status.file_events.file_name.length && ! d3ck_status.browser_events[browser_ip].notify_file) {
-// 
-//     // XXX - odd corner case... if both systems have the same IP ... say... testing behind a nat...
-//     // this probably won't work as expected.....
-// 
-//         console.log('ho ho ho, santa is here with new filez 4 the kidd3z!')
-// 
-//         var friend = all_d3ck_ids[d3ck_status.file_events.did].owner.name
-//         var dir    = ""
-// 
-//         // try to figure out if we sent it or the remote did
-// 
-//         // if (d3ck_status.file_events.file_from != browser_ip)
-// 
-//         //
-//         // it shows up in UI's filestore if we *didn't* try to give it to someone else
-//         //
-//         if (d3ck_status.file_events.did == my_d3ck.D3CK_ID) {
-//             console.log('new local file(z)!')
-// 
-//             // does it go into our vault?
-//             if (d3ck_status.file_events.direction != "local") {
-//                 dir = ' to ' + friend + "/" + d3ck_status.file_events.direction
-//             }
-//             else {
-//                 $('#d3ck_cloud_file_listing tr:last').after('<tr><td><a target="_blank" href="/uploads/' + d3ck_status.file_events.file_name + '">' + d3ck_status.file_events.file_name + '</a></td></tr>')
-//             }
-// 
-//             // put in or lookup PiD, then owner/d3ck's name!
-//             // $.bootstrapGrowl("New file: <strong>" + d3ck_status.file_events.file_name + "</strong>  ("  + d3ck_status.file_events.file_size + " bytes); uploaded", {offset: {from: 'top', amount: 70}, delay: -1})
-//             inform_user("New file: <strong>" + d3ck_status.file_events.file_name + "</strong>  ("  + d3ck_status.file_events.file_size + " bytes); uploaded")
-// 
-//         }
-//         else {
-//             console.log('file(z) from remote')
-// 
-//             // $.bootstrapGrowl("File <strong>" + d3ck_status.file_events.file_name + "</strong>  ("  + d3ck_status.file_events.file_size + " bytes) from " + friend + '/' + d3ck_status.file_events.file_from, {offset: {from: 'top', amount: 70}, delay: -1})
-//             inform_user("File <strong>" + d3ck_status.file_events.file_name + "</strong>  ("  + d3ck_status.file_events.file_size + " bytes) from " + friend + '/' + d3ck_status.file_events.file_from)
-// 
-//             $('#d3ck_cloud_file_listing tr:last').after('<tr><td><a target="_blank" href="/uploads/' + d3ck_status.file_events.file_name + '">' + d3ck_status.file_events.file_name + '</a></td></tr>')
-//         }
-// 
-//     }
-// 
-//     // server... incoming ring
-//     else if (d3ck_status.openvpn_server.vpn_status == "up") {
-//         console.log('incoming...!')
-//         d3ck_current.busy     = false
-//         d3ck_current.incoming = true
-//         state_vpn('incoming', browser_ip)
-//     }
-// 
-//     // client... outgoing ring
-//     else if (d3ck_status.openvpn_client.vpn_status == "up") {
-//         console.log('outgoing...!')
-//         d3ck_current.busy     = false
-//         d3ck_current.outgoing = true
-//         state_vpn('outgoing', browser_ip)
-//         // cat facts!
-//         state_cam(true, 'local')
-//     }
-// 
-//     else {
-//         console.log("\n\nI'm not sure why you called me here...?\n")
-//     }
-// 
-//     // if nothing up now, kill any signs of a call, just to be sure
-//     if (d3ck_status.openvpn_client.vpn_status != "up" && d3ck_status.openvpn_server.vpn_status != "up") {
-// 
-//         kill_RTC()
-// 
-//         console.log("it's dead, jim")
-//         d3ck_current.incoming = false
-//         d3ck_current.outgoing = false
-//         d3ck_current.busy     = false
-// 
-//         if ($('button:contains("connected"),button:contains("hanging up")').length) {
-//             $('body').append("<span class='dead_center animated fadeOut'><h1>Disconnecting!</h1></span>")
-//             // xxx - one for out, one for in?
-//             d3ck_status.browser_events[browser_ip].notify_ring = false
-//             remove_signs_of_call()
-//             console.log('clearing all flags of any calls to false')
-//         }
-// 
-//     }
-
-
-}
 
 //
 // ... nuke the vids and other evidence...
