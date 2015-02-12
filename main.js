@@ -2200,14 +2200,13 @@ function listEvents(req, res, next) {
  */
 function getEvent(req, res, next) {
 
-    log.info('getting event')
-
     if (typeof req.params.key == "undefined") {
-        log.info('type of event required')
+        log.error('type of event required')
         var reply = {error: "missing required event type"}
         res.send(200, reply);
     }
 
+    log.info('getting event: ' + req.params.key)
 
     // get keys first, then data for all keys
 
