@@ -1053,7 +1053,7 @@ function queue_or_die(queue) {
 
         else if (queue.event == 'vpn_server_disconnected') {
             inform_user('VPN', 'remote d3ck disconnected its VPN connection')
-            event_hang_up()
+            // event_hang_up()
         }
 
         else if (queue.event == 'vpn_start') {
