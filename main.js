@@ -2966,7 +2966,7 @@ function uploadSchtuff(req, res, next) {
 
                 log.info('FN: ' + target_file + '  Opts:')
 
-                log.info(options)
+                log.info(options.headers)
 
                 fs.createReadStream(tmpfile).pipe(request.post(url, options, function cb (err, resp) {
                     if (err) {
@@ -2974,7 +2974,7 @@ function uploadSchtuff(req, res, next) {
                         }
                     else {
                         log.info('Upload successful...?')
-                        log.info(resp)
+                        // log.info(resp)
 
                         var browser_magic          = { "notify_add":false, "notify_ring":false, "notify_file":true}
                         d3ck_status.browser_events = browser_magic
