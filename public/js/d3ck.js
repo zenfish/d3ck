@@ -2192,7 +2192,7 @@ function ask_user_4_response(data) {
                   Seconds         : { show: true, color: "#2b94ea"}
               }
           }).addListener(function(unit, value, total) {
-              console.log(DEFAULT_RING_TIME, unit,value,total)
+              // console.log(DEFAULT_RING_TIME, unit,value,total)
               if (value <= 0) {
                   // alert('wakka!')
                   console.log('clicking... cancel!')

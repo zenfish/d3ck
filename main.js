@@ -4323,6 +4323,8 @@ io_sig = require('socket.io').listen(d3cky)
 //    store:        new candyStore({ client: rclient })
 //}))
 
+io_sig.set('log level', 2);
+
 
 // xxx?
 // io_sig.disable('browser client cache');
