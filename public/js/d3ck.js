@@ -535,7 +535,7 @@ function d3ck_create(element, ip_addr) {
 
     $.ajax({
         type: "POST",
-        url: "/form",
+        url: "/form-create",
         headers: { 'Content-Type': 'application/json' },
         data: post_data,
         success: function(data, status) {
