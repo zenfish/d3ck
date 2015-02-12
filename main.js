@@ -2085,7 +2085,7 @@ function createEvent(ip, event_data, ds) {
     log.info(event_data)
 
     event_data.from  = ip
-    event_data.time  = Date()
+    event_data.time  = moment().format('MM-DD-YY ddd HH:mm:ss')
 
     var e_type       = event_data.event_type
     var key          = e_type + ":" + event_data.time
@@ -3318,7 +3318,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
         var url = 'https://' + ip + ':' + d3ck_port_ext + '/ping'
 
-        log.info('pinging  ' + url);
+        log.debug('pinging  ' + url);
 
         // var req = https.get(url, function(response) {
         get_https_certified(url, ping_d3ckid).then(function (ping_data) {
