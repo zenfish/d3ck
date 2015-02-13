@@ -612,6 +612,7 @@ function auth(req, res, next) {
     if (open_sesame) {
         if (req.path != '/ping')    // let's not get carried away ;)
             log.info('public property, anyone can go => ' + req.path)
+
         return next();
     }
 
@@ -4174,6 +4175,7 @@ server.get('/ping', auth, echoReply)
 
 // get a new client key pair
 server.get('/cli3nt', auth, create_cli3nt_rest)
+server.post('/cli3nt', auth, create_cli3nt_rest)
 
 // creation
 server.post('/d3ck', auth, create_d3ck)
