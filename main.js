@@ -1657,10 +1657,11 @@ function update_d3ck(_d3ck) {
 //
 function create_cli3nt_rest(req, res, next) {
 
-    var target  = ''
-    var command = d3ck_bin + '/bundle_certs.js'
-    var argz    = []
-    var ip_addr = get_client_ip(req)
+    var target  = '',
+        secret  = '',
+        command = d3ck_bin + '/bundle_certs.js',
+        argz    = [],
+        ip_addr = get_client_ip(req);
 
     //
     // url
@@ -1675,6 +1676,7 @@ function create_cli3nt_rest(req, res, next) {
 
     // secret in here
     if (req.method.toLowerCase() == 'post') {
+        log.info('POST')
 
         var body = '';
         req.on('data', function (data) {
@@ -1684,12 +1686,13 @@ function create_cli3nt_rest(req, res, next) {
             // request.connection.destroy();
         });
         req.on('end', function () {
-            var post = qs.parse(body);
-            log.info("POSTY! " + post)
+            secret = qs.parse(body);
+            log.info("POSTY! " + secret)
+
+            // check secret xxxx
+
         })
-
     }
-
 
     var did = req.query.did
 
@@ -1711,17 +1714,21 @@ function create_cli3nt_rest(req, res, next) {
         write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
         write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.cert", cli3nt_bundle.vpn.cert.join('\n'))
 
+    }
+
+    if (req.method.toLowerCase() != 'post') {
+
         //
         // if !exist, create their d3ck locally as well
         //
         if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
             log.info("Hmm, we don't have their data... try to get it")
             create_d3ck_locally(ip_addr)
-        }
-        try       { res.send(200, JSON.stringify(cli3nt_bundle)) }
-        catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
+            try       { res.send(200, JSON.stringify(cli3nt_bundle)) }
+            catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
 
-        return
+            return
+        }
     }
 
 }
