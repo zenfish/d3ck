@@ -1709,7 +1709,7 @@ function create_cli3nt_rest(req, res, next) {
 
     }
 
-    if (req.method.toLowerCase() != 'post') {
+    // if (req.method.toLowerCase() != 'post') {
         //
         // if !exist, create their d3ck locally as well
         //
@@ -1717,10 +1717,10 @@ function create_cli3nt_rest(req, res, next) {
             log.info("Hmm, we don't have their data... try to get it")
             create_d3ck_locally(ip_addr)
         }
-    }
+    // }
 
     try       { 
-        console.log('looks good - ' + JSON.stringify(cli3nt_bundle))
+        // console.log('looks good - ' + JSON.stringify(cli3nt_bundle))
         res.send(200, JSON.stringify(cli3nt_bundle)) 
     }
     catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
@@ -3624,37 +3624,19 @@ function get_https(url) {
     var str      = ""
 
 
-    // xxx - yeah, yeah....
-    // var d = require('domain').create();
+    log.info("https snaggin' " + url)
 
-    // d.run(function() {
-        log.info("https snaggin' " + url)
+    request(url, function (err, res, body) {
+        if (err) {
+            deferred.reject(err)
+        }
+    else {
+            // log.info(body)
+            deferred.resolve(body)
+        }
+    });
 
-        request(url, function (err, res, body) {
-            if (err) {
-                deferred.reject(err)
-            }
-            else {
-                // log.info(body)
-                deferred.resolve(body)
-            }
-        });
-
-    // });
-
-//  d.on('error', function(err) {
-//      if (err.code == 'ECONNREFUSED' || err.code == 'EHOSTUNREACH') {
-//          log.error('https.get !lucky: ' + JSON.stringify(err));
-//          deferred.reject(err)
-//      }
-//      else {
-//          log.info('https.get (' + url + ') cronked on some weird/bad shit: ' + JSON.stringify(err.message));
-//          deferred.reject(err)
-//      }
-//  });
-//
     return deferred.promise;
-
 
 }
 
