@@ -41,6 +41,8 @@ var Tail       = require('./tail').Tail,
     d3ck       = require('./modules');
 
 
+var DEBUG = false;
+
 //
 // Initial setup
 //
@@ -604,7 +606,8 @@ function findByUsername(name, fn) {
 
 function auth(req, res, next) {
 
-    // log.info('got auth?  --> ' + req.path)
+    if (!DEBUG && (req.path != '/ping' && req.path != '/q' && req.path != '/status'))    // let's not get carried away ;)
+        log.info('got auth?  --> ' + req.path)
 
     //
     // is it public property... e.g. can anon go?
@@ -682,7 +685,7 @@ function auth(req, res, next) {
     //
     else if (typeof req.headers['x-ssl-client-verify'] != "undefined" && req.headers['x-ssl-client-verify'] == "SUCCESS") {
 
-        // log.info('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
+        log.info('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
 
         var loc_cn    = req.headers['x-ssl-client-s-dn'].indexOf('/CN=') + 4
         var cn        = req.headers['x-ssl-client-s-dn'].substr(loc_cn)
@@ -1668,7 +1671,7 @@ function update_d3ck(_d3ck) {
 }
 
 //
-// via REST... executes a program, creates client certs, stashes them
+// via REST, internal to srever... executes a program, creates client certs, stashes them
 // in the querying d3ck's dir, then returns the certs back
 //
 function create_cli3nt_rest(req, res, next) {
@@ -2564,6 +2567,59 @@ function load_up_cert_by_did(d3ck) {
     return(certz)
 
 }
+
+//
+// need a shared secret when creating a friend request
+//
+// Expires after a time... 3 days by default? That's:
+//
+//  3*24*60*60 = 259200 sec
+//
+//      Basic idea;
+//
+//          Assume Alice's d3ck wants to befriend Bob's d3ck.
+//
+//          AD = Alice's d3ck
+//          BD = Bob's d3ck
+//
+//          1) AD generates pseudo random number RNG. Currently 32 bytes from /dev/urandom
+//          2) AD sends RNG to BD using standard SSL
+//          3) ... time passes...
+//
+//          4) profit!  No, really... possible outcomes include:
+//
+//              a) BD replies
+//
+//                  if before expiration, the friend request will succeed, else fail
+//
+//              b) BD doesn't reply... then it simply expires
+//
+function generate_friend_request(d3ck_id) {
+
+    log.info('creating a shared secret')
+
+    var secret = gen_somewhat_random(SHARED_SECRET_BYTES)
+
+    // current time + expire window in seconds
+    var expiration_date = (new Date).getTime() + FRIEND_REQUEST_EXPIRES;
+
+    var friend_request = { secret: secret, expires: expiration_date }
+
+    console.log("secret! Don't tell anyone... well... you have to tell someone, or... " + JSON.stringify(friend_request))
+
+    rclient.set('friend_request_' + d3ck_id, friend_request, function(err) {
+        if (err) {
+            log.error(err, "friend secret couldn't be saved!  " + JSON.stringify(err));
+            return({error: err});
+        } else {
+            log.info('shared secret saved')
+            return(friend_request)
+        }
+
+    })
+
+}
+
 
 /*
  *
@@ -3678,11 +3734,22 @@ function create_d3ck_by_ip(req, res, next) {
     // do all the create stuff
     create_d3ck_locally(ip_addr).then(function(data) {
 
-        log.info('created local -> ' + JSON.stringify(data))
+        if (typeof data.error != "undefined") {
+            log.error(data.error)
+            deferred.reject({error: "error creating d3ck: " + JSON.stringify(data.error)})
+            return
+        }
+
+        //log.info('created local -> ' + JSON.stringify(data))
 
         if (typeof data.did == "undefined" || typeof data.owner.name == "undefined") {
+            log.error('error creating d3ck, bailing...')
             deferred.reject({ error: "couldnt get remote d3ck ID or owner name"} )
+            return
         }
+
+        // secretz......
+        var secret = generate_friend_request(data.D3CK_ID)
 
         //
         // get client keys
@@ -3698,7 +3765,8 @@ function create_d3ck_by_ip(req, res, next) {
                 bwana_d3ck.owner.name,
                 bwana_d3ck.owner.email,
                 ip_addr,
-                data.did]
+                data.did,
+                secret.secret]
 
         d3ck_spawn(cmd, argz)
 
@@ -3754,7 +3822,7 @@ function create_d3ck_locally(ip_addr) {
 
         if (typeof all_d3cks[ping_data.did] != "undefined") {
             log.error('duplicate... pass.')
-            p_deferred.reject({'error': "duplicate... alreadydone"})
+            p_deferred.reject({'error': "duplicate... already done"})
         }
 
         else {
