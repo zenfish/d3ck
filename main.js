@@ -28,6 +28,7 @@ var Tail       = require('./tail').Tail,
     tcpProxy   = require('tcp-proxy'),
     redis      = require("redis"),
     candyStore = require('connect-redis')(express);
+    qstring    = require('querystring'),
     request    = require('request'),
     response   = require('response-time'),
     rest       = require('rest'),
@@ -77,6 +78,11 @@ var d3ck_port_ext     = config.D3CK.d3ck_port_ext
 var d3ck_port_forward = config.D3CK.d3ck_port_forward
 var d3ck_port_signal  = config.D3CK.d3ck_port_signal
 var d3ck_proto_signal = config.D3CK.d3ck_proto_signal
+
+// secret stuff
+var SHARED_SECRET_BYTES    = config.magic_numbers.SHARED_SECRET_BYTES
+var FRIEND_REQUEST_EXPIRES = config.magic_numbers.FRIEND_REQUEST_EXPIRES
+
 
 // start with a clean slate
 status_queue = []   // not to be confused with quo
@@ -1645,13 +1651,10 @@ function update_d3ck(_d3ck) {
 }
 
 //
-// via REST, internal to srever... executes a program, creates client certs, stashes them
+// via REST... executes a program, creates client certs, stashes them
 // in the querying d3ck's dir, then returns the certs back
 //
 function create_cli3nt_rest(req, res, next) {
-
-    // XXXX - have to verify that they're requesting for themselves,
-    // not for others!
 
     var target  = ''
     var command = d3ck_bin + '/bundle_certs.js'
@@ -1668,6 +1671,24 @@ function create_cli3nt_rest(req, res, next) {
         res.send(400, { error: 'bad dog, no DiD, no tasty bites!' })
         return
     }
+
+    // secret in here
+    if (req.method.toLowerCase() == 'post') {
+
+        var body = '';
+        request.on('data', function (data) {
+            body += data;
+            // Too much POST data, kill the connection!
+            // if (body.length > 1e6)
+            // request.connection.destroy();
+        });
+        request.on('end', function () {
+            var post = qs.parse(body);
+            log.info("POSTY! " + post)
+        })
+
+    }
+
 
     var did = req.query.did
 
@@ -2568,7 +2589,7 @@ function load_up_cert_by_did(d3ck) {
 //
 //              b) BD doesn't reply... then it simply expires
 //
-function generate_friend_request(d3ck_id) {
+function generate_friend_request(ip_addr) {
 
     log.info('creating a shared secret')
 
@@ -2581,13 +2602,13 @@ function generate_friend_request(d3ck_id) {
 
     console.log("secret! Don't tell anyone... well... you have to tell someone, or... " + JSON.stringify(friend_request))
 
-    rclient.set('friend_request_' + d3ck_id, friend_request, function(err) {
+    return(friend_request)
+
+    rclient.set('friend_request_' + ip_addr, friend_request, function(err) {
         if (err) {
             log.error(err, "friend secret couldn't be saved!  " + JSON.stringify(err));
-            return({error: err});
         } else {
             log.info('shared secret saved')
-            return(friend_request)
         }
 
     })
@@ -2859,8 +2880,7 @@ function uploadSchtuff(req, res, next) {
 
     //
     // yet another hack in a long line of hacks...
-    // this time, multipart forms... let's just try to see
-    // if I can figure this out; this is only d3ck-2-d3ck
+    // this time, multipart forms... this should be is only d3ck-2-d3ck
     //
     if (typeof req.files.uppity == 'undefined') {
 
@@ -2872,10 +2892,6 @@ function uploadSchtuff(req, res, next) {
 
         var file_name   = req.headers['x-filename']
         var file_size   = req.headers['x-filesize']
-
-        // xxx
-        // when self-testing through a NAT... ips started getting weird... really
-        // should figure out from cert matching
         var file_d3ckid = req.headers['x-d3ckid']
 
         // var ws = fs.createWriteStream(d3ck_public + '/uploads/lucky.png')
@@ -3819,6 +3835,7 @@ function create_d3ck_locally(ip_addr) {
 
         var c_data   = ""
         var options  = {}
+        var secret   = generate_friend_request(ip_addr)
 
         options.url  = c_url
         options.form = { from_d3ck: bwana_d3ck.D3CK_ID, secret: secret } // toss a secret at them
@@ -3907,9 +3924,6 @@ function create_d3ck_locally(ip_addr) {
             r_deferred.reject({ "error": JSON.stringify(error)})
         });
 
-    }).fail(function (error) {
-        log.error("in create d3ck errz: " + error);
-        r_deferred.reject({ "error": error })
     });
 
     return deferred.promise;
