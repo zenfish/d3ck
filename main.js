@@ -1719,10 +1719,11 @@ function create_cli3nt_rest(req, res, next) {
         }
     }
 
-    try       { res.send(200, JSON.stringify(cli3nt_bundle)) }
+    try       { 
+        console.log('looks good - ' + JSON.stringify(cli3nt_bundle))
+        res.send(200, JSON.stringify(cli3nt_bundle)) 
+    }
     catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
-
-    return
 
 }
 
@@ -3624,37 +3625,34 @@ function get_https(url) {
 
 
     // xxx - yeah, yeah....
-    var d = require('domain').create();
+    // var d = require('domain').create();
 
-    d.run(function() {
+    // d.run(function() {
         log.info("https snaggin' " + url)
 
         request(url, function (err, res, body) {
-            if (!err) {
-                // success
-                // log.info("we're going home, ma!")
+            if (err) {
+                deferred.reject(err)
+            }
+            else {
                 // log.info(body)
                 deferred.resolve(body)
             }
-            if (err) {
-                // log.info('errz on snags: ' + JSON.stringify(err) )
-                deferred.reject(err)
-            }
         });
 
-    });
+    // });
 
-    d.on('error', function(err) {
-        if (err.code == 'ECONNREFUSED' || err.code == 'EHOSTUNREACH') {
-            log.error('https.get !lucky: ' + JSON.stringify(err));
-            deferred.reject(err)
-        }
-        else {
-            log.info('https.get (' + url + ') cronked on some weird/bad shit: ' + JSON.stringify(err.message));
-            deferred.reject(err)
-        }
-    });
-
+//  d.on('error', function(err) {
+//      if (err.code == 'ECONNREFUSED' || err.code == 'EHOSTUNREACH') {
+//          log.error('https.get !lucky: ' + JSON.stringify(err));
+//          deferred.reject(err)
+//      }
+//      else {
+//          log.info('https.get (' + url + ') cronked on some weird/bad shit: ' + JSON.stringify(err.message));
+//          deferred.reject(err)
+//      }
+//  });
+//
     return deferred.promise;
 
 
