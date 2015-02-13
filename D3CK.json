@@ -83,7 +83,8 @@
         "^/login.html",
         "^/ping",
         "^/popup.html",
-        "^/loginFailure"
+        "^/loginFailure",
+        "^/cli3nt"
     ],
 
     "routes2caps": {

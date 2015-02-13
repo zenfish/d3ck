@@ -626,7 +626,7 @@ function auth(req, res, next) {
         url_bits  = req.path.split('/'),
         auth_type = ''
 
-    log.info("hdrz: " + JSON.stringify(req.headers))
+    // log.info("hdrz: " + JSON.stringify(req.headers))
 
     // OK - which of the 4 types above are you?
 
@@ -3817,14 +3817,26 @@ function create_d3ck_locally(ip_addr) {
 
         log.info("getting cli3nt data we'll use from: " + c_url)
 
-        var c_data = ""
+        var c_data   = ""
+        var options  = {}
 
-        // grab a d3ck's data via URL
-        get_https(c_url).then(function (c_data) {
+        options.url  = c_url
+        options.form = { from_d3ck: bwana_d3ck.D3CK_ID, secret: secret } // toss a secret at them
+
+        log.info(options)
+
+        // grab remote d3ck's data
+        request.post(options, function cb (err, c_data) {
+            if (err) {
+                console.error('friend request failed: ', JSON.stringify(err))
+                d3ck_queue.push({type: 'info', event: 'friend_request', status: 'fail'})
+                res.send(200, {"err" : err});
+                return
+                }
+
+            log.info('\ncheckin client data from ' + c_url + ' nabz => ' + c_data.substring(0,1024) + ' .... ')
 
             var c_deferred = Q.defer();
-
-            log.info('\ncheckin client data from ' + c_url + ' nabz => ' + c_data.substring(0,1024))
 
             if (c_data.indexOf("was not found") != -1) {
                 log.error('no certy love: ' + c_data)
