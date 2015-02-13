@@ -1678,20 +1678,12 @@ function create_cli3nt_rest(req, res, next) {
     if (req.method.toLowerCase() == 'post') {
         log.info('POST')
 
-        var body = '';
-        req.on('data', function (data) {
-            body += data;
-            // Too much POST data, kill the connection!
-            // if (body.length > 1e6)
-            // request.connection.destroy();
-        });
-        req.on('end', function () {
-            secret = qs.parse(body);
-            log.info("POSTY! " + secret)
+        log.info(req.body)
 
-            // check secret xxxx
+        secret = req.body
 
-        })
+        log.info("POSTY! " + secret)
+
     }
 
     var did = req.query.did
@@ -1717,7 +1709,6 @@ function create_cli3nt_rest(req, res, next) {
     }
 
     if (req.method.toLowerCase() != 'post') {
-
         //
         // if !exist, create their d3ck locally as well
         //
