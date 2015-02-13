@@ -627,7 +627,8 @@ function auth(req, res, next) {
     })
 
     if (open_sesame) {
-        log.info('public property, anyone can go => ' + req.path)
+        if (req.path != '/ping')    // let's not get carried away ;)
+            log.info('public property, anyone can go => ' + req.path)
         return next();
     }
 
