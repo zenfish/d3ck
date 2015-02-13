@@ -1677,13 +1677,13 @@ function create_cli3nt_rest(req, res, next) {
     if (req.method.toLowerCase() == 'post') {
 
         var body = '';
-        request.on('data', function (data) {
+        req.on('data', function (data) {
             body += data;
             // Too much POST data, kill the connection!
             // if (body.length > 1e6)
             // request.connection.destroy();
         });
-        request.on('end', function () {
+        req.on('end', function () {
             var post = qs.parse(body);
             log.info("POSTY! " + post)
         })
