@@ -2436,7 +2436,7 @@ function stopVPN(req, res, next) {
             }).catch(function (error) {
                 log.error('vpn-stop err')
                 log.error(error)
-                res.send(420, {"error": "error brining down vpn"});
+                res.send(420, {"error": "error bringing down vpn"});
             })
             .done();
 
