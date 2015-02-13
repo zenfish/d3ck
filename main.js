@@ -1657,11 +1657,12 @@ function update_d3ck(_d3ck) {
 //
 function create_cli3nt_rest(req, res, next) {
 
-    var target  = '',
-        secret  = '',
-        command = d3ck_bin + '/bundle_certs.js',
-        argz    = [],
-        ip_addr = get_client_ip(req);
+    var target        = '',
+        secret        = '',
+        cli3nt_bundle = {},
+        command       = d3ck_bin + '/bundle_certs.js',
+        argz          = [],
+        ip_addr       = get_client_ip(req);
 
     //
     // url
@@ -1680,7 +1681,7 @@ function create_cli3nt_rest(req, res, next) {
 
         log.info(req.body)
 
-        secret = req.body
+        secret = req.body.secret
 
         log.info("POSTY! " + secret)
 
@@ -1701,7 +1702,7 @@ function create_cli3nt_rest(req, res, next) {
         log.info('looks good...')
         log.info(d3ck_keystore +'/'+ did + "/_cli3nt.all")
 
-        var cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ did + "/_cli3nt.json").toString())
+        cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ did + "/_cli3nt.json").toString())
 
         write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
         write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.cert", cli3nt_bundle.vpn.cert.join('\n'))
@@ -1715,12 +1716,13 @@ function create_cli3nt_rest(req, res, next) {
         if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
             log.info("Hmm, we don't have their data... try to get it")
             create_d3ck_locally(ip_addr)
-            try       { res.send(200, JSON.stringify(cli3nt_bundle)) }
-            catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
-
-            return
         }
     }
+
+    try       { res.send(200, JSON.stringify(cli3nt_bundle)) }
+    catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
+
+    return
 
 }
 
