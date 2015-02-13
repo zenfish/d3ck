@@ -4090,7 +4090,8 @@ function gen_somewhat_random(n) {
 //
 server.use(express.session({
     secret: gen_somewhat_random(),
-    store:  new candyStore({ client: rclient })
+    store:  new candyStore({ client: rclient }),
+    resave: false // don't save session if unmodified
 }));
 
 server.use(flash());
