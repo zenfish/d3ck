@@ -130,7 +130,6 @@ log.on('logging', function (transport, level, msg, meta) {
 })
 
 
-
 // firing up the auth engine
 init_capabilities(capabilities)
 
@@ -157,24 +156,13 @@ var PID_POLLING_TIME = config.misc.did_polling_time
 // users must run quickstart if they haven't already
 var redirect_to_quickstart = true
 if (fs.existsSync(d3ck_secretz)) {
-    console.log("---> NO QS!")
-    console.log("---> NO QS!")
-    console.log("---> NO QS!")
-    console.log("---> NO QS!")
     redirect_to_quickstart = false
-}
-else {
-    console.log("<--- QS!")
-    console.log("<--- QS!")
-    console.log("<--- QS!")
-    console.log("<--- QS!")
 }
 
 // owner user array
 var d3ck_owners = []
 
 var all_d3cks   = {}
-
 
 //
 // URLs that anyone can contact
@@ -285,20 +273,6 @@ rclient.keys('[A-F0-9]*', function (err, keys) {
         })
     }
 });
-
-
-
-
-
-// ... trust isnt in redis DB?
-// ... get /trust/xxxxx returns undef
-// ... blow things away, start scratch, see if they have trust?
-
-
-
-
-
-
 
 //
 // get the latest status... create the file if it doesn't exist...
@@ -594,7 +568,7 @@ function findByUsername(name, fn) {
 //
 // 4 situations:
 //
-//  local     - coming from 127.0.0.1. Probably server. If it's an attacker, we're in trouble...
+//  local     - coming from 127.0.0.1 or one of our IP #'s. Probably server. If it's an attacker, we're in trouble...
 //  
 //  logged in via login/passwd - probably the owner of the d3ck.
 //
@@ -652,6 +626,8 @@ function auth(req, res, next) {
         url_bits  = req.path.split('/'),
         auth_type = ''
 
+    log.warning("hdrz: " + JSON.stringify(req.headers))
+
     // OK - which of the 4 types above are you?
 
     //
@@ -665,7 +641,8 @@ function auth(req, res, next) {
 
     // for now... let in localhost... may rethink
     // log.info('localhost')
-    else if (ip == '127.0.0.1') {
+    // else if (ip == '127.0.0.1') {
+    else if (__.contains(my_ips, ip)) {
         log.info("you ain't from around here, are ya... wait... yes you are... hi, bobby-sue!  " + req.path)
         auth_type = 'local'
         return next();
@@ -817,9 +794,6 @@ wait_for_d3ck = null
 //
 // suck in our D3CK's data
 //
-// if it doesn't exist yet, spin and wait until it does... can't go anywhere without this
-//
-var sleepy_time = 5
 
 var init = false
 
