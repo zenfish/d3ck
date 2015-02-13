@@ -626,7 +626,7 @@ function auth(req, res, next) {
         url_bits  = req.path.split('/'),
         auth_type = ''
 
-    log.warning("hdrz: " + JSON.stringify(req.headers))
+    log.info("hdrz: " + JSON.stringify(req.headers))
 
     // OK - which of the 4 types above are you?
 
