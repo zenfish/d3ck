@@ -2634,42 +2634,36 @@ function knock(req, res, next) {
 
     // bail if we don't get ID
     // var ip_addr  = req.body.ip_addr
-    var ip_addr   = get_client_ip(req)
+    var ip_addr   = req.body.ip_addr
     var d3ckid    = req.body.d3ckid
     var from      = req.body.from
     var from_d3ck = req.body.from_d3ck
     var owner     = req.body.owner
+    var service   = req.body.service
 
     // bwana_d3ck.owner.name  = name
 
-
-    log.info(ip_addr, d3ckid)
-
-    if (typeof d3ckid == "undefined") {
-      var bad_dog = "No ID, no love";
-      log.info(bad_dog)
-      res.send(403, { "bad": "dog"});
-      return
-    }
-    else {
-        log.info("you've passed the first test...", d3ckid)
+    if (ip_addr == '') {
+        var bad_dog = "No IP, no love";
+        log.error(bad_dog)
+        res.send(403, { "bad": "dog"});
+        return
     }
 
-    log.info('moving on...')
-
-
+    //
     // is it for us, or are we passing it on?
-    if (d3ckid == bwana_d3ck.D3CK_ID) {
-
+    //
+    // if for us, give to user
+    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr)) {
         log.info("for me? You shouldn't have!")
-
-        resolveGeo(ip_addr)
 
         var d3ck_request    = {
             knock       : true,
-            ip_addr     : ip_addr,
             from        : from,
+            ip_addr     : ip_addr,
+            owner       : owner,
             'from_d3ck' : from_d3ck,
+            service     : service,
             did         : d3ckid
         }
 
@@ -2678,6 +2672,7 @@ function knock(req, res, next) {
         d3ck_status.d3ck_requests  = d3ck_request
 
         createEvent(client_ip, {event_type: "knock", "ip_addr": ip_addr, "from_d3ck": from_d3ck, "d3ck_id": d3ckid}, d3ck_status)
+
         d3ck_queue.push({type: 'request', event: 'knock' , 'd3ck_status': d3ck_status })
 
         log.info('sending back... <3!!!')
@@ -2688,17 +2683,18 @@ function knock(req, res, next) {
 
     }
 
+    // else, to another d3ck
     else {
         log.info('... you want the next door down....')
 
-        if (typeof d3ck2ip[d3ckid] == "undefined") {
-            log.info("Can't find IP addr for " + d3ckid)
-            res.send(420, { error: "enhance your calm! Can't find IP addr for " + d3ckid })
-        }
+        // if (typeof d3ck2ip[d3ckid] == "undefined") {
+        //     log.info("Can't find IP addr for " + d3ckid)
+        //     res.send(420, { error: "enhance your calm! Can't find IP addr for " + d3ckid })
+        // }
 
-        var ip = d3ck2ip[d3ckid]
+        // var ip = d3ck2ip[d3ckid]
 
-        var url = 'https://' + ip + ':' + d3ck_port_ext + '/knock'
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/knock'
 
         log.info(url)
 
@@ -2712,9 +2708,12 @@ function knock(req, res, next) {
         var d3ck_request    = {
             knock       : true,
             ip_addr     : ip_addr,
+            owner       : owner,
             'from_d3ck' : bwana_d3ck.D3CK_ID,
+            service     : service,
             did         : d3ckid
         }
+
         var d3ck_status            = empty_status()
         d3ck_status.d3ck_requests  = d3ck_request
 
@@ -2761,10 +2760,11 @@ function knockReply(req, res, next) {
     answer = req.params.answer
     d3ckid = req.params.d3ckid
 
-    client_ip = get_client_ip(req)
+    ip_addr = req.body.ip_addr
 
     // is it for us, or are we passing it on?
     if (d3ckid == bwana_d3ck.D3CK_ID) {
+
         log.info("about time you answered, I've been knocking!")
         log.info(req.body)
 
@@ -2772,14 +2772,19 @@ function knockReply(req, res, next) {
         var d3ck_response   = {
             knock    : true,
             answer   : answer,
+            ip_addr  : ip_addr,
+            service  : req.body.service,
             did      : req.body.did,
             did_from : req.body.did_from
         }
 
+        if (typeof req.body.secret != "undefined")
+            d3ck_response.secret = req.body.secret
+
         var d3ck_status            = empty_status()
         d3ck_status.d3ck_requests  = d3ck_response
 
-        createEvent(client_ip, {event_type: "knock_response", "d3ck_id": d3ckid}, d3ck_status)
+        createEvent(ip_addr, {event_type: "knock_response", "d3ck_id": d3ckid}, d3ck_status)
 
         d3ck_queue.push({type: 'info', event: 'knock_response', 'from_d3ck': req.body.did_from, 'd3ck_status': d3ck_status})
 
@@ -2787,13 +2792,7 @@ function knockReply(req, res, next) {
 
     }
     else {
-        if (typeof d3ck2ip[d3ckid] == "undefined") {
-            log.info("Can't find IP addr for " + d3ckid)
-            res.send(420, { error: "enhance your calm! Can't find IP addr for " + d3ckid })
-        }
-
-        var ip  = d3ck2ip[d3ckid]
-        var url = 'https://' + ip + ':' + d3ck_port_ext + '/knockReply/' + d3ckid + '/' + answer
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/knockReply/' + d3ckid + '/' + answer
 
         log.info('answer going to : ' + url)
 
@@ -2806,7 +2805,7 @@ function knockReply(req, res, next) {
 
         d3ck_status.d3ck_requests = d3ck_response
 
-        createEvent(client_ip, {event_type: "knock_request", "d3ck_id": d3ckid}, d3ck_status)
+        createEvent(ip_addr, {event_type: "knock_request", "d3ck_id": d3ckid}, d3ck_status)
 
         d3ck_queue.push({type: 'info', event: 'knock_request', 'd3ck_status': d3ck_status})
 
@@ -2826,6 +2825,53 @@ function knockReply(req, res, next) {
             }
         })
     }
+
+    // do all the create stuff
+//    create_d3ck_locally(ip_addr).then(function(data) {
+//
+//        if (typeof data.error != "undefined") {
+//            log.error(data.error)
+//            deferred.reject({error: "error creating d3ck: " + JSON.stringify(data.error)})
+//            return
+//        }
+//
+//        //log.info('created local -> ' + JSON.stringify(data))
+//
+//        if (typeof data.did == "undefined" || typeof data.owner.name == "undefined") {
+//            log.error('error creating d3ck, bailing...')
+//            deferred.reject({ error: "couldnt get remote d3ck ID or owner name"} )
+//            return
+//        }
+//
+//        // secretz......
+//        var secret = generate_friend_request(data.D3CK_ID)
+//
+//        //
+//        // get client keys
+//        //
+//        log.info("posting our d3ck data to the d3ck we just added with create_d3ck.sh....")
+//
+//        var cmd  = d3ck_bin + '/create_client_d3ck.sh'
+//
+//        argz = [bwana_d3ck.D3CK_ID,
+//                bwana_d3ck.image,
+//                bwana_d3ck.ip_addr,
+//                "\"all_ips\": [" + my_ips + "]",
+//                bwana_d3ck.owner.name,
+//                bwana_d3ck.owner.email,
+//                ip_addr,
+//                data.did,
+//                secret.secret]
+//
+//        d3ck_spawn(cmd, argz)
+//
+//        createEvent(ip_addr, {event_type: "create", d3ck_id: data.did})
+//
+//        d3ck_queue.push({type: 'info', event: 'd3ck_create', 'd3ck_status': d3ck_status})
+//
+//        deferred.resolve();
+//
+//    })
 
 }
 
@@ -3698,54 +3744,33 @@ function create_d3ck_by_ip(req, res, next) {
 
     var ip_addr  = req.body.ip_addr
 
-    log.info("creating d3ck by " + ip_addr)
-
     var deferred = Q.defer();
 
-    // do all the create stuff
-    create_d3ck_locally(ip_addr).then(function(data) {
+    log.info("creating d3ck hopefully found @ " + ip_addr)
 
-        if (typeof data.error != "undefined") {
-            log.error(data.error)
-            deferred.reject({error: "error creating d3ck: " + JSON.stringify(data.error)})
+    // need a secret they'll send back if they say yes
+    var secret = generate_friend_request(ip_addr)
+
+    var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/knock'
+
+    var options = { url: url, d3ckid: bwana_d3ck.D3CK_ID, ip_addr: ip_addr, owner: bwana_d3ck.owner.name, service: 'friend' }
+
+    log.info('knocking @ ' + url)
+
+    // grab remote d3ck's data... first we have to ask permission
+    request.post(options, function cb (e, r, body) {
+        if (e) {
+            console.error('friend request failed: ', JSON.stringify(e))
+            d3ck_queue.push({type: 'info', event: 'friend_request', status: 'fail'})
+            deferred.reject({"err" : e});
             return
         }
 
-        //log.info('created local -> ' + JSON.stringify(data))
+        log.info('friend request returned... ' + body)
 
-        if (typeof data.did == "undefined" || typeof data.owner.name == "undefined") {
-            log.error('error creating d3ck, bailing...')
-            deferred.reject({ error: "couldnt get remote d3ck ID or owner name"} )
-            return
-        }
+        // remote will kick off transfer
+        deferred.resolve(body.secret);
 
-        // secretz......
-        var secret = generate_friend_request(data.D3CK_ID)
-
-        //
-        // get client keys
-        //
-        log.info("posting our d3ck data to the d3ck we just added with create_d3ck.sh....")
-
-        var cmd  = d3ck_bin + '/create_client_d3ck.sh'
-
-        argz = [bwana_d3ck.D3CK_ID,
-                bwana_d3ck.image,
-                bwana_d3ck.ip_addr,
-                "\"all_ips\": [" + my_ips + "]",
-                bwana_d3ck.owner.name,
-                bwana_d3ck.owner.email,
-                ip_addr,
-                data.did,
-                secret.secret]
-
-        d3ck_spawn(cmd, argz)
-
-        createEvent(ip_addr, {event_type: "create", d3ck_id: data.did})
-
-        d3ck_queue.push({type: 'info', event: 'd3ck_create', 'd3ck_status': d3ck_status})
-
-        deferred.resolve();
     })
 
     back_to_home(res)
