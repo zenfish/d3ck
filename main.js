@@ -2629,6 +2629,7 @@ function knock(req, res, next) {
 
     log.info('knock knock')
 
+    log.info(req.body)
     //log.info(req.params)
     // log.info(req)
 
