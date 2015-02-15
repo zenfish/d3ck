@@ -2630,7 +2630,9 @@ function knock(req, res, next) {
     log.info('knock knock')
 
     log.info(req.body)
-    //log.info(req.params)
+
+    log.info(req.params)
+
     // log.info(req)
 
     // bail if we don't get ID
@@ -2641,6 +2643,12 @@ function knock(req, res, next) {
     var from_d3ck = req.body.from_d3ck
     var owner     = req.body.owner
     var service   = req.body.service
+
+    var secret    = ''
+    if (typeof req.body.secret != 'undefined') {
+        secret = req.body.secret
+    }
+
 
     // bwana_d3ck.owner.name  = name
 
@@ -2655,7 +2663,8 @@ function knock(req, res, next) {
     // is it for us, or are we passing it on?
     //
     // if for us, give to user
-    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr)) {
+    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (service == 'friend' && secret)) {
+
         log.info("for me? You shouldn't have!")
 
         var d3ck_request    = {
@@ -2667,6 +2676,9 @@ function knock(req, res, next) {
             service     : service,
             did         : d3ckid
         }
+
+        d3ck_request.secret             = ''
+        if (secret) d3ck_request.secret = secret
 
         var d3ck_status            = empty_status()
 
@@ -3753,9 +3765,17 @@ function create_d3ck_by_ip(req, res, next) {
 
     var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/knock'
 
-    var options = { url: url, d3ckid: bwana_d3ck.D3CK_ID, ip_addr: ip_addr, owner: bwana_d3ck.owner.name, service: 'friend' }
+    var options = { 
+        url:     url,
+        d3ckid:  bwana_d3ck.D3CK_ID,
+        ip_addr: ip_addr,
+        owner:   bwana_d3ck.owner.name,
+        service: 'friend',
+        secret:  secret
+    }
 
     log.info('knocking @ ' + url)
+    log.info('with: ' + JSON.stringify(options))
 
     // grab remote d3ck's data... first we have to ask permission
     request.post(options, function cb (e, r, body) {
