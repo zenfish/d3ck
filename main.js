@@ -2822,6 +2822,7 @@ function knockReply(req, res, next) {
         d3ck_queue.push({type: 'info', event: 'knock_request', 'd3ck_status': d3ck_status})
 
         // var options = load_up_cc_cert(d3ckid)
+        var options = {}
 
         options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
 
@@ -3765,8 +3766,9 @@ function create_d3ck_by_ip(req, res, next) {
 
     var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/knock'
 
-    var options = { 
-        url:     url,
+    var options  = { url:     url }
+
+    options.form = {
         d3ckid:  bwana_d3ck.D3CK_ID,
         ip_addr: ip_addr,
         owner:   bwana_d3ck.owner.name,
