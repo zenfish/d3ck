@@ -540,7 +540,7 @@ function d3ck_create(element, ip_addr) {
         data: post_data,
         success: function(data, status) {
             console.log('suck... sess.... ')
-            inform_user('adding d3ck', 'trying to add ' + ip_addr)
+            inform_user('adding d3ck', 'trying to befriend the d3ck @ ' + ip_addr)
         },
         fail: function(data, err) {
             console.log('fuck... me')
@@ -1098,6 +1098,14 @@ function queue_or_die(queue) {
         inform_user('error', queue.message, 'error')
         return
     }
+
+    // friend request
+    else if (queue.service == 'friend') {
+        console.log('event: ' + JSON.stringify(queue))
+        ask_user_4_response(queue)
+        return
+    }
+
     else {
         console.log(':???: ' + JSON.stringify(queue))
         return
@@ -1886,33 +1894,11 @@ function inform_user(title, message, level, element) {
 
 }
 
+
 //
-// (it will eventually!) look up authorization for request, do various things based on this
+// ask the user in the UI - confirm, deny, or...?
 //
-function ask_user_4_response(data) {
-
-    console.log('ask the user....')
-
-    if (typeof data.type == "undefined" || data.type != 'request') {
-        console.log("that ain't no question")
-        return
-    }
-
-    console.log(data.d3ck_status)
-
-    var req = data.d3ck_status.d3ck_requests
-
-// ask_user_4_response({qtype: 'knock', 'from': friend, 'ip_addr': d3ck_status.d3ck_requests.ip_addr, 'did': d3ck_status.d3ck_requests.from_d3ck})
-
-    if (data.event == 'knock') {
-
-        console.log('knock... time to pay the piper...')
-
-        var friend = req.from
-
-        // var message_request = '<h2>' + req.from + '</h2> wants to connect from <span style="font-weight: 600">' + req.ip_addr + '</span><br /><span style="font-weight:100">' + req.from_d3ck + '</span><br />'
-        var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
-                              '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
+function confirm_or_deny_or(type, message, element) {
 
         $("#labels", function () {
             alertify.set({
@@ -1921,7 +1907,7 @@ function ask_user_4_response(data) {
                 labels          : { ok: 'Answer', cancel: 'Decline' }
             });
 
-            inform_user('Connect Request', req.from + ' wants to connect from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
+            inform_user(req.from + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
 
             // user hit allow or deny?
             alertify.confirm(message_request, function (e) {
@@ -1930,6 +1916,7 @@ function ask_user_4_response(data) {
 
                 var answer    = ''
                 var post_data = { 'ip_addr' : my_d3ck.ip_addr, 'from_d3ck': req.from_d3ck, 'did': my_d3ck.D3CK_ID }
+
                 post_data     = JSON.stringify(post_data)
 
                 // if they say yes....
@@ -1964,15 +1951,22 @@ function ask_user_4_response(data) {
                     })
 
 
+                    if (type == 'knock') {
+                        inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
+                        lower_shields(req.ip_addr)
+                    }
+                    if (type == 'befriend') {
+                        inform_user('starting to exchange d3ck data', 'info')
+                        // xxx - do something friendy to start sending things
+                        // friendy(secret)
+                    }
+
                     $('#alertify-ok').hide()
-                    inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
-                    lower_shields(req.ip_addr)
 
                 }
                 else {
                     answer = 'no'
-                    inform_user('request', 'declined connection from ' + req.ip_addr)
-                    // alertify.error('Declined connection from: <br />' + req.from + ' / ' + req.ip_addr, "", 0)
+                    inform_user('declined request from: ' + req.ip_addr)
                 }
 
                 $.ajax({
@@ -1995,10 +1989,8 @@ function ask_user_4_response(data) {
         });
 
         $('#alertify').append('<div style="height:150px;width:150px;float:left;" id="timer_countdown" data-timer="' + DEFAULT_RING_TIME + '"></div>')
-        // $('body').append('<div style="height:150px;width:150px;" id="timer_countdown" data-timer="' + DEFAULT_RING_TIME + '"></div>')
-
-    //  timer circle
-          $('#timer_countdown').TimeCircles({
+        //  timer circle
+        $('#timer_countdown').TimeCircles({
               total_duration  : DEFAULT_RING_TIME + 1,
               direction: "Counter-clockwise",
               count_past_zero : false,
@@ -2016,13 +2008,52 @@ function ask_user_4_response(data) {
                   $('#alertify-cancel').click()
               }
           });
-        // $.bootstrapGrowl('<strong>' + data.from + '</strong> wants to connect\n' + data.ip_addr + '\n' + data.did, { 
-        //     offset: { from: 'top', amount: 140}, delay: -1, align: 'center', allow_dismiss: true 
-        // })
+}
 
-        // $('.thumbnail').css({"text-overflow": "ellipsis"})
-        // $.bootstrapGrowl("My message");
+//
+// (it will eventually!) look up authorization for request, do various things based on this
+//
+function ask_user_4_response(data) {
+
+    console.log('ask the user....')
+
+    if (typeof data.type == "undefined" || data.type != 'request') {
+        console.log("that ain't no question")
+        return
     }
+
+    console.log(data.d3ck_status)
+
+    var req = data.d3ck_status.d3ck_requests
+
+// ask_user_4_response({qtype: 'knock', 'from': friend, 'ip_addr': d3ck_status.d3ck_requests.ip_addr, 'did': d3ck_status.d3ck_requests.from_d3ck})
+
+    if (data.event == 'knock') {
+
+        console.log('knock... time to pay the piper...')
+
+        var friend          = req.from
+
+        var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
+                              '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
+
+        confirm_or_deny_or('connect', message_request, '#labels')
+
+    }
+
+    else if (data.service == 'friend') {
+
+        console.log('friend or foe?')
+
+        var friend          = req.from
+
+        var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
+                              '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
+
+        confirm_or_deny_or('befriend', message_request, '#labels')
+
+    }
+
 
 }
 
