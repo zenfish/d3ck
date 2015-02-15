@@ -2028,7 +2028,15 @@ function ask_user_4_response(data) {
 
 // ask_user_4_response({qtype: 'knock', 'from': friend, 'ip_addr': d3ck_status.d3ck_requests.ip_addr, 'did': d3ck_status.d3ck_requests.from_d3ck})
 
-    if (data.event == 'knock') {
+    if (data.service == 'friend') {
+        console.log('friend or foe?')
+        var friend          = req.from
+        var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
+                              '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
+        confirm_or_deny_or('befriend', message_request, '#labels')
+    }
+
+    else if (data.event == 'knock') {
 
         console.log('knock... time to pay the piper...')
 
@@ -2038,19 +2046,6 @@ function ask_user_4_response(data) {
                               '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
 
         confirm_or_deny_or('connect', message_request, '#labels')
-
-    }
-
-    else if (data.service == 'friend') {
-
-        console.log('friend or foe?')
-
-        var friend          = req.from
-
-        var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
-                              '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
-
-        confirm_or_deny_or('befriend', message_request, '#labels')
 
     }
 
