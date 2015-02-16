@@ -1901,11 +1901,26 @@ function inform_user(title, message, level, element) {
 function confirm_or_deny_or(type, req, element) {
 
         $("#labels", function () {
-            alertify.set({
-                // delay           : DEFAULT_RING_TIME,
-                buttonReverse   : true, 
-                labels          : { ok: 'Answer', cancel: 'Decline' }
-            });
+
+            // defaults
+
+
+            if (def(req.service) && req.service == 'friend') {
+                alertify.set({
+                    buttonReverse   : true, 
+                    labels          : { ok: 'Confirm', cancel: 'Not Now' }
+                })
+            }
+
+            // currently only calls
+            else {
+                alertify.set({
+                    buttonReverse   : true, 
+                    labels          : { ok: 'Answer', cancel: 'Decline' }
+                });
+            }
+
+
 
             var message_request = ''
             if (typeof all_d3ck_ids[req.from_d3ck] != 'undefined') {
@@ -1913,7 +1928,12 @@ function confirm_or_deny_or(type, req, element) {
                                       '<h2 style="position: relative;">Connecting...</h2></span><br />'
             }
 
-            inform_user(req.from + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
+            if (def(req.from)) {
+                inform_user(req.from + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
+            }
+            else {
+                inform_user(req.did+ ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
+            }
 
             // user hit allow or deny?
             alertify.confirm(message_request, function (e) {
