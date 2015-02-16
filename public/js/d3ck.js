@@ -1951,8 +1951,11 @@ function confirm_or_deny_or(type, req, element) {
                     answer = 'yes'
 
                     if (def(req.service) && req.service == 'friend') {
+                        inform_user('starting to exchange d3ck data', 'info')
+                        // xxx - do something friendy to start sending things
+                        // friendy(secret)
                         $('#alertify-ok').hide()
-                        return
+                        break
                     }
 
 
@@ -1983,11 +1986,6 @@ function confirm_or_deny_or(type, req, element) {
                     if (type == 'knock') {
                         inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
                         lower_shields(req.ip_addr)
-                    }
-                    if (type == 'befriend') {
-                        inform_user('starting to exchange d3ck data', 'info')
-                        // xxx - do something friendy to start sending things
-                        // friendy(secret)
                     }
 
                     $('#alertify-ok').hide()
