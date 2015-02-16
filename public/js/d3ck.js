@@ -1907,6 +1907,12 @@ function confirm_or_deny_or(type, req, element) {
                 labels          : { ok: 'Answer', cancel: 'Decline' }
             });
 
+            var message_request = ''
+            if (typeof all_d3ck_ids[req.from_d3ck] != 'undefined') {
+                var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
+                                      '<h2 style="position: relative;">Connecting...</h2></span><br />'
+            }
+
             inform_user(req.from + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
 
             // user hit allow or deny?
@@ -1923,12 +1929,6 @@ function confirm_or_deny_or(type, req, element) {
                 if (e) {
                     console.log('go for it')
                     answer = 'yes'
-
-                    var message_request = ''
-                    if (typeof all_d3ck_ids[req.from_d3ck] != 'undefined') {
-                        var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
-                                              '<h2 style="position: relative;">Connecting...</h2></span><br />'
-                    }
 
                     alertify.set({
                         buttonReverse   : true,
