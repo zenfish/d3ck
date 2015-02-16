@@ -1950,6 +1950,12 @@ function confirm_or_deny_or(type, req, element) {
                     console.log('go for it')
                     answer = 'yes'
 
+                    if (def(req.service) && req.service == 'friend') {
+                        $('#alertify-ok').hide()
+                        return
+                    }
+
+
                     alertify.set({
                         buttonReverse   : true,
                         labels          : { ok: 'Answer', cancel: 'Decline' }
