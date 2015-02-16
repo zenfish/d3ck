@@ -1101,7 +1101,7 @@ function queue_or_die(queue) {
 
     // friend request
     else if (queue.service == 'friend') {
-        console.log('event: ' + JSON.stringify(queue))
+        console.log('friend: ' + JSON.stringify(queue))
         ask_user_4_response(queue)
         return
     }
