@@ -2026,7 +2026,7 @@ function ask_user_4_response(data) {
 
     var req = data.d3ck_status.d3ck_requests
 
-    if (req.d3ck_r == 'friend') {
+    if (req.service == 'friend') {
         console.log('friend or foe?')
         var friend          = req.from
         var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
@@ -2045,6 +2045,9 @@ function ask_user_4_response(data) {
 
         confirm_or_deny_or('connect', message_request, '#labels')
 
+    }
+    else {
+        inform_user('request for answer', 'unknown type: ' + req.event, 'warning')
     }
 
 
