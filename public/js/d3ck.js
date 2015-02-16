@@ -1954,38 +1954,38 @@ function confirm_or_deny_or(type, req, element) {
                         inform_user('starting to exchange d3ck data', 'info')
                         // xxx - do something friendy to start sending things
                         // friendy(secret)
-                        $('#alertify-ok').hide()
-                        break
                     }
+                    else {
+
+                        alertify.set({
+                            buttonReverse   : true,
+                            labels          : { ok: 'Answer', cancel: 'Decline' }
+                        });
+
+                        // xxx - if user hits cancel... ignore for now... probably not optimal, lol
+                        alertify.confirm(message_request, function (e) {
+                            console.log('cancel...?')
+                            console.log(e)
+
+                            var answer    = ''
+
+                            // this will be hidden... only programatically triggered, hopefully
+                            if (e) {
+                                console.log('clicking... ok, ok')
+                            }
+                            else {
+                                inform_user('info', 'you cancelled the call', 'warning')
+                                console.log('give it the ol college try')
+                                event_hang_up(d3ckid)
+                            }
+                        })
 
 
-                    alertify.set({
-                        buttonReverse   : true,
-                        labels          : { ok: 'Answer', cancel: 'Decline' }
-                    });
-
-                    // xxx - if user hits cancel... ignore for now... probably not optimal, lol
-                    alertify.confirm(message_request, function (e) {
-                        console.log('cancel...?')
-                        console.log(e)
-
-                        var answer    = ''
-
-                        // this will be hidden... only programatically triggered, hopefully
-                        if (e) {
-                            console.log('clicking... ok, ok')
+                        if (type == 'knock') {
+                            inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
+                            lower_shields(req.ip_addr)
                         }
-                        else {
-                            inform_user('info', 'you cancelled the call', 'warning')
-                            console.log('give it the ol college try')
-                            event_hang_up(d3ckid)
-                        }
-                    })
 
-
-                    if (type == 'knock') {
-                        inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
-                        lower_shields(req.ip_addr)
                     }
 
                     $('#alertify-ok').hide()
