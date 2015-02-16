@@ -1898,7 +1898,7 @@ function inform_user(title, message, level, element) {
 //
 // ask the user in the UI - confirm, deny, or...?
 //
-function confirm_or_deny_or(type, message, element) {
+function confirm_or_deny_or(type, req, element) {
 
         $("#labels", function () {
             alertify.set({
@@ -1924,8 +1924,11 @@ function confirm_or_deny_or(type, message, element) {
                     console.log('go for it')
                     answer = 'yes'
 
-                    var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
-                                          '<h2 style="position: relative;">Connecting...</h2></span><br />'
+                    var message_request = ''
+                    if (typeof all_d3ck_ids[req.from_d3ck] != 'undefined') {
+                        var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
+                                              '<h2 style="position: relative;">Connecting...</h2></span><br />'
+                    }
 
                     alertify.set({
                         buttonReverse   : true,
