@@ -2677,8 +2677,9 @@ function knock(req, res, next) {
             did         : d3ckid
         }
 
-        d3ck_request.secret             = ''
-        if (secret) d3ck_request.secret = secret
+        d3ck_request.secret        = ''
+        if (secret) 
+            d3ck_request.secret    = secret
 
         var d3ck_status            = empty_status()
 

@@ -2026,9 +2026,7 @@ function ask_user_4_response(data) {
 
     var req = data.d3ck_status.d3ck_requests
 
-// ask_user_4_response({qtype: 'knock', 'from': friend, 'ip_addr': d3ck_status.d3ck_requests.ip_addr, 'did': d3ck_status.d3ck_requests.from_d3ck})
-
-    if (data.service == 'friend') {
+    if (req.d3ck_r == 'friend') {
         console.log('friend or foe?')
         var friend          = req.from
         var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
@@ -2036,7 +2034,7 @@ function ask_user_4_response(data) {
         confirm_or_deny_or('befriend', message_request, '#labels')
     }
 
-    else if (data.event == 'knock') {
+    else if (req.event == 'knock') {
 
         console.log('knock... time to pay the piper...')
 
