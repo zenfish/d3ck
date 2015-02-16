@@ -2029,8 +2029,7 @@ function ask_user_4_response(data) {
     if (req.service == 'friend') {
         console.log('friend or foe?')
         var friend          = req.from
-        var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
-                              '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
+        var message_request = ''
         confirm_or_deny_or('befriend', message_request, '#labels')
     }
 
@@ -2040,7 +2039,8 @@ function ask_user_4_response(data) {
 
         var friend          = req.from
 
-        var message_request = ''
+        var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
+                              '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
 
         confirm_or_deny_or('connect', message_request, '#labels')
 
