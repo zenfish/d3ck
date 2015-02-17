@@ -104,7 +104,7 @@ var time_format = 'MMMM Do YYYY, h:mm:ss a'     // used by moment.js
 //
 var log = new (winston.Logger)({
     transports: [
-      // console.log, basically
+      // log.info, basically
       new (winston.transports.Console)({
           timestamp: function() { // put my stamp on the timestamps
             return moment().format(time_format)
@@ -131,7 +131,7 @@ var log = new (winston.Logger)({
 //
 log.on('logging', function (transport, level, msg, meta) {
     if (level == 'error' && transport.name == 'd3ck_console') {
-        console.log('\terrz --> ' + msg)
+        log.info('\terrz --> ' + msg)
         d3ck_queue.push({type: 'error', event: 'error', 'message': msg, time: moment().format(time_format)})
         createEvent(client_ip, {event_type: "error", message: msg})
     }
@@ -608,7 +608,7 @@ function auth(req, res, next) {
         // log.info(r + ' vs. ' + req.path)
         // if (r == req.path) {
         if (req.path.search(r) > -1) {
-            // console.log('WIN! -> ' + r + ' vs. ' + req.path)
+            // log.info('WIN! -> ' + r + ' vs. ' + req.path)
             auth_type = 'anon'
             open_sesame = true
         }
@@ -1760,7 +1760,7 @@ function create_cli3nt_rest(req, res, next) {
     // }
 
     try       { 
-        // console.log('looks good - ' + JSON.stringify(cli3nt_bundle))
+        // log.info('looks good - ' + JSON.stringify(cli3nt_bundle))
         res.send(200, JSON.stringify(cli3nt_bundle)) 
     }
     catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
@@ -2638,7 +2638,7 @@ function generate_friend_request(ip_addr) {
 
     var friend_request = { secret: secret, expires: expiration_date }
 
-    console.log("secret! Don't tell anyone... well... you have to tell someone, or... " + JSON.stringify(friend_request))
+    log.info("secret! Don't tell anyone... well... you have to tell someone, or... " + JSON.stringify(friend_request))
 
     return(friend_request)
 
@@ -2687,7 +2687,7 @@ function serviceRequest(req, res, next) {
         return
     }
 
-    console.log('service request: ' + service)
+    log.info('service request: ' + service)
 
     if (typeof req.body.secret != 'undefined') { secret = req.body.secret }
 
@@ -2710,10 +2710,13 @@ function serviceRequest(req, res, next) {
     // special case - friending... don't know d3ck_id yet
     //
     if (__.contains(my_ips, ip_addr)) {
-        console.log("NO MATCH! -> ")
-        console.log(ip_addr)
-        console.log(my_ips)
+        log.info("NO MATCH! -> ")
+        log.info(ip_addr)
+        log.info(my_ips)
     }
+
+    else log.info("MATCH, mofo!")
+
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend')) {
         log.info("for me? You shouldn't have!")
 
