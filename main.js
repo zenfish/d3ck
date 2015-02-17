@@ -109,7 +109,7 @@ var log = new (winston.Logger)({
           timestamp: function() { // put my stamp on the timestamps
             return moment().format(time_format)
           },
-          name:      'd3ck_console', 
+          name:      'd3ck_console',
           colorize:  true
       }),
       // log stuff to a real d3ck log file
@@ -117,7 +117,7 @@ var log = new (winston.Logger)({
           timestamp: function() { // put my stamp on the timestamps
             return moment().format(time_format)
           },
-          name:      'd3ck_logfile', 
+          name:      'd3ck_logfile',
           filename:  d3ck_logs + '/' + 'd3ck.log',
           handleExceptions: true,
           json:             true
@@ -580,7 +580,7 @@ function findByUsername(name, fn) {
 // 4 situations:
 //
 //  local     - coming from 127.0.0.1 or one of our IP #'s. Probably server. If it's an attacker, we're in trouble...
-//  
+//
 //  logged in via login/passwd - probably the owner of the d3ck.
 //
 //  authenticated via client side cert. This will map the IP to the D3CK ID associated with the certificate.
@@ -627,7 +627,7 @@ function auth(req, res, next) {
     if (redirect_to_quickstart) {
         if (req.path == '/quikstart.html') {
             log.info('you want quickstart, you got it')
-            return next() 
+            return next()
         }
         log.info('redirecting to qs from ' + req.path)
         res.redirect(302, '/quikstart.html')
@@ -668,7 +668,7 @@ function auth(req, res, next) {
     //  'x-ssl-client-verify': 'SUCCESS',
     //  'x-ssl-client-s-dn': '/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=BBB46ECE741BA56C4EF84DC5710D2D060CD86AF2.4ca0d9de10f01745420cceb',
     //
-    // Normally... I trust as little as possible... but since we issued this cert, 
+    // Normally... I trust as little as possible... but since we issued this cert,
     // I think it's pretty safe to assume that it's actually the real deal, and
     // we can extract their d3ck id from it.
     //
@@ -1755,9 +1755,9 @@ function create_cli3nt_rest(req, res, next) {
     }
     // }
 
-    try       { 
+    try       {
         // log.info('looks good - ' + JSON.stringify(cli3nt_bundle))
-        res.send(200, JSON.stringify(cli3nt_bundle)) 
+        res.send(200, JSON.stringify(cli3nt_bundle))
     }
     catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
 
@@ -2677,7 +2677,14 @@ function serviceRequest(req, res, next) {
         service   = req.body.service,
         secret    = '';
 
-    if (typeof req.body.secret != 'undefined') { secret = req.body.secret }
+    // if given one, use that
+    if (typeof req.body.secret != 'undefined') { 
+        secret = req.body.secret
+    }
+    // else check to see if it's in the all-array o secrets
+    else if (typeof secret_requests[ip_addr] != 'undefined') {
+        secret = secret_requests[ip_addr]
+    }
 
     if (typeof service == 'undefined') {
         log.error("Service type required when asking for service!")
@@ -2710,7 +2717,7 @@ function serviceRequest(req, res, next) {
 
         var _tmp_d3ck = {}
 
-        if (service == 'friend') { _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] } 
+        if (service == 'friend') { _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] }
         else                     { _tmp_d3ck = all_d3cks[d3ck_id] }
 
         log.info('service: ' + service)
@@ -2729,6 +2736,7 @@ function serviceRequest(req, res, next) {
             action      : action,
             'from_d3ck' : from_d3ck,
             service     : service,
+            secret      : secret
         }
 
         d3ck_request.secret        = secret
@@ -2769,13 +2777,12 @@ function serviceRequest(req, res, next) {
 
         // var options = load_up_cc_cert(d3ckid)
 
-        options = { 
+        options = {
             'ip_addr' : ip_addr,
             'd3ckid'  : d3ckid,
             from_d3ck : bwana_d3ck.D3CK_ID,
             from      : bwana_d3ck.owner.name,
-            secret    : secret,
-            url       : url 
+            url       : url
         }
 
         log.info(options)
@@ -2786,6 +2793,7 @@ function serviceRequest(req, res, next) {
             owner       : owner,
             'from_d3ck' : bwana_d3ck.D3CK_ID,
             service     : service,
+            secret      : secret,
             did         : d3ckid
         }
 
