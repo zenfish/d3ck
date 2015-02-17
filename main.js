@@ -2713,6 +2713,9 @@ function serviceRequest(req, res, next) {
         if (service == 'friend') { _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] } 
         else                     { _tmp_d3ck = all_d3cks[d3ck_id] }
 
+        log.info('service: ' + service)
+        log.info(_tmp_d3ck.capabilities)
+
         // XXXXX - TODO! If the action is simply accept, don't wait until client replies, just do it and inform!
         // XXXXX - TODO! If the action is simply accept, don't wait until client replies, just do it and inform!
         // XXXXX - TODO! If the action is simply accept, don't wait until client replies, just do it and inform!
