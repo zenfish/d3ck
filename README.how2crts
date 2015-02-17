@@ -1,0 +1,53 @@
+
+Basic steps taken when you do a friend request of a d3ck - needed - the
+remote d3ck's IP address (hostnames will be soon, working on resolver!)
+
+requester (usually done in UI by clicking and typing in IP):
+
+    - send request to remote - will you be my friend?
+
+    - generate client certs
+
+    - wait for response
+
+    - if response is affirmative
+
+        - save remote certs
+
+        - send FULL d3ck AND client certs
+
+    - if negative/timeout/etc., revoke client certs and tell user
+
+
+requestee:
+
+    - get request
+
+    - look up what to do - ask, deny, accept..?
+
+    - if accept request
+
+        - generate client certs for requester
+
+        - send FULL d3ck AND client certs
+
+        - lookup how to notify user
+
+        - wait for remote response
+
+        - if affirmative
+
+            - make remote d3ck live
+
+            - lookup how to notify user
+
+        - if never get it, time out, etc.
+
+            - lookup how to notify user
+
+
+    - if no
+    
+        - lookup how to notify user
+
+

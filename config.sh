@@ -41,6 +41,7 @@ export RANDFILE="$D3CK_HOME/.rnd"
 export hell="$D3CK_HOME/f-u-openssl"
 
 export keystore="$D3CK_HOME/d3cks"
+export staging="$keystore/staging"
 export d3ck_keystore="$D3CK_HOME/d3cks/D3CK"
 
 export d3ck_proto="https"

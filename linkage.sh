@@ -65,6 +65,7 @@ sudo mkdir /etc/d3ck/uploads
 sudo mkdir /etc/d3ck/logs
 sudo mkdir /etc/d3ck/redis
 sudo mkdir /etc/d3ck/d3cks
+sudo mkdir /etc/d3ck/d3cks/staging
 
 sudo mkdir -p /etc/d3ck/f-u-openssl/clients
 

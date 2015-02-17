@@ -1,14 +1,13 @@
 #!/bin/bash
 #
-# create a new d3ck via curl
+# create new client certs for potential friends
 #
-# Usage: $0 d3ck-id picture IP-addr 'ints-n-ips-in-json' owner email d3ck-ip remote-d3ck-id
+# Usage: $0 d3ck-id picture IP-addr 'ints-n-ips-in-json' owner email d3ck-ip remote-d3ck-id secret
 #
 
 . /etc/d3ck/config.sh
 
 results="$D3CK_TMP/_d3ck_create_results.$$"
-new_d3ck="$D3CK_TMP/_new_d3ck.$$"
 tmp_files="$results $new_d3ck"
 
 invalid="InvalidContent"
@@ -20,8 +19,8 @@ serverborkage="InternalError"
 
 echo ARGZ: $*
 
-if [ $# -lt 8 ] ; then
-   echo "Usage: $0 key picture d3ck-ID  IP-addr owner email d3ck-ip d3ck-id"
+if [ $# -lt 9 ] ; then
+   echo "Usage: $0 key picture d3ck-ID IP-addr owner email d3ck-ip d3ck-id secret"
    exit 1
 fi
 
@@ -42,6 +41,9 @@ email=$6
 d3ck_ip=$7
 d3ck_host=$7
 r_d3ck_id=$8
+secret=$9
+
+new_d3ck="$staging/$r_d3ck_id.tmp"
 
 d3ck_url="https://$d3ck_host:$d3ck_port/d3ck"
 
@@ -99,8 +101,9 @@ bundle=$(cat $keystore/$r_d3ck_id/_cli3nt.json)
 (
 cat <<E_O_C
 {
-    "key"  : "$d3ck_id",
-    "value": $bundle
+    "key"    : "$d3ck_id",
+    "value"  : $bundle,
+    "secret" : $secret
 }
 E_O_C
 ) > $new_d3ck
@@ -109,46 +112,6 @@ echo "NEW D3CK!"
 
 echo $new_d3ck
 
-#
-# use curl to put the JSON into the DB
-#
-echo "using curl to create D3CK..."
-
-echo curl -k -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d "@$new_d3ck" $d3ck_url
-     curl -k    -H "Accept: application/json" -H "Content-type: application/json" -X POST -d "@$new_d3ck" $d3ck_url &> $results
-
-if [ $? != 0 ] ; then
-   echo "curl REST to D3CK server failed to create D3CK"
-   exit 3
-fi
-
-#
-# crude result checking... TODO - fix this when figure out
-# return codes from UI...
-#
-if `grep -q "$duplicate" $results` ; then
-   echo JSON already in DB
-   exit 4
-elif `grep -q "$invalid" $results` ; then
-   echo mangled JSON
-   exit 5
-elif `grep -q "$noserver" $results` ; then
-   echo couldn\'t connect to $url
-   exit 6
-elif `grep -q "$serverborkage" $results` ; then
-   echo internal server error $url
-   exit 7
-# elif `grep -q "$error" $results` ; then
-#    echo Invalid method
-#    exit 4
-
-# elif `grep -q "$success" $results` ; then
-else
-   echo success\!
-   exit 0
-fi
-
-echo "unknown error, bailin\' out"
-
-exit 8
+echo success\!
+exit 0
 
