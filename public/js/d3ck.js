@@ -1954,6 +1954,9 @@ function confirm_or_deny_or(type, req, element) {
                         inform_user('starting to exchange d3ck data', 'info')
                         // xxx - do something friendy to start sending things
                         // friendy(secret)
+                        //
+                        //  ... this is it... send the secret received along with your stuff, get theirs
+                        //
                     }
                     else {
 
@@ -1998,7 +2001,7 @@ function confirm_or_deny_or(type, req, element) {
 
                 $.ajax({
                     type: "POST",
-                    url: '/knockReply/' + req.from_d3ck + '/' + answer,
+                    url: '/serviceReply/' + req.from_d3ck + '/' + answer,
                     headers: { 'Content-Type': 'application/json' },
                     req: post_data,
 
@@ -2114,7 +2117,7 @@ function show_user_sequence(d3ckid) {
 
 //          $.ajax({
 //              type: "POST",
-//              url: '/knockReply/' + req.from_d3ck + '/' + answer,
+//              url: '/serviceReply/' + req.from_d3ck + '/' + answer,
 //              headers: { 'Content-Type': 'application/json' },
 //              req: post_data,
 
