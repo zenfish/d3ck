@@ -2709,6 +2709,11 @@ function serviceRequest(req, res, next) {
     //
     // special case - friending... don't know d3ck_id yet
     //
+    if (__.contains(my_ips, ip_addr)) {
+        console.log("NO MATCH! -> ")
+        console.log(ip_addr)
+        console.log(my_ips)
+    }
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend')) {
         log.info("for me? You shouldn't have!")
 
