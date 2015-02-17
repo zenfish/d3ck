@@ -2714,8 +2714,10 @@ function serviceRequest(req, res, next) {
         log.info(ip_addr)
         log.info(my_ips)
     }
-
     else log.info("MATCH, mofo!")
+
+    log.info(my_ips)
+    log.info(ip_addr)
 
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend')) {
         log.info("for me? You shouldn't have!")
