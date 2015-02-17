@@ -857,14 +857,14 @@ for (var dev in ifaces) {
     var alias = 0
     ifaces[dev].forEach(function(details){
         if (details.family=='IPv4') {
-
             my_net[details.address] = dev+(alias?':'+alias:'')
             log.info(dev+(alias?':'+alias:''),details.address)
             ++alias
-            my_ips[n]    = '"' + details.address + '"'
+            my_ips[n]    = details.address
             my_devs[dev] = details.address
-
             n = n + 1
+
+            log.info('\t -> ' + details.address)
         }
     })
 }
@@ -881,13 +881,17 @@ http.get(get_my_ip, function(res) {
     res.on('data', function (chunk) {
         my_ip = JSON.parse(chunk).ip
         log.info("Server's external IP: " + my_ip)
+        console.log(my_ips)
+        log.info("1")
+        log.info(my_ip)
+        log.info(typeof my_ip)
+        log.info("2")
 
         // add possible NAT if it isn't in here already....
         if (!__.contains(my_ips, my_ip)) {
-            log_info("adding " + my_ip + " to list of ips I'll answer to...")
+            log.info("adding " + my_ip + " to list of ips I'll answer to...")
             my_ips[n+1] = my_ip
         }
-
         log.info(my_ips)
 
     })
