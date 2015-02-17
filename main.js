@@ -2677,6 +2677,11 @@ function serviceRequest(req, res, next) {
         service   = req.body.service,
         secret    = '';
 
+    // put this in temp so we can get back a friend request
+    if (typeof ip2d3ck[ip_addr] == 'undefined') {
+        ip2d3ck[ip_addr] = from_d3ck;
+    }
+
     // if given one, use that
     if (typeof req.body.secret != 'undefined') { 
         secret = req.body.secret
@@ -2882,6 +2887,8 @@ function serviceReply(req, res, next) {
 
     }
     else {
+        if (!def(ip_addr)) ip_addr = ip2d3ck[ip_addr] 
+
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/serviceReply/' + d3ckid + '/' + answer
 
         log.info('answer going to : ' + url)
