@@ -4670,6 +4670,16 @@ Object.size = function(obj) {
     }
     return size;
 }
+//
+// is a variable defined or no?  Returns true if it is
+//
+function def(varvar) {
+    // console.log('checking ' + varvar)
+    if (typeof varvar === "undefined")
+        return false
+    return true
+}
+
 
 //
 //
