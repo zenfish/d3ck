@@ -1,4 +1,6 @@
 {
+    "NAT": "",
+
     "D3CK" : {
         "home"               : "/etc/d3ck",
         "keystore"           : "/d3cks",

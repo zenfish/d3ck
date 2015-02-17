@@ -79,6 +79,8 @@ var d3ck_port_forward = config.D3CK.d3ck_port_forward
 var d3ck_port_signal  = config.D3CK.d3ck_port_signal
 var d3ck_proto_signal = config.D3CK.d3ck_proto_signal
 
+var FRIEND_REQUEST_EXPIRES = config.magic_numbers.FRIEND_REQUEST_EXPIRES
+
 // secret stuff
 var SHARED_SECRET_BYTES    = config.magic_numbers.SHARED_SECRET_BYTES
 var FRIEND_REQUEST_EXPIRES = config.magic_numbers.FRIEND_REQUEST_EXPIRES
@@ -134,7 +136,6 @@ log.on('logging', function (transport, level, msg, meta) {
         createEvent(client_ip, {event_type: "error", message: msg})
     }
 })
-
 
 // firing up the auth engine
 init_capabilities(capabilities)
@@ -867,6 +868,35 @@ for (var dev in ifaces) {
         }
     })
 }
+
+//
+// try to get external IP, if different than what we got above....
+//
+// seems ok to me...?
+var get_my_ip = 'http://myexternalip.com/json';
+var my_ip     = ''
+
+log.info('looking for my ip @ ' + get_my_ip)
+http.get(get_my_ip, function(res) {
+    res.on('data', function (chunk) {
+        my_ip = JSON.parse(chunk).ip
+        log.info("Server's external IP: " + my_ip)
+
+        // add possible NAT if it isn't in here already....
+        if (!__.contains(my_ips, my_ip)) {
+            log_info("adding " + my_ip + " to list of ips I'll answer to...")
+            my_ips[n+1] = my_ip
+        }
+
+        log.info(my_ips)
+
+    })
+}).on('error', function(e) {
+    log.error("couldn't find the server's IP addr as seen from the outside....")
+});
+
+
+
 
 // set to local VPN int
 cat_fact_server = my_devs["tun0"]
@@ -2651,7 +2681,7 @@ function serviceRequest(req, res, next) {
         service   = req.body.service,
         secret    = '';
 
-    if (typeof req.body.service == 'undefined') {
+    if (typeof service == 'undefined') {
         log.error("Service type required when asking for service!")
         res.send(403, { error: "service type required"})
         return
