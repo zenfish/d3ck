@@ -2789,12 +2789,12 @@ function serviceRequest(req, res, next) {
         var d3ck_status            = empty_status()
         d3ck_status.d3ck_requests  = d3ck_request
 
-        d3ck_queue.push({type: 'info', event: 'service_request', 'd3ck_status': d3ck_status})
+        d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
 
         request.post(options, function cb (err, resp) {
             if (err) {
                 console.error('post to remote failed:', JSON.stringify(err))
-                d3ck_queue.push({type: 'info', event: 'service_request_fail', 'd3ck_status': d3ck_status})
+                d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
 
                 res.send(200, {"err" : err});
                 }
@@ -2804,12 +2804,12 @@ function serviceRequest(req, res, next) {
                 // log.info(res)
 
                 if (resp.statusCode != 200) {
-                    d3ck_queue.push({type: 'info', event: 'service_request_return', statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
+                    d3ck_queue.push({type: 'info', event: 'service_request_return', service: service, statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
                     log.info(resp.body)
                     res.send(resp.statusCode, resp.body)
                 }
                 else {
-                    d3ck_queue.push({type: 'info', event: 'service_request_success','d3ck_status': d3ck_status })
+                    d3ck_queue.push({type: 'info', event: 'service_request_success',service: service, 'd3ck_status': d3ck_status })
                     log.info(resp.body)
                     res.send(200, resp.body)
                 }
@@ -2884,9 +2884,9 @@ function serviceReply(req, res, next) {
 
         d3ck_status.d3ck_requests = d3ck_response
 
-        createEvent(ip_addr, {event_type: "service_request", "d3ck_id": d3ckid}, d3ck_status)
+        createEvent(ip_addr, {event_type: "service_request", service: service, "d3ck_id": d3ckid}, d3ck_status)
 
-        d3ck_queue.push({type: 'info', event: 'service_request', 'd3ck_status': d3ck_status})
+        d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
 
         // var options = load_up_cc_cert(d3ckid)
         var options = {}

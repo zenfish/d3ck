@@ -930,7 +930,17 @@ function queue_or_die(queue) {
 
         console.log('event...? ' + queue.event)
 
-        if      (queue.event == 'd3ck_create') {
+        inform_user('service_request', kk)
+
+        if (queue.d3ck_status.d3ck_requests.service == 'friend') {
+            inform_user('service_request', kk)
+        }
+
+        if (queue.event == 'service_request') {
+            inform_user('service_request', 'service request')
+        }
+
+        else if (queue.event == 'd3ck_create') {
             var remote_ip   = queue.d3ck_status.events.new_d3ck_ip
             var remote_name = queue.d3ck_status.events.new_d3ck_name
 
