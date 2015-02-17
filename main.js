@@ -880,20 +880,12 @@ log.info('looking for my ip @ ' + get_my_ip)
 http.get(get_my_ip, function(res) {
     res.on('data', function (chunk) {
         my_ip = JSON.parse(chunk).ip
-        log.info("Server's external IP: " + my_ip)
-        console.log(my_ips)
-        log.info("1")
-        log.info(my_ip)
-        log.info(typeof my_ip)
-        log.info("2")
-
         // add possible NAT if it isn't in here already....
         if (!__.contains(my_ips, my_ip)) {
             log.info("adding " + my_ip + " to list of ips I'll answer to...")
-            my_ips[n+1] = my_ip
+            my_ips[n] = my_ip
         }
         log.info(my_ips)
-
     })
 }).on('error', function(e) {
     log.error("couldn't find the server's IP addr as seen from the outside....")
@@ -2685,6 +2677,8 @@ function serviceRequest(req, res, next) {
         service   = req.body.service,
         secret    = '';
 
+    if (typeof req.body.secret != 'undefined') { secret = req.body.secret }
+
     if (typeof service == 'undefined') {
         log.error("Service type required when asking for service!")
         res.send(403, { error: "service type required"})
@@ -2692,8 +2686,6 @@ function serviceRequest(req, res, next) {
     }
 
     log.info('service request: ' + service)
-
-    if (typeof req.body.secret != 'undefined') { secret = req.body.secret }
 
     // bwana_d3ck.owner.name  = name
 
@@ -2713,16 +2705,6 @@ function serviceRequest(req, res, next) {
     //
     // special case - friending... don't know d3ck_id yet
     //
-    if (__.contains(my_ips, ip_addr)) {
-        log.info("NO MATCH! -> ")
-        log.info(ip_addr)
-        log.info(my_ips)
-    }
-    else log.info("MATCH, mofo!")
-
-    log.info(my_ips)
-    log.info(ip_addr)
-
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend')) {
         log.info("for me? You shouldn't have!")
 
@@ -2746,7 +2728,7 @@ function serviceRequest(req, res, next) {
             service     : service,
         }
 
-        d3ck_request.secret        = ''
+        d3ck_request.secret        = secret
 
         var d3ck_status            = empty_status()
 
