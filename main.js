@@ -2794,19 +2794,28 @@ function serviceRequest(req, res, next) {
 
 }
 
-// server.post('/serviceReply/:did/:answer', auth, knockReply);
+// server.post('/serviceReply/:did/:answer/:secret', auth, serviceReply);
 
 function serviceReply(req, res, next) {
 
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
 
-    answer = req.params.answer
-    d3ckid = req.params.d3ckid
+    var answer = req.params.answer,
+        d3ckid = req.params.d3ckid,
+        secret = req.params.secret
 
-    ip_addr = req.body.ip_addr
+    var ip_addr = req.body.ip_addr
+
+    if (secret != secret_requests[ip_addr]) {
+        log.error('error creating d3ck, bailing...')
+        res.send(400, { error: "secret mismatch on reply"} )
+        return
+    }
+
 
     // is it for us, or are we passing it on?
+
     if (d3ckid == bwana_d3ck.D3CK_ID) {
 
         log.info("about time you answered, I've been knocking!")
@@ -3783,7 +3792,8 @@ function get_https_certified(url, d3ckid) {
 
 //
 // take the ip/data pushed to us from the UI and create something... beautiful!
-// a virtual butterfly, no less
+// a virtual butterfly, no less. At least... a request for a butterfly...
+// the other side has to agree....
 //
 function create_d3ck_by_ip(req, res, next) {
 
@@ -3796,7 +3806,7 @@ function create_d3ck_by_ip(req, res, next) {
     // need a secret they'll send back if they say yes
     var secret = generate_friend_request(ip_addr)
 
-    all_requests[ip] = secret
+    secret_requests[ip_addr] = secret
 
     var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service'
 

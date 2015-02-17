@@ -78,7 +78,7 @@
         "^/img/.*",
         "^/images/.*",
         "^/js/.*",
-        "^/knock",
+        "^/service",
         "^/login",
         "^/login.html",
         "^/ping",
