@@ -2679,6 +2679,7 @@ function serviceRequest(req, res, next) {
 
     // put this in temp so we can get back a friend request
     if (typeof ip2d3ck[ip_addr] == 'undefined') {
+        console.log('loading up ip2d3ck with ' + ip_addr)
         ip2d3ck[ip_addr] = from_d3ck;
     }
 
@@ -2850,6 +2851,8 @@ function serviceReply(req, res, next) {
         secret = req.params.secret
 
     var ip_addr = req.body.ip_addr
+
+    if (!def(ip_addr)) ip_addr = ip2d3ck[ip_addr] 
 
     if (secret != secret_requests[ip_addr]) {
         log.error('error creating d3ck, bailing...')
