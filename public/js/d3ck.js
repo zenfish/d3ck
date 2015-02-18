@@ -930,12 +930,6 @@ function queue_or_die(queue) {
 
         console.log('event...? ' + queue.event)
 
-        inform_user('service_request', kk)
-
-        if (queue.d3ck_status.d3ck_requests.service == 'friend request') {
-            inform_user('service_request', kk)
-        }
-
         if (queue.event == 'service_request') {
             inform_user('service_request', 'service request')
         }
@@ -1093,7 +1087,9 @@ function queue_or_die(queue) {
     // request user feedback
     else if (queue.type == "request") {
         console.log('event: ' + JSON.stringify(queue))
+
         ask_user_4_response(queue)
+
         return
     }
 
@@ -1110,11 +1106,12 @@ function queue_or_die(queue) {
     }
 
     // friend request
-    else if (queue.service == 'friend_request') {
-        console.log('friend_request: ' + JSON.stringify(queue))
+    else if (queue.service == 'friend request') {
+        console.log('friend request: ' + JSON.stringify(queue))
         ask_user_4_response(queue)
         return
     }
+
 
     else {
         console.log(':???: ' + JSON.stringify(queue))
@@ -2051,7 +2048,7 @@ function confirm_or_deny_or(type, req, element) {
 }
 
 //
-// (it will eventually!) look up authorization for request, do various things based on this
+// do various things based on questions....
 //
 function ask_user_4_response(data) {
 
@@ -2066,7 +2063,7 @@ function ask_user_4_response(data) {
 
     var req = data.d3ck_status.d3ck_requests
 
-    if (req.service == 'friend_request') {
+    if (req.service == 'friend request') {
         console.log('friend or foe?')
         confirm_or_deny_or('befriend', req, '#labels')
     }
