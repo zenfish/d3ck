@@ -932,7 +932,7 @@ function queue_or_die(queue) {
 
         inform_user('service_request', kk)
 
-        if (queue.d3ck_status.d3ck_requests.service == 'friend_request') {
+        if (queue.d3ck_status.d3ck_requests.service == 'friend request') {
             inform_user('service_request', kk)
         }
 
