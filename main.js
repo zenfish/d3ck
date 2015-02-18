@@ -2661,12 +2661,6 @@ function serviceRequest(req, res, next) {
 
     log.info('knock knock')
 
-    log.info(req.body)
-
-    log.info(req.params)
-
-    // log.info(req)
-
     // bail if we don't get ID
     // var ip_addr  = req.body.ip_addr
     var ip_addr   = req.body.ip_addr,
@@ -2852,7 +2846,7 @@ function serviceReply(req, res, next) {
 
     var ip_addr = req.body.ip_addr
 
-    if (!def(ip_addr)) ip_addr = d3ck2ip[ip_addr] 
+    if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
 
     if (secret != secret_requests[ip_addr]) {
         log.error('error creating d3ck, bailing...')
@@ -2893,6 +2887,8 @@ function serviceReply(req, res, next) {
     }
     else {
         console.log(ip2d3ck)
+
+        if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
 
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/serviceReply/' + d3ckid + '/' + answer
 
@@ -3862,12 +3858,12 @@ function create_d3ck_by_ip(req, res, next) {
     var options  = { url: url }
 
     options.form = {
-        d3ckid   :  bwana_d3ck.D3CK_ID,
-        from_d3ck:  bwana_d3ck.D3CK_ID,
-        ip_addr  : ip_addr,
-        owner    :   bwana_d3ck.owner.name,
-        service  : 'friend request',
-        secret   :  secret
+        d3ckid    :  bwana_d3ck.D3CK_ID,
+        from_d3ck :  bwana_d3ck.D3CK_ID,
+        ip_addr   :  ip_addr,
+        owner     :   bwana_d3ck.owner.name,
+        service   : 'friend request',
+        secret    :  secret
     }
 
     log.info('knocking @ ' + url)
