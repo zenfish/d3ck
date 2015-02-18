@@ -1689,6 +1689,7 @@ function create_cli3nt_rest(req, res, next) {
 
     var target        = '',
         secret        = '',
+        did           = '',
         cli3nt_bundle = {},
         command       = d3ck_bin + '/bundle_certs.js',
         argz          = [],
@@ -1710,6 +1711,10 @@ function create_cli3nt_rest(req, res, next) {
         log.info('POST')
         log.info(req.body)
 
+        did = req.body.did
+
+        log.info('DiD: ' + did)
+
         secret = req.body.secret
         log.info("POSTY TOASTY SECRETZ! " + secret)
 
@@ -1721,10 +1726,6 @@ function create_cli3nt_rest(req, res, next) {
         }
 
     }
-
-    var did = req.query.did
-
-    log.info('DiD: ' + did)
 
     var keyout = d3ck_spawn_sync(command, [did])
 
