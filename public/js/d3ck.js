@@ -934,6 +934,10 @@ function queue_or_die(queue) {
             inform_user('service_request', 'service request')
         }
 
+        else if (queue.event == 'service_response') {
+            inform_user('service_response', 'service response')
+        }
+
         else if (queue.event == 'd3ck_create') {
             var remote_ip   = queue.d3ck_status.events.new_d3ck_ip
             var remote_name = queue.d3ck_status.events.new_d3ck_name
@@ -1087,9 +1091,7 @@ function queue_or_die(queue) {
     // request user feedback
     else if (queue.type == "request") {
         console.log('event: ' + JSON.stringify(queue))
-
         ask_user_4_response(queue)
-
         return
     }
 
@@ -1105,12 +1107,12 @@ function queue_or_die(queue) {
         return
     }
 
-    // friend request
-    else if (queue.service == 'friend request') {
-        console.log('friend request: ' + JSON.stringify(queue))
-        ask_user_4_response(queue)
-        return
-    }
+//  // friend request
+//  else if (queue.service == 'friend request') {
+//      console.log('friend request: ' + JSON.stringify(queue))
+//      ask_user_4_response(queue)
+//      return
+//  }
 
 
     else {
@@ -1910,15 +1912,12 @@ function confirm_or_deny_or(type, req, element) {
         $("#labels", function () {
 
             // defaults
-
-
-            if (def(req.service) && req.service == 'friend_request') {
+            if (def(req.service) && req.service == 'friend request') {
                 alertify.set({
                     buttonReverse   : true, 
                     labels          : { ok: 'Confirm', cancel: 'Not Now' }
                 })
             }
-
             // currently only calls
             else {
                 alertify.set({
@@ -1927,8 +1926,6 @@ function confirm_or_deny_or(type, req, element) {
                 });
             }
 
-
-
             var message_request = ''
             if (typeof all_d3ck_ids[req.from_d3ck] != 'undefined') {
                 var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
@@ -1936,10 +1933,10 @@ function confirm_or_deny_or(type, req, element) {
             }
 
             if (def(req.from)) {
-                inform_user(req.from + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
+                inform_user(req.owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
             }
             else {
-                inform_user(req.did+ ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
+                inform_user(req.did   + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
             }
 
             // user hit allow or deny?
@@ -1957,7 +1954,7 @@ function confirm_or_deny_or(type, req, element) {
                     console.log('go for it')
                     answer = 'yes'
 
-                    if (def(req.service) && req.service == 'friend_request') {
+                    if (def(req.service) && req.service == 'friend request') {
                         inform_user('starting to exchange d3ck data', 'info')
                         // xxx - do something friendy to start sending things
                         // friendy(secret)
@@ -2000,10 +1997,13 @@ function confirm_or_deny_or(type, req, element) {
 
                     $('#alertify-ok').hide()
 
+                    return true;
+
                 }
                 else {
                     answer = 'no'
                     inform_user('declined request from: ' + req.ip_addr)
+                    return false;
                 }
 
                 $.ajax({
@@ -2022,7 +2022,7 @@ function confirm_or_deny_or(type, req, element) {
                 $('#timer_countdown').TimeCircles().destroy();
             });
 
-            return false;
+            // return false;
         });
 
         $('#alertify').append('<div style="height:150px;width:150px;float:left;" id="timer_countdown" data-timer="' + DEFAULT_RING_TIME + '"></div>')
@@ -2065,7 +2065,14 @@ function ask_user_4_response(data) {
 
     if (req.service == 'friend request') {
         console.log('friend or foe?')
-        confirm_or_deny_or('befriend', req, '#labels')
+        
+         // do eet here... kick off 
+        // if (confirm_or_deny_or('befriend', req, '#labels')) {
+        // }
+        // else {
+        // }
+
+
     }
 
     else if (req.event == 'knock') {
