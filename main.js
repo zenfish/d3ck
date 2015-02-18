@@ -2850,12 +2850,15 @@ function serviceReply(req, res, next) {
 
     var ip_addr = req.body.ip_addr
 
-    if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
+    // if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
 
     if (secret != secret_requests[ip_addr]) {
         log.error('error creating d3ck, bailing...')
         res.send(400, { error: "secret mismatch on reply"} )
         return
+    }
+    else {
+        log.info("secretz match, lookin' good")
     }
 
 
@@ -2894,7 +2897,7 @@ function serviceReply(req, res, next) {
 
         if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
 
-        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/serviceReply/' + d3ckid + '/' + answer
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/serviceReply/' + d3ckid + '/' + answer + '/' + secret
 
         log.info('answer going to : ' + url)
 
