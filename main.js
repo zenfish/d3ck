@@ -2667,6 +2667,7 @@ function serviceRequest(req, res, next) {
         d3ckid    = req.body.d3ckid,
         from      = req.body.from,
         from_d3ck = req.body.from_d3ck,
+        from_ip   = req.body.from_ip,
         owner     = req.body.owner,
         service   = req.body.service,
         secret    = '';
@@ -2674,7 +2675,7 @@ function serviceRequest(req, res, next) {
     // put this in temp so we can get back a friend request
     if (typeof ip_addr != 'undefined' && typeof d3ck2ip[from_d3ck] == 'undefined') {
         console.log('loading up ip2d3ck with ' + ip_addr)
-        d3ck2ip[from_d3ck] = ip_addr;
+        d3ck2ip[from_d3ck] = from_ip;
     }
 
     // if given one, use that
@@ -2906,9 +2907,11 @@ function serviceReply(req, res, next) {
 
         d3ck_status.d3ck_requests = d3ck_response
 
-        createEvent(ip_addr, {event_type: "service_request", service: service, "d3ck_id": d3ckid}, d3ck_status)
+        // createEvent(ip_addr, {event_type: "service_request", service: service, "d3ck_id": d3ckid}, d3ck_status)
+        createEvent(ip_addr, {event_type: "service_request", "d3ck_id": d3ckid}, d3ck_status)
 
-        d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
+        // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
+        d3ck_queue.push({type: 'info', event: 'service_request', 'd3ck_status': d3ck_status})
 
         // var options = load_up_cc_cert(d3ckid)
         var options = {}
@@ -3847,10 +3850,10 @@ function create_d3ck_by_ip(req, res, next) {
 
     var ip_addr  = req.body.ip_addr
 
-    if (__.contains(my_ips, ip_addr)) {
-        ip_addr = get_client_ip(req)
-        console.log('incoming d3ck create... changing to clients ip ->  ' + ip_addr)
-    }
+    // if (__.contains(my_ips, ip_addr)) {
+    //     ip_addr = get_client_ip(req)
+    //     console.log('incoming d3ck create... changing to clients ip ->  ' + ip_addr)
+    // }
 
     var deferred = Q.defer();
 
@@ -3868,6 +3871,7 @@ function create_d3ck_by_ip(req, res, next) {
     options.form = {
         d3ckid    :  bwana_d3ck.D3CK_ID,
         from_d3ck :  bwana_d3ck.D3CK_ID,
+        from_ip   :  my_ip,
         ip_addr   :  ip_addr,
         owner     :   bwana_d3ck.owner.name,
         service   : 'friend request',
