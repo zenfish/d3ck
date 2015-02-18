@@ -2070,10 +2070,12 @@ function ask_user_4_response(data) {
         confirm_or_deny_or('befriend', req, '#labels')
         // if (confirm_or_deny_or('befriend', req, '#labels')) {
 
-            post_data = JSON.stringify({
-                            'ip_addr': ip_addr, 
-                            d3ck_action : 'CREATE'
-                        })
+            var post_data         = {}
+
+            post_data.ip_addr     = req.from_ip
+            post_data.d3ck_action = "CREATE"
+
+            post_data             = JSON.stringify(post_data)
 
             // console.log(post_data)
 

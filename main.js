@@ -2734,7 +2734,7 @@ function serviceRequest(req, res, next) {
 
         var d3ck_request    = {
             knock       : true,
-            from        : from,
+            from_ip     : from_ip,
             ip_addr     : ip_addr,
             owner       : owner,
             action      : action,
@@ -2794,6 +2794,7 @@ function serviceRequest(req, res, next) {
         var d3ck_request    = {
             knock       : true,
             ip_addr     : ip_addr,
+            from_ip     : from_ip,
             owner       : owner,
             'from_d3ck' : bwana_d3ck.D3CK_ID,
             service     : service,
