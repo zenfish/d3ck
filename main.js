@@ -1700,6 +1700,8 @@ function create_cli3nt_rest(req, res, next) {
     //
     log.info('who are ya, punk?  ' + ip_addr)
 
+    log.info(req.body)
+
     // secret in here
     if (req.method.toLowerCase() == 'post') {
         log.info('POST')
