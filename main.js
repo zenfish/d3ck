@@ -2672,9 +2672,9 @@ function serviceRequest(req, res, next) {
         secret    = '';
 
     // put this in temp so we can get back a friend request
-    if (typeof ip_addr != 'undefined' && typeof d3ck2ip[ip_addr] == 'undefined') {
+    if (typeof ip_addr != 'undefined' && typeof d3ck2ip[from_d3ck] == 'undefined') {
         console.log('loading up ip2d3ck with ' + ip_addr)
-        d3ck2ip[ip_addr] = from_d3ck;
+        d3ck2ip[from_d3ck] = ip_addr;
     }
 
     // if given one, use that
