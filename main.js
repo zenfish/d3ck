@@ -1689,22 +1689,16 @@ function create_cli3nt_rest(req, res, next) {
 
     var target        = '',
         secret        = '',
-        did           = '',
         cli3nt_bundle = {},
         command       = d3ck_bin + '/bundle_certs.js',
         argz          = [],
         ip_addr       = get_client_ip(req);
 
+    var did;
     //
     // url
     //
     log.info('who are ya, punk?  ' + ip_addr)
-
-    if (typeof req.query.did == "undefined") {
-        log.info('bad dog, no DiD!')
-        res.send(400, { error: 'bad dog, no DiD, no tasty bites!' })
-        return
-    }
 
     // secret in here
     if (req.method.toLowerCase() == 'post') {
@@ -1725,6 +1719,12 @@ function create_cli3nt_rest(req, res, next) {
             return
         }
 
+    }
+
+    if (typeof did == "undefined") {
+        log.info('bad dog, no DiD!')
+        res.send(400, { error: 'bad dog, no DiD, no tasty bites!' })
+        return
     }
 
     var keyout = d3ck_spawn_sync(command, [did])
