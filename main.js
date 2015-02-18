@@ -1708,12 +1708,10 @@ function create_cli3nt_rest(req, res, next) {
     // secret in here
     if (req.method.toLowerCase() == 'post') {
         log.info('POST')
-
         log.info(req.body)
 
         secret = req.body.secret
-
-        log.info("POSTY! " + secret)
+        log.info("POSTY TOASTY SECRETZ! " + secret)
 
         // die if mismatch or missing
         if (!def(secret_requests[ip_addr]) || secret_requests[ip_addr] != secret) {
