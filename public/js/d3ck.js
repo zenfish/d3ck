@@ -2066,12 +2066,35 @@ function ask_user_4_response(data) {
     if (req.service == 'friend request') {
         console.log('friend or foe?')
         
-         // do eet here... kick off 
-        // if (confirm_or_deny_or('befriend', req, '#labels')) {
-        // }
-        // else {
-        // }
+        // do eet here... kick off 
+        if (confirm_or_deny_or('befriend', req, '#labels')) {
 
+            var post_data         = {}
+            post_data.ip_addr     = ip_addr
+            post_data.d3ck_action = "CREATE"
+            post_data = JSON.stringify(post_data)
+
+            // console.log(post_data)
+
+            $.ajax({
+                type    : 'POST',
+                url     : '/cli3nt',
+                headers : { 'Content-Type': 'application/json' },
+                data    : post_data,
+                success : function(data, status) {
+                    console.log('suck... sess.... ')
+                    inform_user('adding d3ck', 'trying to add ' + ip_addr)
+                },
+                fail: function(data, err) {
+                    console.log('fuck... me')
+                    inform_user('failed to add', ip_addr + ' was not added', 'error')
+                }
+            })
+
+        }
+        else {
+            log('not created: user said fuck off')
+        }
 
     }
 
