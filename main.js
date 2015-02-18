@@ -2721,7 +2721,7 @@ function serviceRequest(req, res, next) {
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend request')) {
         log.info("for me? You shouldn't have!")
 
-        if (!def(ip_addr)) ip_addr = ip2d3ck[ip_addr] 
+        if (!def(d3ck2ip[d3ckid])) ip_addr = d3ck2ip[d3ckid] 
 
         var _tmp_d3ck = {}
 
@@ -2852,7 +2852,7 @@ function serviceReply(req, res, next) {
 
     var ip_addr = req.body.ip_addr
 
-    if (!def(ip_addr)) ip_addr = ip2d3ck[ip_addr] 
+    if (!def(ip_addr)) ip_addr = d3ck2ip[ip_addr] 
 
     if (secret != secret_requests[ip_addr]) {
         log.error('error creating d3ck, bailing...')
