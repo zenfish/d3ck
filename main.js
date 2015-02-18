@@ -1701,6 +1701,7 @@ function create_cli3nt_rest(req, res, next) {
     log.info('who are ya, punk?  ' + ip_addr)
 
     log.info(req.body)
+    log.info(secret_requests)
 
     // secret in here
     if (req.method.toLowerCase() == 'post') {
@@ -1712,6 +1713,7 @@ function create_cli3nt_rest(req, res, next) {
         log.info('DiD: ' + did)
 
         secret = req.body.secret
+
         log.info("POSTY TOASTY SECRETZ! " + secret)
 
         // die if mismatch or missing
