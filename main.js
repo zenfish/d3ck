@@ -2672,9 +2672,9 @@ function serviceRequest(req, res, next) {
         secret    = '';
 
     // put this in temp so we can get back a friend request
-    if (typeof ip2d3ck[ip_addr] == 'undefined') {
+    if (typeof ip_addr != 'undefined' && typeof d3ck2ip[ip_addr] == 'undefined') {
         console.log('loading up ip2d3ck with ' + ip_addr)
-        ip2d3ck[ip_addr] = from_d3ck;
+        d3ck2ip[ip_addr] = from_d3ck;
     }
 
     // if given one, use that
@@ -2714,6 +2714,9 @@ function serviceRequest(req, res, next) {
     //
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend request')) {
         log.info("for me? You shouldn't have!")
+
+        console.log(d3ckid)
+        console.log(ip_addr)
 
         if (!def(d3ck2ip[d3ckid])) ip_addr = d3ck2ip[d3ckid] 
 
