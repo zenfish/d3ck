@@ -2707,7 +2707,7 @@ function serviceRequest(req, res, next) {
         return
     }
 
-    // if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (service == 'friend' && secret)) {
+    // if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (service == 'friend request' && secret)) {
 
     //
     // is it for us, or are we passing it on?
@@ -2717,12 +2717,12 @@ function serviceRequest(req, res, next) {
     //
     // special case - friending... don't know d3ck_id yet
     //
-    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend')) {
+    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend request')) {
         log.info("for me? You shouldn't have!")
 
         var _tmp_d3ck = {}
 
-        if (service == 'friend') { _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] }
+        if (service == 'friend request') { _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] }
         else                     { _tmp_d3ck = all_d3cks[d3ck_id] }
 
         log.info('service: ' + service)
@@ -3861,7 +3861,7 @@ function create_d3ck_by_ip(req, res, next) {
         from_d3ck:  bwana_d3ck.D3CK_ID,
         ip_addr  : ip_addr,
         owner    :   bwana_d3ck.owner.name,
-        service  : 'friend',
+        service  : 'friend request',
         secret   :  secret
     }
 

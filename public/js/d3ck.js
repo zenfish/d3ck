@@ -932,7 +932,7 @@ function queue_or_die(queue) {
 
         inform_user('service_request', kk)
 
-        if (queue.d3ck_status.d3ck_requests.service == 'friend') {
+        if (queue.d3ck_status.d3ck_requests.service == 'friend_request') {
             inform_user('service_request', kk)
         }
 
@@ -1110,8 +1110,8 @@ function queue_or_die(queue) {
     }
 
     // friend request
-    else if (queue.service == 'friend') {
-        console.log('friend: ' + JSON.stringify(queue))
+    else if (queue.service == 'friend_request') {
+        console.log('friend_request: ' + JSON.stringify(queue))
         ask_user_4_response(queue)
         return
     }
@@ -1915,7 +1915,7 @@ function confirm_or_deny_or(type, req, element) {
             // defaults
 
 
-            if (def(req.service) && req.service == 'friend') {
+            if (def(req.service) && req.service == 'friend_request') {
                 alertify.set({
                     buttonReverse   : true, 
                     labels          : { ok: 'Confirm', cancel: 'Not Now' }
@@ -1960,7 +1960,7 @@ function confirm_or_deny_or(type, req, element) {
                     console.log('go for it')
                     answer = 'yes'
 
-                    if (def(req.service) && req.service == 'friend') {
+                    if (def(req.service) && req.service == 'friend_request') {
                         inform_user('starting to exchange d3ck data', 'info')
                         // xxx - do something friendy to start sending things
                         // friendy(secret)
@@ -2066,7 +2066,7 @@ function ask_user_4_response(data) {
 
     var req = data.d3ck_status.d3ck_requests
 
-    if (req.service == 'friend') {
+    if (req.service == 'friend_request') {
         console.log('friend or foe?')
         confirm_or_deny_or('befriend', req, '#labels')
     }
