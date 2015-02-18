@@ -2720,6 +2720,8 @@ function serviceRequest(req, res, next) {
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend request')) {
         log.info("for me? You shouldn't have!")
 
+        if (!def(ip_addr)) ip_addr = ip2d3ck[ip_addr] 
+
         var _tmp_d3ck = {}
 
         if (service == 'friend request') { _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] }
@@ -2887,7 +2889,7 @@ function serviceReply(req, res, next) {
 
     }
     else {
-        if (!def(ip_addr)) ip_addr = ip2d3ck[ip_addr] 
+        console.log(ip2d3ck)
 
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/serviceReply/' + d3ckid + '/' + answer
 
