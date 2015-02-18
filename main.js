@@ -2683,7 +2683,7 @@ function serviceRequest(req, res, next) {
 
     // if given one, use that
     if (typeof req.body.secret != 'undefined') { 
-        secret = req.body.secret
+        secret = req.body.secret.secret
         log.info('setting secret w body -> ' + secret)
     }
     // else check to see if it's in the all-array o secrets
