@@ -3847,6 +3847,11 @@ function create_d3ck_by_ip(req, res, next) {
 
     var ip_addr  = req.body.ip_addr
 
+    if (__.contains(my_ips, ip_addr)) {
+        ip_addr = get_client_ip(req)
+        console.log('incoming d3ck create... changing to clients ip ->  ' + ip_addr)
+    }
+
     var deferred = Q.defer();
 
     log.info("creating d3ck hopefully found @ " + ip_addr)
