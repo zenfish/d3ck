@@ -2677,17 +2677,19 @@ function serviceRequest(req, res, next) {
 
     // put this in temp so we can get back a friend request
     if (typeof ip_addr != 'undefined' && typeof d3ck2ip[from_d3ck] == 'undefined') {
-        console.log('loading up ip2d3ck with ' + ip_addr)
+        console.log('loading up ip2d3ck with ' + from_d3ck + ' -> ' + from_ip)
         d3ck2ip[from_d3ck] = from_ip;
     }
 
     // if given one, use that
     if (typeof req.body.secret != 'undefined') { 
         secret = req.body.secret
+        log.info('setting secret w body -> ' + secret)
     }
     // else check to see if it's in the all-array o secrets
     else if (typeof secret_requests[ip_addr] != 'undefined') {
         secret = secret_requests[ip_addr]
+        log.info('setting secret w array -> ' + secret)
     }
 
     if (typeof service == 'undefined') {
