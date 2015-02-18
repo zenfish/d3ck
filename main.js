@@ -2837,30 +2837,27 @@ function serviceRequest(req, res, next) {
 
 }
 
-// server.post('/serviceReply/:did/:answer/:secret', auth, serviceReply);
+// server.post('/serviceReply/:did/:answer/:secret?*', auth, serviceReply);
 
 function serviceReply(req, res, next) {
 
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
 
-    var answer = req.params.answer,
-        d3ckid = req.params.d3ckid,
-        secret = req.params.secret
+    var answer  = req.params.answer,
+        d3ckid  = req.params.d3ckid,
+        service = req.body.service,
+        secret  = req.params.secret;
 
     var ip_addr = req.body.ip_addr
 
     // if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
 
-    if (secret != secret_requests[ip_addr]) {
+    if (service == 'friend request' && def(secret) && secret != secret_requests[ip_addr]) {
         log.error('error creating d3ck, bailing...')
         res.send(400, { error: "secret mismatch on reply"} )
         return
     }
-    else {
-        log.info("secretz match, lookin' good")
-    }
-
 
     // is it for us, or are we passing it on?
 
@@ -2874,13 +2871,13 @@ function serviceReply(req, res, next) {
             knock    : true,
             answer   : answer,
             ip_addr  : ip_addr,
-            service  : req.body.service,
+            service  : service,
             did      : req.body.did,
             did_from : req.body.did_from
         }
 
-        if (typeof req.body.secret != "undefined")
-            d3ck_response.secret = req.body.secret
+        // if (typeof req.body.secret != "undefined")
+        //     d3ck_response.secret = req.body.secret
 
         var d3ck_status            = empty_status()
         d3ck_status.d3ck_requests  = d3ck_response
@@ -2897,7 +2894,10 @@ function serviceReply(req, res, next) {
 
         if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
 
-        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/serviceReply/' + d3ckid + '/' + answer + '/' + secret
+        if (def(secret)) secret = '/' + secret
+        else             secret = ''
+
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/serviceReply/' + d3ckid + '/' + answer + secret
 
         log.info('answer going to : ' + url)
 
@@ -4358,7 +4358,7 @@ server.get('/ping/:key', auth, echoStatus)
 server.post('/service', auth, serviceRequest);
 
 // reply to the first
-server.post('/serviceReply/:d3ckid/:answer', auth, serviceReply);
+server.post('/serviceReply/:d3ckid/:answer/:secret?*', auth, serviceReply);
 
 server.post('/vpn/start', auth, startVPN);
 
