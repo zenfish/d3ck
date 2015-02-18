@@ -2723,7 +2723,7 @@ function serviceRequest(req, res, next) {
         var _tmp_d3ck = {}
 
         if (service == 'friend request') { _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] }
-        else                     { _tmp_d3ck = all_d3cks[d3ck_id] }
+        else                             { _tmp_d3ck = all_d3cks[d3ck_id] }
 
         log.info('service: ' + service)
         log.info(_tmp_d3ck.capabilities)
@@ -2805,7 +2805,7 @@ function serviceRequest(req, res, next) {
         var d3ck_status            = empty_status()
         d3ck_status.d3ck_requests  = d3ck_request
 
-        d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
+        d3ck_queue.push({type: 'request', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
 
         request.post(options, function cb (err, resp) {
             if (err) {
@@ -3872,7 +3872,7 @@ function create_d3ck_by_ip(req, res, next) {
     request.post(options, function cb (e, r, body) {
         if (e) {
             console.error('friend request failed: ', JSON.stringify(e))
-            d3ck_queue.push({type: 'info', event: 'friend_request', status: 'fail'})
+            d3ck_queue.push({type: 'request', event: 'friend_request', status: 'fail'})
             deferred.reject({"err" : e});
             return
         }
