@@ -2067,7 +2067,8 @@ function ask_user_4_response(data) {
         console.log('friend or foe?')
         
         // do eet here... kick off 
-        if (confirm_or_deny_or('befriend', req, '#labels')) {
+        confirm_or_deny_or('befriend', req, '#labels')
+        // if (confirm_or_deny_or('befriend', req, '#labels')) {
 
             var post_data         = {}
             post_data.ip_addr     = ip_addr
@@ -2091,10 +2092,10 @@ function ask_user_4_response(data) {
                 }
             })
 
-        }
-        else {
-            log('not created: user said fuck off')
-        }
+        // }
+        // else {
+        //     log('not created: user said fuck off')
+        // }
 
     }
 
