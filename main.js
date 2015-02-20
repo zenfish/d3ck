@@ -2684,6 +2684,17 @@ function serviceRequest(req, res, next) {
     // if given one, use that
     if (typeof req.body.secret != 'undefined') { 
         secret = req.body.secret.secret
+
+
+
+/// suspect secret.secret one location, secret in another... track down!!!!
+
+
+
+
+
+
+
         log.info('setting secret w body -> ' + secret)
     }
     // else check to see if it's in the all-array o secrets
@@ -3884,7 +3895,7 @@ function create_d3ck_by_ip(req, res, next) {
         ip_addr   :  ip_addr,
         owner     :   bwana_d3ck.owner.name,
         service   : 'friend request',
-        secret    :  secret
+        secret    :  secret.secret
     }
 
     log.info('knocking @ ' + url)
