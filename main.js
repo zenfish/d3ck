@@ -1715,6 +1715,7 @@ function create_cli3nt_rest(req, res, next) {
         secret = req.body.secret
 
         log.info("POSTY TOASTY SECRETZ! " + secret)
+        log.info(secret_requests)
 
         // die if mismatch or missing
         if (!def(secret_requests[ip_addr]) || secret_requests[ip_addr].secret != secret) {
