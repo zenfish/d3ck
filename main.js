@@ -1701,7 +1701,7 @@ function create_cli3nt_rest(req, res, next) {
     log.info('who are ya, punk?  ' + ip_addr)
 
     log.info(req.body)
-    log.info(secret_requests)
+    console.log(secret_requests)
 
     // secret in here
     if (req.method.toLowerCase() == 'post') {
@@ -1715,7 +1715,6 @@ function create_cli3nt_rest(req, res, next) {
         secret = req.body.secret
 
         log.info("POSTY TOASTY SECRETZ! " + secret)
-        log.info(secret_requests)
 
         // die if mismatch or missing
         if (!def(secret_requests[ip_addr]) || secret_requests[ip_addr].secret != secret) {
@@ -2684,13 +2683,14 @@ function serviceRequest(req, res, next) {
 
     // if given one, use that
     if (typeof req.body.secret != 'undefined') { 
-        secret = req.body.secret.secret
+        secret = req.body.secret
         log.info('setting secret w body -> ' + secret)
     }
     // else check to see if it's in the all-array o secrets
     else if (typeof secret_requests[ip_addr] != 'undefined') {
         secret = secret_requests[ip_addr]
-        log.info('setting secret w array -> ' + secret)
+        log.info('setting secret w array -> ')
+        log.info(secret)
     }
 
     if (typeof service == 'undefined') {
@@ -2750,8 +2750,6 @@ function serviceRequest(req, res, next) {
             service     : service,
             secret      : secret
         }
-
-        d3ck_request.secret        = secret
 
         var d3ck_status            = empty_status()
 
