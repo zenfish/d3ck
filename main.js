@@ -1717,7 +1717,7 @@ function create_cli3nt_rest(req, res, next) {
         log.info("POSTY TOASTY SECRETZ! " + secret)
 
         // die if mismatch or missing
-        if (!def(secret_requests[ip_addr]) || secret_requests[ip_addr] != secret) {
+        if (!def(secret_requests[ip_addr]) || secret_requests[ip_addr].secret != secret) {
             log.error("no secret or secret mismatch, friend request unsuccessful")
             res.send(400, { error: "no secret or secret mismatch, friend request unsuccessful" })
             return
