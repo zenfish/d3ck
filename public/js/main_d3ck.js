@@ -83,7 +83,7 @@ $(document).ready(function () {
 
     // when adding a d3ck, put the focus on the input... doesn't work, hmm....
     $('#modalD3ck').on('shown.bs.modal', function () {
-        console.log('click on the button, motherfucker, I dare you to click the fucking button!')
+        console.log('click on the button, motherfucker, I double-dare you to click the fucking button!')
         $('#d3ck_action').focus();
     })
 
@@ -146,7 +146,7 @@ $(document).ready(function () {
 
         var knock_knock = $.ajax({
             type: "POST",
-            url: "/service",
+            url: "/service/request",
             // data: {d3ckid: my_d3ck.D3CK_ID, ipaddr: my_d3ck.ip_addr}
             data: {d3ckid: vd3ckid, ip_addr: ipaddr, owner: my_d3ck.owner.name, service: vpn }
         })

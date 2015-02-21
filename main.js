@@ -1699,6 +1699,7 @@ function create_cli3nt_rest(req, res, next) {
     // url
     //
     log.info('who are ya, punk?  ' + ip_addr)
+    log.info('punk or punkette?' + JSON.stringify(req.headers))
 
     log.info(req.body)
     console.log(secret_requests)
@@ -1712,7 +1713,7 @@ function create_cli3nt_rest(req, res, next) {
 
         log.info('DiD: ' + did)
 
-        secret = req.body.secret
+        secret = req.body.secret.secret
 
         log.info("POSTY TOASTY SECRETZ! " + secret)
 
@@ -1724,6 +1725,21 @@ function create_cli3nt_rest(req, res, next) {
         }
 
     }
+
+    // if it's an auth'd user, then they're giving back a response from the user/d3ck
+    if (req.isAuthenticated()) {
+    }
+
+
+    // a d3ck trying to make friends
+    else {
+    }
+
+
+
+    //
+    // GET - 
+    //
 
     if (typeof did == "undefined") {
         log.info('bad dog, no DiD!')
@@ -1748,15 +1764,13 @@ function create_cli3nt_rest(req, res, next) {
 
     }
 
-    // if (req.method.toLowerCase() != 'post') {
-        //
-        // if !exist, create their d3ck locally as well
-        //
+    //
+    // if !exist, create their d3ck locally as well
+    //
     if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
         log.info("Hmm, we don't have their data... try to get it")
         create_d3ck_locally(ip_addr)
     }
-    // }
 
     try       {
         // log.info('looks good - ' + JSON.stringify(cli3nt_bundle))
@@ -2659,6 +2673,11 @@ function generate_friend_request(ip_addr) {
  *
  * Check welcome/black lists to see if your D3CK will talk
  *
+ * This is a public route, so it bypasses normal auth channels, so
+ * there will be some auth checks below. This is so we can get friend
+ * requests and do the right thing... we auth that by secrets generated
+ * by the requester.
+ *
 */
 function serviceRequest(req, res, next) {
 
@@ -2675,11 +2694,15 @@ function serviceRequest(req, res, next) {
         service   = req.body.service,
         secret    = '';
 
-    // put this in temp so we can get back a friend request
+    // if it's us... no worries
     if (typeof ip_addr != 'undefined' && typeof d3ck2ip[from_d3ck] == 'undefined') {
         console.log('loading up ip2d3ck with ' + from_d3ck + ' -> ' + from_ip)
         d3ck2ip[from_d3ck] = from_ip;
     }
+
+    //
+    // XXX - need to check date
+    //
 
     // if given one, use that
     if (typeof req.body.secret != 'undefined') { 
@@ -2692,6 +2715,12 @@ function serviceRequest(req, res, next) {
         log.info('setting secret w array -> ')
         log.info(secret)
     }
+    else {
+        log.error("need a secret be from local to make this work, bailin'")
+        res.send(403, { error: "secret missing"})
+        return
+    }
+
 
     if (typeof service == 'undefined') {
         log.error("Service type required when asking for service!")
@@ -2701,23 +2730,14 @@ function serviceRequest(req, res, next) {
 
     log.info('service request: ' + service)
 
-    // bwana_d3ck.owner.name  = name
-
-    if (ip_addr == '') {
-        log.error("No IP, no love")
-        res.send(403, { "bad": "dog"});
-        return
-    }
-
-    // if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (service == 'friend request' && secret)) {
-
     //
     // is it for us, or are we passing it on?
     //
-    // if for us, give to user
 
     //
-    // special case - friending... don't know d3ck_id yet
+    // if for us, give to user to answer/see....
+    //
+    // special case - friending... don't know d3ck_id yet... so check for our IP and if its for a friend request
     //
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend request')) {
         log.info("for me? You shouldn't have!")
@@ -2729,16 +2749,23 @@ function serviceRequest(req, res, next) {
 
         var _tmp_d3ck = {}
 
+        // friends-to-be don't have an ID we know yet
         if (service == 'friend request') { _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] }
         else                             { _tmp_d3ck = all_d3cks[d3ck_id] }
 
         log.info('service: ' + service)
         log.info(_tmp_d3ck.capabilities)
 
-        // XXXXX - TODO! If the action is simply accept, don't wait until client replies, just do it and inform!
-        // XXXXX - TODO! If the action is simply accept, don't wait until client replies, just do it and inform!
-        // XXXXX - TODO! If the action is simply accept, don't wait until client replies, just do it and inform!
+        //
+        // look up in capabilies... what's the appropriate response?  Ask the user,
+        // do it, throw it away, ....?
+        //
         var action = _tmp_d3ck.capabilities[service]
+
+        //
+        // XXXXX - TODO! If the associated capability for an action is simply accept, 
+        // don't fuck around and wait, until user replies, just do it and inform!
+        //
 
         var d3ck_request    = {
             knock       : true,
@@ -2761,13 +2788,10 @@ function serviceRequest(req, res, next) {
 
         log.info('sending back... <3!!!')
 
-        // XXXX send back done/success if permissions are just do-eet
-        // XXXX send back done/success if permissions are just do-eet
-        // XXXX send back done/success if permissions are just do-eet
+        // XXXX immediately send back done/success if permissions are just do-eet
         res.send(200, { emotion: "<3" })
 
         return
-
     }
 
     // else, to another d3ck
@@ -2842,8 +2866,15 @@ function serviceRequest(req, res, next) {
 
 }
 
-// server.post('/serviceReply/:did/:answer/:secret?*', auth, serviceReply);
-
+//
+// various services map to various capabilites... here we
+// respond to various requests.
+//
+// This will come from either a d3ck or a browser/user/api thing -
+// if it's the latter, we'll answer... if it's the former, they're
+// probably asking for another d3ck, so we route it to them using
+// client side certs if we know how to.
+//
 function serviceReply(req, res, next) {
 
     log.info("who is it going to...? " + req.params.d3ckid)
@@ -2851,21 +2882,28 @@ function serviceReply(req, res, next) {
 
     var answer  = req.params.answer,
         d3ckid  = req.params.d3ckid,
-        service = req.body.service,
-        secret  = req.params.secret;
+        service = req.body.service;
 
     var ip_addr = req.body.ip_addr
 
-    // if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
-
-    if (service == 'friend request' && def(secret) && secret != secret_requests[ip_addr]) {
-        log.error('error creating d3ck, bailing...')
-        res.send(400, { error: "secret mismatch on reply"} )
-        return
+    //
+    // let's be friends
+    //
+    if (service == 'friend request') {
+        log.info('routing to friend req')
+        friend_req(req, res, next)
     }
+
 
     // is it for us, or are we passing it on?
 
+    //
+    // for us... we have asked a question of something/one... I hope. I think. Maybe.
+    //
+    // XXX - currently this ALWAYS goes to the client, eventually we should
+    // be able to short circuit this process and handle it at the server if
+    // the client shouldn't be bothered, and maybe send logs/info if appropriate.
+    //
     if (d3ckid == bwana_d3ck.D3CK_ID) {
 
         log.info("about time you answered, I've been knocking!")
@@ -2891,18 +2929,24 @@ function serviceReply(req, res, next) {
 
         d3ck_queue.push({type: 'info', event: 'service_response', 'from_d3ck': req.body.did_from, 'd3ck_status': d3ck_status})
 
+        // ack
         res.send(200, { emotion: "^..^" })
-
     }
+
+    //
+    // onto the next d3ck in line....
+    //
     else {
         console.log(ip2d3ck)
 
+        // do we know their cert? If not, we'd better know a secret or we 
+        // probably won't get far
         if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
 
         if (def(secret)) secret = '/' + secret
         else             secret = ''
 
-        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/serviceReply/' + d3ckid + '/' + answer + secret
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/reply' + d3ckid + '/' + answer + secret
 
         log.info('answer going to : ' + url)
 
@@ -2938,6 +2982,8 @@ function serviceReply(req, res, next) {
             }
         })
     }
+
+
 
     // do all the create stuff
 //    create_d3ck_locally(ip_addr).then(function(data) {
@@ -2988,7 +3034,24 @@ function serviceReply(req, res, next) {
 
 }
 
+function friend_request(req, res, next) {
 
+    var answer  = req.params.answer,
+        d3ckid  = req.params.d3ckid,
+        service = req.body.service,
+        secret  = req.params.secret;
+
+    var ip_addr = req.body.ip_addr
+
+    log.info("who are you, anyway, I'm not allowed to talk to strangers...")
+
+    if (def(secret) && secret != secret_requests[ip_addr]) {
+        log.error('error creating d3ck, bailing...')
+        res.send(400, { error: "secret mismatch on reply"} )
+        return
+    }
+
+}
 
 // upload and download some content from the vaults
 function downloadStuff (req, res, next) {
@@ -4311,9 +4374,11 @@ async.whilst(
 // Ping action - no auth
 server.get('/ping', auth, echoReply)
 
-// get a new client key pair
-server.get('/cli3nt', auth, create_cli3nt_rest)
-server.post('/cli3nt', auth, create_cli3nt_rest)
+// retrieve
+server.get('/cli3nt/get', auth, create_cli3nt_rest)
+
+// create new client certz
+server.post('/cli3nt/post', auth, create_cli3nt_rest)
 
 // creation
 server.post('/d3ck', auth, create_d3ck)
@@ -4360,10 +4425,10 @@ server.get('/dns', auth, getDNS);
 server.get('/ping/:key', auth, echoStatus)
 
 // knock knock proto to request access to a service
-server.post('/service', auth, serviceRequest);
+server.post('/service/request', auth, serviceRequest);
 
-// reply to the first
-server.post('/serviceReply/:d3ckid/:answer/:secret?*', auth, serviceReply);
+// reply to above
+server.post('/service/reply/:d3ckid/:answer/:secret?*', auth, serviceReply);
 
 server.post('/vpn/start', auth, startVPN);
 

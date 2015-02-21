@@ -2008,7 +2008,7 @@ function confirm_or_deny_or(type, req, element) {
 
                 $.ajax({
                     type: "POST",
-                    url: '/serviceReply/' + req.from_d3ck + '/' + answer,
+                    url: '/service/reply/' + req.from_d3ck + '/' + answer,
                     headers: { 'Content-Type': 'application/json' },
                     req: post_data,
 
