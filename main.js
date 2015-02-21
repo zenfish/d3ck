@@ -4388,10 +4388,10 @@ async.whilst(
 server.get('/ping', auth, echoReply)
 
 // retrieve
-server.get('/cli3nt/get', auth, create_cli3nt_rest)
+server.get('/cli3nt', auth, create_cli3nt_rest)
 
 // create new client certz
-server.post('/cli3nt/post', auth, create_cli3nt_rest)
+server.post('/cli3nt', auth, create_cli3nt_rest)
 
 // creation
 server.post('/d3ck', auth, create_d3ck)
