@@ -1699,6 +1699,7 @@ function create_cli3nt_rest(req, res, next) {
         command       = d3ck_bin + '/bundle_certs.js',
         argz          = [],
         ip_addr       = get_client_ip(req),
+        from_d3ck     = ''
         did           = '';
 
     log.info('... in c_c3_rest')
