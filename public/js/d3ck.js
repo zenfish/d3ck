@@ -1932,7 +1932,7 @@ function confirm_or_deny_or(type, req, element) {
                                       '<h2 style="position: relative;">Connecting...</h2></span><br />'
             }
 
-            if (def(req.from)) {
+            if (def(req.owner)) {
                 inform_user(req.owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
             }
             else {

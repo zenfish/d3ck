@@ -18,7 +18,6 @@
         },
 
     "magic_numbers": {
-        "SHARED_SECRET_BYTES"    :     32,
         "FRIEND_REQUEST_EXPIRES" : 259200
     },
 
@@ -54,10 +53,12 @@
     },
     
     "crypto": {
-        "keysize"       : "2048",
-        "life_d3ck"     : "365",
-        "life_vpn"      : "30",
-        "bcrypt_rounds" : "12"
+        "keysize"             : "2048",
+        "life_d3ck"           : "365",
+        "life_vpn"            : "30",
+        "bcrypt_rounds"       : "12",
+        "SESSION_SIZE_BYTES"  : "128",
+        "SHARED_SECRET_BYTES" :  "32"
     },
 
     "limits": {

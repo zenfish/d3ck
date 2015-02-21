@@ -64,26 +64,25 @@ var config = JSON.parse(fs.readFileSync('/etc/d3ck/D3CK.json').toString())
 bwana_d3ck = {}   // the big d3ck, you!
 
 // shortcuts
-var d3ck_home         = config.D3CK.home
-var d3ck_keystore     = d3ck_home + config.D3CK.keystore
-var d3ck_bin          = d3ck_home + config.D3CK.bin
-var d3ck_logs         = d3ck_home + config.D3CK.logs
-var d3ck_public       = d3ck_home + config.D3CK.pub
-var d3ck_secretz      = d3ck_home + config.D3CK.secretz
-var default_image     = d3ck_home + config.D3CK.default_image
+var d3ck_home         = config.D3CK.home,
+    d3ck_keystore     = d3ck_home + config.D3CK.keystore,
+    d3ck_bin          = d3ck_home + config.D3CK.bin,
+    d3ck_logs         = d3ck_home + config.D3CK.logs,
+    d3ck_public       = d3ck_home + config.D3CK.pub,
+    d3ck_secretz      = d3ck_home + config.D3CK.secretz,
+    default_image     = d3ck_home + config.D3CK.default_image;
 
 // oh, the tangled web we weave... "we"?  Well, I.
-var d3ck_port_int     = config.D3CK.d3ck_port_int
-var d3ck_port_ext     = config.D3CK.d3ck_port_ext
-var d3ck_port_forward = config.D3CK.d3ck_port_forward
-var d3ck_port_signal  = config.D3CK.d3ck_port_signal
-var d3ck_proto_signal = config.D3CK.d3ck_proto_signal
-
-var FRIEND_REQUEST_EXPIRES = config.magic_numbers.FRIEND_REQUEST_EXPIRES
+var d3ck_port_int     = config.D3CK.d3ck_port_int,
+    d3ck_port_ext     = config.D3CK.d3ck_port_ext,
+    d3ck_port_forward = config.D3CK.d3ck_port_forward,
+    d3ck_port_signal  = config.D3CK.d3ck_port_signal,
+    d3ck_proto_signal = config.D3CK.d3ck_proto_signal;
 
 // secret stuff
-var SHARED_SECRET_BYTES    = config.magic_numbers.SHARED_SECRET_BYTES
-var FRIEND_REQUEST_EXPIRES = config.magic_numbers.FRIEND_REQUEST_EXPIRES
+var FRIEND_REQUEST_EXPIRES = config.magic_numbers.FRIEND_REQUEST_EXPIRES,
+    SHARED_SECRET_BYTES    = config.crypto.SHARED_SECRET_BYTES,
+    SESSION_SIZE_BYTES     = config.crypto.SESSION_SIZE_BYTES;
 
 
 // start with a clean slate
@@ -1685,6 +1684,12 @@ function update_d3ck(_d3ck) {
 // via REST... executes a program, creates client certs, stashes them
 // in the querying d3ck's dir, then returns the certs back
 //
+
+//
+// if not authenticated must have the secret given to you by the
+// initiating request or you'll fail
+//
+
 function create_cli3nt_rest(req, res, next) {
 
     var target        = '',
@@ -1724,22 +1729,23 @@ function create_cli3nt_rest(req, res, next) {
             return
         }
 
+
+
+
     }
+
+
+    //
+    // need auth or secret, or don't pass go....
+    //
 
     // if it's an auth'd user, then they're giving back a response from the user/d3ck
-    if (req.isAuthenticated()) {
+    if (! req.isAuthenticated() && secret == '') {
+        console.error("ain't got none auth")
+        res.redirect(302, '/login.html')
+        return
     }
 
-
-    // a d3ck trying to make friends
-    else {
-    }
-
-
-
-    //
-    // GET - 
-    //
 
     if (typeof did == "undefined") {
         log.info('bad dog, no DiD!')
@@ -1747,6 +1753,11 @@ function create_cli3nt_rest(req, res, next) {
         return
     }
 
+    //
+    // GET & rest of POST
+    //
+
+    // create client bundle
     var keyout = d3ck_spawn_sync(command, [did])
 
     if (keyout.code) {
@@ -1754,6 +1765,7 @@ function create_cli3nt_rest(req, res, next) {
         res.send(420, { error: "couldn't retrieve client certificates" } )
         return
     }
+
     else {
         log.info('writing out to ' + d3ck_keystore +'/'+ did + "/_cli3nt.all")
 
@@ -1761,7 +1773,6 @@ function create_cli3nt_rest(req, res, next) {
 
         write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
         write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
-
     }
 
     //
