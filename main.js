@@ -303,8 +303,9 @@ var d3ck_proxy_up  = false,
     proxy_server   = "",
     proxy          = "";
 
-var all_client_ips = [],
-    client_ip      = "";
+var all_client_ips        = [],
+    all_authenticated_ips = [],
+    client_ip             = "";
 
 var vpn_server_status = {}
 var vpn_client_status = {}
@@ -1697,9 +1698,9 @@ function create_cli3nt_rest(req, res, next) {
         cli3nt_bundle = {},
         command       = d3ck_bin + '/bundle_certs.js',
         argz          = [],
-        ip_addr       = get_client_ip(req);
+        ip_addr       = get_client_ip(req),
+        did           = req.body.did;
 
-    var did;
     //
     // url
     //
@@ -1709,12 +1710,15 @@ function create_cli3nt_rest(req, res, next) {
     log.info(req.body)
     console.log(secret_requests)
 
-    // secret in here
-    if (req.method.toLowerCase() == 'post') {
+    console.log("all auth'd ips")
+    console.log(all_authenticated_ips)
+    console.log('client: ' + get_client_ip(req))
+
+    // is there a secret in here?  Although... if you're the auth'd client... no worries, you go by
+    if (req.method.toLowerCase() == 'post' && ! __.contains(all_authenticated_ips, get_client_ip(req))) {
+
         log.info('POST')
         log.info(req.body)
-
-        did = req.body.did
 
         log.info('DiD: ' + did)
 
@@ -1728,9 +1732,6 @@ function create_cli3nt_rest(req, res, next) {
             res.send(400, { error: "no secret or secret mismatch, friend request unsuccessful" })
             return
         }
-
-
-
 
     }
 
@@ -4491,13 +4492,15 @@ server.post('/login',
         // rclient.set('session_cookie', req.client._httpMessage.req.sessionID, function(err) {
         rclient.set('session_cookie', gen_somewhat_random(), function(err) {
             if (err) {
-                log.error(err, 'session cookie crumbled: ' + JSON.stringify(err));
+                log.info("these *are* the droids you're looking for, arrest them!" + JSON.stringify(err))
                 return(err);
             } else {
                 log.info('cookie baking complete')
-                // log.info('houston, we have a go, prepare for liftoff')
-                // these aren't the droids you're looking for
-                // log.info("these *are* the droids you're looking for, arrest them!")
+                log.info("these aren't the droids you're looking for")
+                var ip                    = get_client_ip(req)
+                all_authenticated_ips.push(ip)
+                log.info(ip)
+                log.info(all_authenticated_ips)
             }
         })
         res.redirect('/');

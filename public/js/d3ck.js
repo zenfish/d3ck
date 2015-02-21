@@ -2074,6 +2074,7 @@ function ask_user_4_response(data) {
 
             post_data.ip_addr     = req.ip_addr
             post_data.from_ip     = req.from_ip
+            post_data.server_ip   = window.location.hostname
             post_data.did         = my_d3ck.D3CK_ID
             post_data.d3ck_action = "CREATE"
             post_data.secret      = req.secret
