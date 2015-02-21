@@ -1699,26 +1699,27 @@ function create_cli3nt_rest(req, res, next) {
         command       = d3ck_bin + '/bundle_certs.js',
         argz          = [],
         ip_addr       = get_client_ip(req),
-        did           = req.body.did,
-        from_d3ck     = req.body.from_d3ck;
+        did           = '';
 
     log.info('... in c_c3_rest')
-
-    log.info(req.body.secret)
 
     if (def(req.body.secret)) {
         secret = req.body.secret
         log.info("POSTY TOASTY SECRETZ! " + secret)
     }
 
+
+    if (def(req.body.did)) {
+        did = req.body.did
+        log.info("DID! " + did)
+    }
+
     //
     // url
     //
-    log.info('who are ya, punk?  ' + ip_addr)
     log.info('punk or punkette?' + JSON.stringify(req.headers))
 
     log.info(req.body)
-    console.log(secret_requests)
 
     if (__.contains(all_authenticated_ips, get_client_ip(req))) {
         console.log('client: ' + get_client_ip(req))
@@ -2716,6 +2717,9 @@ function serviceRequest(req, res, next) {
         service   = req.body.service,
         secret    = '';
 
+    log.info(d3ckid)
+    log.info(ip_addr)
+
     // if it's us... no worries
     if (typeof ip_addr != 'undefined' && typeof d3ck2ip[from_d3ck] == 'undefined') {
         console.log('loading up ip2d3ck with ' + from_d3ck + ' -> ' + from_ip)
@@ -2763,9 +2767,6 @@ function serviceRequest(req, res, next) {
     //
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend request')) {
         log.info("for me? You shouldn't have!")
-
-        console.log(d3ckid)
-        console.log(ip_addr)
 
         if (!def(d3ck2ip[d3ckid])) ip_addr = d3ck2ip[d3ckid] 
 
@@ -4026,10 +4027,8 @@ function create_d3ck_locally(ip_addr, secret, did) {
         //
         // now get client certs
         //
-        c_url      = 'https://' + ip_addr + ':' + d3ck_port_ext + '/cli3nt?did=' + bwana_d3ck.D3CK_ID
-
+        c_url        = 'https://' + ip_addr + ':' + d3ck_port_ext + '/cli3nt?did=' + bwana_d3ck.D3CK_ID
         // log.info("getting cli3nt data we'll use from: " + c_url)
-
         var c_data   = ""
         var options  = {}
 
