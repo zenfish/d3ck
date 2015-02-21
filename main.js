@@ -4033,7 +4033,11 @@ function create_d3ck_locally(ip_addr, secret) {
         var options  = {}
 
         options.url  = c_url
-        options.form = { from_d3ck: bwana_d3ck.D3CK_ID, secret: secret } // toss a secret at them
+        options.form = { 
+            from_d3ck : bwana_d3ck.D3CK_ID,
+            secret    : secret,
+            did       : ip2d3ck[ip_addr]
+        }
 
         log.info(options)
 
