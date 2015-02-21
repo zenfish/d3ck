@@ -1699,7 +1699,8 @@ function create_cli3nt_rest(req, res, next) {
         command       = d3ck_bin + '/bundle_certs.js',
         argz          = [],
         ip_addr       = get_client_ip(req),
-        did           = req.body.did;
+        did           = req.body.did,
+        from_d3ck     = req.body.from_d3ck;
 
     log.info('... in c_c3_rest')
 
@@ -1790,7 +1791,7 @@ function create_cli3nt_rest(req, res, next) {
     //
     if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
         log.info("Hmm, we don't have their data... try to get it")
-        create_d3ck_locally(ip_addr, secret.secret)
+        create_d3ck_locally(ip_addr, secret.secret, from_d3ck)
     }
 
     try       {
@@ -4008,7 +4009,7 @@ function create_d3ck_by_ip(req, res, next) {
 //  - save all that stuff it seems valid
 //
 //
-function create_d3ck_locally(ip_addr, secret) {
+function create_d3ck_locally(ip_addr, secret, did) {
 
     log.info('creating local cert/d3ck stuff for: ' + ip_addr + ', with secret: ' + secret)
 
@@ -4036,7 +4037,7 @@ function create_d3ck_locally(ip_addr, secret) {
         options.form = { 
             from_d3ck : bwana_d3ck.D3CK_ID,
             secret    : secret,
-            did       : ip2d3ck[ip_addr]
+            did       : did
         }
 
         log.info(options)
