@@ -1701,6 +1701,15 @@ function create_cli3nt_rest(req, res, next) {
         ip_addr       = get_client_ip(req),
         did           = req.body.did;
 
+    log.info('... in c_c3_rest')
+
+    log.info(req.body.secret)
+
+    if (def(req.body.secret)) {
+        secret = req.body.secret
+        log.info("POSTY TOASTY SECRETZ! " + secret)
+    }
+
     //
     // url
     //
@@ -1710,21 +1719,20 @@ function create_cli3nt_rest(req, res, next) {
     log.info(req.body)
     console.log(secret_requests)
 
-    console.log("all auth'd ips")
-    console.log(all_authenticated_ips)
-    console.log('client: ' + get_client_ip(req))
+    if (__.contains(all_authenticated_ips, get_client_ip(req))) {
+        console.log('client: ' + get_client_ip(req))
+
+        if (def(req.body.from_ip)) {
+            ip_addr = req.body.from_ip
+            log.info('setting ip to remote d3ck -> ' + ip_addr)
+        }
+
+    }
 
     // is there a secret in here?  Although... if you're the auth'd client... no worries, you go by
-    if (req.method.toLowerCase() == 'post' && ! __.contains(all_authenticated_ips, get_client_ip(req))) {
+    else if (req.method.toLowerCase() == 'post') {
 
-        log.info('POST')
-        log.info(req.body)
-
-        log.info('DiD: ' + did)
-
-        secret = req.body.secret.secret
-
-        log.info("POSTY TOASTY SECRETZ! " + secret)
+        log.info('postify')
 
         // die if mismatch or missing
         if (!def(secret_requests[ip_addr]) || secret_requests[ip_addr].secret != secret) {
@@ -1735,6 +1743,7 @@ function create_cli3nt_rest(req, res, next) {
 
     }
 
+    log.info('past all the major hurdles...')
 
     //
     // need auth or secret, or don't pass go....
@@ -1781,7 +1790,7 @@ function create_cli3nt_rest(req, res, next) {
     //
     if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
         log.info("Hmm, we don't have their data... try to get it")
-        create_d3ck_locally(ip_addr)
+        create_d3ck_locally(ip_addr, secret)
     }
 
     try       {
@@ -4011,36 +4020,6 @@ function create_d3ck_locally(ip_addr, secret) {
 
     var data = ""
 
-    // ping first
-    get_https(url).then(function (ping_data) {
-
-        var p_deferred = Q.defer();
-
-        ping_data = JSON.parse(ping_data)
-
-        log.info(ping_data)
-
-        log.info(url + ' nabbed')
-
-        if (typeof ping_data.did == "undefined") {
-            log.error('not a d3ck...?')
-            p_deferred.reject({'error': "not a d3ck...?"})
-        }
-
-        if (typeof all_d3cks[ping_data.did] != "undefined") {
-            log.error('duplicate... pass.')
-            p_deferred.reject({'error': "duplicate... already done"})
-        }
-
-        else {
-            log.info('ping seemz ok')
-            p_deferred.resolve(ping_data)
-        }
-
-        return p_deferred.promise;
-
-    }).then(function (data) {
-
         log.info('post ping')
 
         //
@@ -4135,12 +4114,7 @@ function create_d3ck_locally(ip_addr, secret) {
 
             }
 
-        }).fail(function (error) {
-            log.error("in c-form error occured: " + error);
-            r_deferred.reject({ "error": JSON.stringify(error)})
-        });
-
-    });
+        })
 
     return deferred.promise;
 
