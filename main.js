@@ -3935,7 +3935,7 @@ function create_d3ck_by_ip(req, res, next) {
 
     secret_requests[ip_addr] = secret
 
-    var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service'
+    var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/request'
 
     var options  = { url: url }
 
@@ -3960,6 +3960,8 @@ function create_d3ck_by_ip(req, res, next) {
             deferred.reject({"err" : e});
             return
         }
+
+        log.info(r.statusCode)
 
         log.info('friend request returned... ' + body)
 
