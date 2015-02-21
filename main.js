@@ -1708,6 +1708,10 @@ function create_cli3nt_rest(req, res, next) {
         log.info("POSTY TOASTY SECRETZ! " + secret)
     }
 
+    if (def(req.body.from_d3ck)) {
+        ip_addr = req.body.from_d3ck
+        log.info('remote d3ck -> ' + d3ck)
+    }
 
     if (def(req.body.did)) {
         did = req.body.did
