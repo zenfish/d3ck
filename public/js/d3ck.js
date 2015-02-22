@@ -1939,13 +1939,22 @@ function confirm_or_deny_or(type, req, element) {
                 inform_user(req.did   + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
             }
 
+
+            //
+            // xxx - need to refactor this for generic service requests
+            //
             // user hit allow or deny?
+            //
             alertify.confirm(message_request, function (e) {
                 console.log('confirm...?')
                 console.log(e)
 
                 var answer    = ''
-                var post_data = { 'ip_addr' : my_d3ck.ip_addr, 'from_d3ck': my_d3ck.D3CK_ID, 'did': my_d3ck.D3CK_ID }
+                var post_data = { 
+                    ip_addr   : my_d3ck.ip_addr, 
+                    from_d3ck : req.did,
+                    did       : my_d3ck.D3CK_ID 
+                }
 
                 post_data     = JSON.stringify(post_data)
 

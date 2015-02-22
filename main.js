@@ -591,8 +591,10 @@ function findByUsername(name, fn) {
 
 function auth(req, res, next) {
 
+    var ip = get_client_ip(req)
+
     if (!DEBUG && (req.path != '/ping' && req.path != '/q' && req.path != '/status'))    // let's not get carried away ;)
-        log.info('got auth?  --> ' + req.path)
+        log.info('got auth?  --> ' + req.path + ' <- ' + ip)
 
     //
     // is it public property... e.g. can anon go?
@@ -634,9 +636,8 @@ function auth(req, res, next) {
         return
     }
 
-    var ip        = get_client_ip(req),
-        url_bits  = req.path.split('/'),
-        auth_type = ''
+    var url_bits  = req.path.split('/'),
+        auth_type = '';
 
     // log.info("hdrz: " + JSON.stringify(req.headers))
 
@@ -2212,7 +2213,7 @@ function createEvent(ip, event_data, ds) {
     // eventually this will go to client... if we have any status along
     // with the event, toss it in the queue
     if (typeof ds != "undefined") {
-        log.info('adding ds: ' + JSON.stringify(ds))
+        log.info('adding to client queue: ' + JSON.stringify(ds))
         q_status(ds)
     }
 
@@ -4039,103 +4040,101 @@ function create_d3ck_locally(ip_addr, secret, did) {
 
     var data = ""
 
-        log.info('post ping')
+    //
+    // now get client certs
+    //
+    c_url        = 'https://' + ip_addr + ':' + d3ck_port_ext + '/cli3nt?did=' + bwana_d3ck.D3CK_ID
+    // log.info("getting cli3nt data we'll use from: " + c_url)
+    var c_data   = ""
+    var options  = {}
 
-        //
-        // now get client certs
-        //
-        c_url        = 'https://' + ip_addr + ':' + d3ck_port_ext + '/cli3nt?did=' + bwana_d3ck.D3CK_ID
-        // log.info("getting cli3nt data we'll use from: " + c_url)
-        var c_data   = ""
-        var options  = {}
+    options.url  = c_url
+    options.form = { 
+        from_d3ck : bwana_d3ck.D3CK_ID,
+        secret    : secret,
+        did       : did
+    }
 
-        options.url  = c_url
-        options.form = { 
-            from_d3ck : bwana_d3ck.D3CK_ID,
-            secret    : secret,
-            did       : did
+    log.info(options)
+
+    // send ours, grab remote d3ck's data
+    request.post(options, function cb (err, c_data) {
+        if (err) {
+            console.error('friend request failed: ', JSON.stringify(err))
+            d3ck_queue.push({type: 'info', event: 'friend_request', status: 'fail'})
+            res.send(200, {"err" : err});
+            return
+            }
+
+        log.info('\ncheckin client data from ' + c_url + ' nabz => ' + c_data.substring(0,1024) + ' .... ')
+
+        var c_deferred = Q.defer();
+
+        if (c_data.indexOf("was not found") != -1) {
+            log.error('no certy love: ' + c_data)
+            c_deferred.reject({'error': "other side didn't cough up our certz"})
+        }
+        else {
+
+            var r_deferred = Q.defer();
+
+            c_data = JSON.parse(c_data)
+
+            log.info('remote client d3ck info in...!')
+
+            log.info(c_data.all_ips)
+
+            // if the IP we get the add from isn't in the ips the other d3ck
+            // says it has... add it in; they may be coming from a NAT or
+            // something weird
+            log.info('looking 2 see if your current ip is in your pool')
+
+            var found = false
+
+            for (var i = 0; i < c_data.all_ips.length; i++) {
+                if (c_data.all_ips[i] == ip_addr) {
+                    log.info('remote ip found in d3ck data')
+                    found = true
+                    break
+                }
+            }
+            if (! found) {
+                log.info("You're coming from an IP that isn't in your stated IPs... adding [" + ip_addr + "] to your IP pool just in case")
+                c_data.all_ips[all_client_ips.length] = ip_addr
+            }
+
+            create_d3ck_key_store(c_data)
+
+            //
+            // execute a shell script with appropriate args to create a d3ck.
+            // ... of course... maybe should be done in node/js anyway...
+            // have to ponder the ponderables....
+            //
+            // Apparently the word ponder comes from the 14th century, coming from the
+            // word heavy or weighty in the physical sense... which makes a certain
+            // amount of sense... funny how we continually grasp for physical analogues (!)
+            // to our philosophical or digital concepts.
+            //
+            // ... back to the program, dog!
+            //
+            create_full_d3ck(c_data)
+
+            all_d3cks[c_data.D3CK_ID] = c_data.D3CK_ID
+
+            // write image
+            log.info('image...')
+
+            // log.info(c_data.image_b64)
+            write_2_file(d3ck_public + c_data.image, b64_decode(c_data.image_b64))
+
+            // self added
+            d3ck_events = { new_d3ck_ip : '127.0.0.1', new_d3ck_name: c_data.name }
+
+            r_deferred.resolve({ "did": c_data.D3CK_ID })
+
         }
 
-        log.info(options)
-
-        // send ours, grab remote d3ck's data
-        request.post(options, function cb (err, c_data) {
-            if (err) {
-                console.error('friend request failed: ', JSON.stringify(err))
-                d3ck_queue.push({type: 'info', event: 'friend_request', status: 'fail'})
-                res.send(200, {"err" : err});
-                return
-                }
-
-            log.info('\ncheckin client data from ' + c_url + ' nabz => ' + c_data.substring(0,1024) + ' .... ')
-
-            var c_deferred = Q.defer();
-
-            if (c_data.indexOf("was not found") != -1) {
-                log.error('no certy love: ' + c_data)
-                c_deferred.reject({'error': "other side didn't cough up our certz"})
-            }
-            else {
-
-                var r_deferred = Q.defer();
-
-                c_data = JSON.parse(c_data)
-
-                log.info('remote client d3ck info in...!')
-
-                log.info(c_data.all_ips)
-
-                // if the IP we get the add from isn't in the ips the other d3ck
-                // says it has... add it in; they may be coming from a NAT or
-                // something weird
-                log.info('looking 2 see if your current ip is in your pool')
-
-                var found = false
-
-                for (var i = 0; i < c_data.all_ips.length; i++) {
-                    if (c_data.all_ips[i] == ip_addr) {
-                        log.info('remote ip found in d3ck data')
-                        found = true
-                        break
-                    }
-                }
-                if (! found) {
-                    log.info("You're coming from an IP that isn't in your stated IPs... adding [" + ip_addr + "] to your IP pool just in case")
-                    c_data.all_ips[all_client_ips.length] = ip_addr
-                }
-
-                create_d3ck_key_store(c_data)
-
-                //
-                // execute a shell script with appropriate args to create a d3ck.
-                // ... of course... maybe should be done in node/js anyway...
-                // have to ponder the ponderables....
-                //
-                // Apparently the word ponder comes from the 14th century, coming from the
-                // word heavy or weighty in the physical sense... which makes a certain
-                // amount of sense... funny how we continually grasp for physical analogues (!)
-                // to our philosophical or digital concepts.
-                //
-                // ... back to the program, dog!
-                //
-                create_full_d3ck(c_data)
-
-                all_d3cks[c_data.D3CK_ID] = c_data.D3CK_ID
-
-                // write image
-                log.info('image...')
-
-                // log.info(c_data.image_b64)
-                write_2_file(d3ck_public + c_data.image, b64_decode(c_data.image_b64))
-
-                // self added
-                d3ck_events = { new_d3ck_ip : '127.0.0.1', new_d3ck_name: c_data.name }
-
-                r_deferred.resolve({ "did": c_data.D3CK_ID })
-
-            }
-
-        })
+    })
 
     return deferred.promise;
 
