@@ -1722,9 +1722,9 @@ function create_cli3nt_rest(req, res, next) {
         did = req.body.from_d3ck
         log.info('remote d3ck -> ' + did)
     }
-    else if (def(d3ck2ip[ip_addr])) {
+    else if (def(ip2d3ck[ip_addr])) {
         log.info('loading did from cache')
-        did = d3ck2ip[ip_addr]
+        did = ip2d3ck[ip_addr]
     }
     else if (def(req.body.did)) {
         did = req.body.did
@@ -2740,9 +2740,9 @@ function serviceRequest(req, res, next) {
     log.info(ip_addr)
 
     // if it's us... no worries
-    if (typeof ip_addr != 'undefined' && typeof d3ck2ip[from_d3ck] == 'undefined') {
-        console.log('loading up ip2d3ck with ' + from_d3ck + ' -> ' + from_ip)
-        d3ck2ip[from_ip] = from_d3ck;
+    if (typeof ip_addr != 'undefined' && typeof ip2d3ck[from_ip] == 'undefined') {
+        console.log('loading up ip2d3ck[' + from_ip + '] = ' + from_d3ck)
+        ip2d3ck[from_ip] = from_d3ck;
     }
 
     //
