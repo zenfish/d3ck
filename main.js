@@ -1709,24 +1709,27 @@ function create_cli3nt_rest(req, res, next) {
 
     var secret;
 
-    // either use their d3ck id or our own... if from_d3ck defined use that
-    if (def(req.body.from_d3ck)) {
-        did = req.body.from_d3ck
-        log.info('remote d3ck -> ' + did)
-    }
-    else if (def(req.body.did)) {
-        did = req.body.did
-        log.info("using our DID! " + did)
-    }
-
     //
     if (def(req.body.secret)) {
         secret_obj = req.body.secret
         secret     = secret_obj.secret
         log.info("POSTY TOASTY SECRETZ! " + secret)
     }
-
     log.error(secret_requests)
+
+    // either use their d3ck id or our own... if from_d3ck defined use that
+    if (def(req.body.from_d3ck)) {
+        did = req.body.from_d3ck
+        log.info('remote d3ck -> ' + did)
+    }
+    else if (def(d3ck2ip[ip_addr])) {
+        log.info('loading did from cache')
+        did = d3ck2ip[ip_addr]
+    }
+    else if (def(req.body.did)) {
+        did = req.body.did
+        log.info("using our DID! " + did)
+    }
 
     //
     // url
@@ -2739,7 +2742,7 @@ function serviceRequest(req, res, next) {
     // if it's us... no worries
     if (typeof ip_addr != 'undefined' && typeof d3ck2ip[from_d3ck] == 'undefined') {
         console.log('loading up ip2d3ck with ' + from_d3ck + ' -> ' + from_ip)
-        d3ck2ip[from_d3ck] = from_ip;
+        d3ck2ip[from_ip] = from_d3ck;
     }
 
     //

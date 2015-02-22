@@ -529,7 +529,7 @@ function d3ck_create(element, ip_addr) {
     var post_data         = {}
     post_data.ip_addr     = ip_addr
     post_data.d3ck_action = "CREATE"
-    post_data = JSON.stringify(post_data)
+    post_data             = JSON.stringify(post_data)
 
     // console.log(post_data)
 
@@ -2077,40 +2077,35 @@ function ask_user_4_response(data) {
         
         // do eet here... kick off 
         confirm_or_deny_or('befriend', req, '#labels')
-        // if (confirm_or_deny_or('befriend', req, '#labels')) {
+        // if (confirm_or_deny_or('befriend', req, '#labels'))
 
-            var post_data         = {}
+        var post_data         = {}
 
-            post_data.ip_addr     = req.ip_addr
-            post_data.from_ip     = req.from_ip
-            post_data.server_ip   = window.location.hostname
-            post_data.did         = my_d3ck.D3CK_ID
-            post_data.d3ck_action = "CREATE"
-            post_data.secret      = req.secret
+        post_data.ip_addr     = req.ip_addr
+        post_data.from_ip     = req.from_ip
+        post_data.server_ip   = window.location.hostname
+        post_data.did         = my_d3ck.D3CK_ID
+        post_data.d3ck_action = "CREATE"
+        post_data.secret      = req.secret
 
-            post_data             = JSON.stringify(post_data)
+        post_data             = JSON.stringify(post_data)
 
-            // console.log(post_data)
+        // console.log(post_data)
 
-            $.ajax({
-                type    : 'POST',
-                url     : '/cli3nt',
-                headers : { 'Content-Type': 'application/json' },
-                data    : post_data,
-                success : function(data, status) {
-                    console.log('suck... sess.... ')
-                    inform_user('adding d3ck', 'trying to add ' + ip_addr)
-                },
-                fail: function(data, err) {
-                    console.log('fuck... me')
-                    inform_user('failed to add', ip_addr + ' was not added', 'error')
-                }
-            })
-
-        // }
-        // else {
-        //     log('not created: user said fuck off')
-        // }
+        $.ajax({
+            type    : 'POST',
+            url     : '/cli3nt',
+            headers : { 'Content-Type': 'application/json' },
+            data    : post_data,
+            success : function(data, status) {
+                console.log('suck... sess.... ')
+                inform_user('adding d3ck', 'trying to add ' + ip_addr)
+            },
+            fail: function(data, err) {
+                console.log('fuck... me')
+                inform_user('failed to add', ip_addr + ' was not added', 'error')
+            }
+        })
 
     }
 
