@@ -1704,19 +1704,21 @@ function create_cli3nt_rest(req, res, next) {
 
     log.info('... in c_c3_rest')
 
+
+    // either use their d3ck id or our own... if from_d3ck defined use that
+    if (def(req.body.from_d3ck)) {
+        did = req.body.from_d3ck
+        log.info('remote d3ck -> ' + did)
+    }
+    else if (def(req.body.did)) {
+        did = req.body.did
+        log.info("using our DID! " + did)
+    }
+
+    //
     if (def(req.body.secret)) {
         secret = req.body.secret
         log.info("POSTY TOASTY SECRETZ! " + secret)
-    }
-
-    if (def(req.body.from_d3ck)) {
-        from_d3ck = req.body.from_d3ck
-        log.info('remote d3ck -> ' + d3ck)
-    }
-
-    if (def(req.body.did)) {
-        did = req.body.did
-        log.info("DID! " + did)
     }
 
     //
@@ -1763,7 +1765,6 @@ function create_cli3nt_rest(req, res, next) {
         return
     }
 
-
     if (typeof did == "undefined") {
         log.info('bad dog, no DiD!')
         res.send(400, { error: 'bad dog, no DiD, no tasty bites!' })
@@ -1797,10 +1798,10 @@ function create_cli3nt_rest(req, res, next) {
     //
     if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
         log.info("Hmm, we don't have their data... try to get it")
-        create_d3ck_locally(ip_addr, secret.secret, from_d3ck)
+        create_d3ck_locally(ip_addr, secret, did)
     }
 
-    try       {
+    try {
         // log.info('looks good - ' + JSON.stringify(cli3nt_bundle))
         res.send(200, JSON.stringify(cli3nt_bundle))
     }
@@ -2741,8 +2742,8 @@ function serviceRequest(req, res, next) {
         log.info('setting secret w body -> ' + secret)
     }
     // else check to see if it's in the all-array o secrets
-    else if (typeof secret_requests[ip_addr] != 'undefined') {
-        secret = secret_requests[ip_addr]
+    else if (typeof secret_requests[from_ip] != 'undefined') {
+        secret = secret_requests[from_ip]
         log.info('setting secret w array -> ')
         log.info(secret)
     }
