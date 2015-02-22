@@ -1728,6 +1728,8 @@ function create_cli3nt_rest(req, res, next) {
 
     log.info(req.body)
 
+    log.error(secret_requests)
+
     if (__.contains(all_authenticated_ips, get_client_ip(req))) {
         console.log('client: ' + get_client_ip(req))
 
