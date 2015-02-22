@@ -1703,7 +1703,9 @@ function create_cli3nt_rest(req, res, next) {
         from_d3ck     = '',
         did           = '';
 
-    log.info('... in c_c3_rest')
+    log.info('... in c_c3_rest from -> ' + ip_addr)
+    log.info('punk or punkette?' + JSON.stringify(req.headers))
+    log.info(req.body)
 
     var secret;
 
@@ -1724,14 +1726,11 @@ function create_cli3nt_rest(req, res, next) {
         log.info("POSTY TOASTY SECRETZ! " + secret)
     }
 
+    log.error(secret_requests)
+
     //
     // url
     //
-    log.info('punk or punkette?' + JSON.stringify(req.headers))
-
-    log.info(req.body)
-
-    log.error(secret_requests)
 
     if (__.contains(all_authenticated_ips, get_client_ip(req))) {
         console.log('client: ' + get_client_ip(req))
@@ -4034,10 +4033,6 @@ function create_d3ck_locally(ip_addr, secret, did) {
 
     var deferred = Q.defer();
 
-    var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/ping'
-
-    log.info('pinging ' + url)
-
     var data = ""
 
     //
@@ -4054,6 +4049,8 @@ function create_d3ck_locally(ip_addr, secret, did) {
         secret    : secret,
         did       : did
     }
+
+    log.info('posting to ' + c_url)
 
     log.info(options)
 
