@@ -1945,7 +1945,7 @@ function confirm_or_deny_or(type, req, element) {
                 console.log(e)
 
                 var answer    = ''
-                var post_data = { 'ip_addr' : my_d3ck.ip_addr, 'from_d3ck': req.from_d3ck, 'did': my_d3ck.D3CK_ID }
+                var post_data = { 'ip_addr' : my_d3ck.ip_addr, 'from_d3ck': my_d3ck.D3CK_ID, 'did': my_d3ck.D3CK_ID }
 
                 post_data     = JSON.stringify(post_data)
 

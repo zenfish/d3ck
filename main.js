@@ -1694,16 +1694,17 @@ function update_d3ck(_d3ck) {
 function create_cli3nt_rest(req, res, next) {
 
     var target        = '',
-        secret        = '',
+        secret_obj    = {},
         cli3nt_bundle = {},
         command       = d3ck_bin + '/bundle_certs.js',
         argz          = [],
         ip_addr       = get_client_ip(req),
-        from_d3ck     = ''
+        from_d3ck     = '',
         did           = '';
 
     log.info('... in c_c3_rest')
 
+    var secret;
 
     // either use their d3ck id or our own... if from_d3ck defined use that
     if (def(req.body.from_d3ck)) {
@@ -1717,7 +1718,8 @@ function create_cli3nt_rest(req, res, next) {
 
     //
     if (def(req.body.secret)) {
-        secret = req.body.secret
+        secret_obj = req.body.secret
+        secret     = secret_obj.secret
         log.info("POSTY TOASTY SECRETZ! " + secret)
     }
 
@@ -1748,9 +1750,10 @@ function create_cli3nt_rest(req, res, next) {
         // die if mismatch or missing
         if (!def(secret_requests[ip_addr])) {
             log.error("no secret given, friend request unsuccessful")
-            res.send(400, { error: "no secret , friend request unsuccessful" })
+            res.send(400, { error: "no secret given, friend request unsuccessful" })
             return
         }
+
         else if (secret_requests[ip_addr].secret != secret) {
             log.error("secret mismatch, friend request unsuccessful")
             res.send(400, { error: "secret mismatch, friend request unsuccessful" })
@@ -1805,7 +1808,7 @@ function create_cli3nt_rest(req, res, next) {
     //
     if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
         log.info("Hmm, we don't have their data... try to get it")
-        create_d3ck_locally(ip_addr, secret, did)
+        create_d3ck_locally(ip_addr, secret_obj, did)
     }
 
     try {
