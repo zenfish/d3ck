@@ -2743,7 +2743,7 @@ function serviceRequest(req, res, next) {
     }
     // else check to see if it's in the all-array o secrets
     else if (typeof secret_requests[from_ip] != 'undefined') {
-        secret = secret_requests[from_ip]
+        secret_requests[from_ip] = secret
         log.info('setting secret w array -> ')
         log.info(secret)
     }
