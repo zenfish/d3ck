@@ -2747,9 +2747,9 @@ function serviceRequest(req, res, next) {
     log.info(ip_addr)
 
     // if it's us... no worries
-    if (typeof ip_addr != 'undefined' && typeof ip2d3ck[from_ip] == 'undefined') {
-        console.log('loading up ip2d3ck[' + from_ip + '] = ' + from_d3ck)
-        ip2d3ck[from_ip] = from_d3ck;
+    if (typeof ip_addr != 'undefined' && typeof ip2d3ck[ip_addr] == 'undefined') {
+        console.log('loading up ip2d3ck[' + ip_addr + '] = ' + from_d3ck)
+        ip2d3ck[ip_addr] = from_d3ck;
     }
 
     //
@@ -2759,12 +2759,12 @@ function serviceRequest(req, res, next) {
     // if given one, use that
     if (typeof req.body.secret != 'undefined') { 
         secret = req.body.secret
-        secret_requests[from_ip] = secret
+        secret_requests[ip_addr] = secret
         log.info('setting secret w body -> ' + secret)
     }
     // else check to see if it's in the all-array o secrets
     else if (typeof secret_requests[from_ip] != 'undefined') {
-        secret_requests[from_ip] = secret
+        secret_requests[ip_addr] = secret
         log.info('setting secret w array -> ')
         log.info(secret)
     }
