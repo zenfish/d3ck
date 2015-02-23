@@ -1732,7 +1732,7 @@ function create_cli3nt_rest(req, res, next) {
 
     log.error(secret_requests)
     log.info('s2ip')
-    log.info(secrets2ips[secret])
+    log.info(secrets2ips)
 
     // either use their d3ck id or our own... if from_d3ck defined use that
     if (def(req.body.from_d3ck)) {
