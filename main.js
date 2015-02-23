@@ -1792,21 +1792,21 @@ function create_cli3nt_rest(req, res, next) {
     //
 
     // create client bundle
-    // var keyout = d3ck_spawn_sync(command, [did])
-    // if (keyout.code) {
-    //     log.error("error in create_cli3nt_rest!")
-    //     res.send(420, { error: "couldn't retrieve client certificates" } )
-    //     return
-    // }
-    // 
-    // else {
-    //     log.info('writing out to ' + d3ck_keystore +'/'+ did + "/_cli3nt.all")
-    // 
-    //     cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ did + "/_cli3nt.json").toString())
-    // 
-    //     write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
-    //     write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
-    // }
+    var keyout = d3ck_spawn_sync(command, [did])
+    if (keyout.code) {
+        log.error("error in create_cli3nt_rest!")
+        res.send(420, { error: "couldn't retrieve client certificates" } )
+        return
+    }
+    
+    else {
+        log.info('writing out to ' + d3ck_keystore +'/'+ did + "/_cli3nt.all")
+    
+        cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ did + "/_cli3nt.json").toString())
+    
+        write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
+        write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
+    }
 
     //
     // if !exist, create their d3ck locally
