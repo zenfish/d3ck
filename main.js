@@ -2763,14 +2763,14 @@ function serviceRequest(req, res, next) {
     // if given one, use that
     if (typeof req.body.secret != 'undefined') { 
         secret = req.body.secret
-        secret_requests[ip_addr] = secret
-        secrets2ips[secret]      = ip_addr
+        secret_requests[ip_addr]   = secret
+        secrets2ips[secret.secret] = ip_addr
         log.info('setting secret w body -> ' + secret)
     }
     // else check to see if it's in the all-array o secrets
     else if (typeof secret_requests[from_ip] != 'undefined') {
-        secret_requests[ip_addr] = secret
-        secrets2ips[secret]      = ip_addr
+        secret_requests[ip_addr]   = secret
+        secrets2ips[secret.secret] = ip_addr
         log.info('setting secret w array -> ')
         log.info(secret)
     }
@@ -3943,8 +3943,8 @@ function create_d3ck_by_ip(req, res, next) {
     // need a secret they'll send back if they say yes
     var secret = generate_friend_request(ip_addr)
 
-    secret_requests[ip_addr] = secret
-    secrets2ips[secret]      = ip_addr
+    secret_requests[ip_addr]   = secret
+    secrets2ips[secret.secret] = ip_addr
 
     var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/request'
 
