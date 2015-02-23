@@ -2764,6 +2764,7 @@ function serviceRequest(req, res, next) {
     if (typeof req.body.secret != 'undefined') { 
         secret = req.body.secret
         secret_requests[ip_addr] = secret
+        secrets2ips[secret]      = ip_addr
         log.info('setting secret w body -> ' + secret)
     }
     // else check to see if it's in the all-array o secrets
