@@ -1818,8 +1818,9 @@ function create_cli3nt_rest(req, res, next) {
     if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
         log.info("Hmm, we don't have their data... try to get it")
 
-        log.info('\n\n\ndisabled for now...\n\n')
-        // create_d3ck_locally(ip_addr, secret_obj, did)
+        // log.info('\n\n\ndisabled for now...\n\n')
+        log.info('\n\n\n---> moment o truth <-----\n\n\n')
+        create_d3ck_locally(ip_addr, secret_obj, did)
 
     }
 
