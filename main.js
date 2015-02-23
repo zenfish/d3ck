@@ -1707,6 +1707,9 @@ function create_cli3nt_rest(req, res, next) {
     log.info('punk or punkette?' + JSON.stringify(req.headers))
     log.info(req.body)
 
+    log.info('ip2d3ck: ')
+    log.info(ip2d3ck)
+
     var secret;
 
     //
@@ -1726,6 +1729,9 @@ function create_cli3nt_rest(req, res, next) {
         log.info('loading did from cache')
         did = ip2d3ck[ip_addr]
     }
+    // if no did at all, do we 
+    // if (def(secret)) {
+    // }
     else if (def(req.body.did)) {
         did = req.body.did
         log.info("using our DID! " + did)
@@ -1789,25 +1795,24 @@ function create_cli3nt_rest(req, res, next) {
     //
 
     // create client bundle
-    var keyout = d3ck_spawn_sync(command, [did])
-
-    if (keyout.code) {
-        log.error("error in create_cli3nt_rest!")
-        res.send(420, { error: "couldn't retrieve client certificates" } )
-        return
-    }
-
-    else {
-        log.info('writing out to ' + d3ck_keystore +'/'+ did + "/_cli3nt.all")
-
-        cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ did + "/_cli3nt.json").toString())
-
-        write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
-        write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
-    }
+    // var keyout = d3ck_spawn_sync(command, [did])
+    // if (keyout.code) {
+    //     log.error("error in create_cli3nt_rest!")
+    //     res.send(420, { error: "couldn't retrieve client certificates" } )
+    //     return
+    // }
+    // 
+    // else {
+    //     log.info('writing out to ' + d3ck_keystore +'/'+ did + "/_cli3nt.all")
+    // 
+    //     cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ did + "/_cli3nt.json").toString())
+    // 
+    //     write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
+    //     write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
+    // }
 
     //
-    // if !exist, create their d3ck locally as well
+    // if !exist, create their d3ck locally
     //
     if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
         log.info("Hmm, we don't have their data... try to get it")
