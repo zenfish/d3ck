@@ -1703,7 +1703,9 @@ function create_cli3nt_rest(req, res, next) {
         from_d3ck     = '',
         did           = '';
 
+    //
     // if coming from client, use original requester's ip
+    //
     if (__.contains(all_authenticated_ips, get_client_ip(req))) {
         console.log('client: ' + get_client_ip(req))
         if (def(req.body.from_ip)) {
@@ -1713,10 +1715,8 @@ function create_cli3nt_rest(req, res, next) {
     }
 
     log.info('... in c_c3_rest from -> ' + ip_addr)
-
     log.info('punk or punkette?' + JSON.stringify(req.headers))
     log.info(req.body)
-
     log.info('ip2d3ck: ')
     log.info(ip2d3ck)
 
@@ -1813,11 +1813,16 @@ function create_cli3nt_rest(req, res, next) {
     //
     if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
         log.info("Hmm, we don't have their data... try to get it")
-        create_d3ck_locally(ip_addr, secret_obj, did)
+
+        log.info('\n\n\ndisabled for now...\n\n')
+        // create_d3ck_locally(ip_addr, secret_obj, did)
+
     }
 
     try {
-        // log.info('looks good - ' + JSON.stringify(cli3nt_bundle))
+
+        log.info('looks good - sending -> ' + JSON.stringify(cli3nt_bundle))
+
         res.send(200, JSON.stringify(cli3nt_bundle))
     }
     catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
@@ -4061,16 +4066,17 @@ function create_d3ck_locally(ip_addr, secret, did) {
 
     // send ours, grab remote d3ck's data
     request.post(options, function cb (err, c_data) {
+        var c_deferred = Q.defer();
+
         if (err) {
             console.error('friend request failed: ', JSON.stringify(err))
             d3ck_queue.push({type: 'info', event: 'friend_request', status: 'fail'})
+            c_deferred.reject({'error': "err"})
             res.send(200, {"err" : err});
             return
             }
 
         log.info('\ncheckin client data from ' + c_url + ' nabz => ' + c_data.substring(0,1024) + ' .... ')
-
-        var c_deferred = Q.defer();
 
         if (c_data.indexOf("was not found") != -1) {
             log.error('no certy love: ' + c_data)
