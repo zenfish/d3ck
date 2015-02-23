@@ -1703,7 +1703,17 @@ function create_cli3nt_rest(req, res, next) {
         from_d3ck     = '',
         did           = '';
 
+    // if coming from client, use original requester's ip
+    if (__.contains(all_authenticated_ips, get_client_ip(req))) {
+        console.log('client: ' + get_client_ip(req))
+        if (def(req.body.from_ip)) {
+            ip_addr = req.body.from_ip
+            log.info('setting ip to remote d3ck -> ' + ip_addr)
+        }
+    }
+
     log.info('... in c_c3_rest from -> ' + ip_addr)
+
     log.info('punk or punkette?' + JSON.stringify(req.headers))
     log.info(req.body)
 
@@ -1718,6 +1728,7 @@ function create_cli3nt_rest(req, res, next) {
         secret     = secret_obj.secret
         log.info("POSTY TOASTY SECRETZ! " + secret)
     }
+
     log.error(secret_requests)
 
     // either use their d3ck id or our own... if from_d3ck defined use that
@@ -1735,20 +1746,6 @@ function create_cli3nt_rest(req, res, next) {
     else if (def(req.body.did)) {
         did = req.body.did
         log.info("using our DID! " + did)
-    }
-
-    //
-    // url
-    //
-
-    if (__.contains(all_authenticated_ips, get_client_ip(req))) {
-        console.log('client: ' + get_client_ip(req))
-
-        if (def(req.body.from_ip)) {
-            ip_addr = req.body.from_ip
-            log.info('setting ip to remote d3ck -> ' + ip_addr)
-        }
-
     }
 
     // is there a secret in here?  Although... if you're the auth'd client... no worries, you go by
