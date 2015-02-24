@@ -1858,7 +1858,7 @@ function install_client(ip_addr, did, secret) {
 
     d3ck_spawn_sync(cmd, argz)
 
-    createEvent(ip_addr, {event_type: "create", d3ck_id: data.did})
+    createEvent(ip_addr, {event_type: "create", d3ck_id: did})
 
     d3ck_queue.push({type: 'info', event: 'd3ck_create', 'd3ck_status': d3ck_status})
 
@@ -3597,6 +3597,8 @@ function formDelete(req, res, next) {
 //
 function pre_ping(ip) {
 
+    log.debug('pre... ' + ip)
+
     var deferred = Q.defer();
     var url      = 'https://' + ip + ':' + d3ck_port_ext + '/ping'
 
@@ -4025,6 +4027,9 @@ function create_d3ck_by_ip(req, res, next) {
     if (def(_remote_d3ck.did)) {
         log.err("remote system " + ip_addr + "wasn't a d3ck: " + JSON.stringify(_remote_d3ck))
         return 
+    }
+    else {
+        log.info('remote system @ ' + ip_addr + ' -> ' + _remote_d3ck.did)
     }
 
     // need a secret they'll send back if they say yes
