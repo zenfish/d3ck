@@ -2005,11 +2005,11 @@ function confirm_or_deny_or(type, req, element) {
                                 data    : post_data,
                                 success : function(data, status) {
                                     console.log('suck... sess.... ')
-                                    inform_user('adding d3ck', 'trying to add ' + req.ip_addr)
+                                    inform_user('adding d3ck', 'trying to add ' + req.from_ip)
                                 },
                                 fail: function(data, err) {
                                     console.log('fuck... me')
-                                    inform_user('failed to add', ip_addr + ' was not added', 'error')
+                                    inform_user('failed to add', req.from_ip + ' was not added', 'error')
                                 }
                             })
                         }

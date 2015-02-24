@@ -82,7 +82,7 @@
         "^/images/.*",
         "^/js/.*",
         "^/service/request",
-        "^/service/reply",
+        "^/service/response",
         "^/login",
         "^/login.html",
         "^/ping",
