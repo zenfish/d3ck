@@ -1858,10 +1858,6 @@ function install_client(ip_addr, did, secret) {
 
     d3ck_spawn_sync(cmd, argz)
 
-    createEvent(ip_addr, {event_type: "create", d3ck_id: did})
-
-    d3ck_queue.push({type: 'info', event: 'd3ck_create', 'd3ck_status': d3ck_status})
-
 }
 
 //
