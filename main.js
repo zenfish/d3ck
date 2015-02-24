@@ -1834,6 +1834,35 @@ function create_cli3nt_rest(req, res, next) {
 
 }
 
+//
+// install all the create stuff, stuff it into db
+//
+function install_client(ip_addr, did, secret) {
+
+    //
+    // get client keys
+    //
+    log.info("posting our d3ck data to the d3ck we just added with create_d3ck.sh....")
+
+    var cmd  = d3ck_bin + '/create_client_d3ck.sh'
+
+    argz = [bwana_d3ck.D3CK_ID,
+            bwana_d3ck.image,
+            bwana_d3ck.ip_addr,
+            "\"all_ips\": [" + my_ips + "]",
+            bwana_d3ck.owner.name,
+            bwana_d3ck.owner.email,
+            ip_addr,
+            did,
+            secret]
+
+    d3ck_spawn_sync(cmd, argz)
+
+    createEvent(ip_addr, {event_type: "create", d3ck_id: data.did})
+
+    d3ck_queue.push({type: 'info', event: 'd3ck_create', 'd3ck_status': d3ck_status})
+
+}
 
 //
 // grab remote d3ck and stuff it locally
@@ -2964,15 +2993,6 @@ function serviceResponse(req, res, next) {
 
     var ip_addr = req.body.ip_addr
 
-    //
-    // let's be friends
-    //
-    if (service == 'friend request') {
-        log.info('routing to friend req')
-        friend_req(req, res, next)
-    }
-
-
     // is it for us, or are we passing it on?
 
     //
@@ -2986,6 +3006,18 @@ function serviceResponse(req, res, next) {
 
         log.info("about time you answered, I've been knocking!")
         log.info(req.body)
+
+        //
+        // let's be friends
+        //
+        if (service == 'friend request') {
+            log.info('routing to friend req')
+            friend_req(req, res, next)
+
+
+
+
+        }
 
         // mark it as an event, which will be picked up by the client
         var d3ck_response   = {
@@ -3559,6 +3591,31 @@ function formDelete(req, res, next) {
 
 }
 
+//
+// super simple ping of a remote d3ck... just give it
+// an IP addr, it'll return what it finds, if anything
+//
+function pre_ping(ip) {
+
+    var deferred = Q.defer();
+    var url      = 'https://' + ip + ':' + d3ck_port_ext + '/ping'
+
+    log.debug('pinging  ' + url);
+
+    Q.try(get_https(url, function (ping_data) {
+        // log.info('+++ someday has come for ' + ip + ' ... ping response back')
+        log.info(ping_data)
+        ping_data = JSON.parse(ping_data)
+        deferred.resolve(ping_data)
+
+    })).catch(function(err) {
+        log.error('errz pinging: ' + JSON.stringify(err))
+        response = {status: "ping error", "error": err}
+        deferred.reject(response)
+    })
+
+    return deferred.promise;
+}
 
 //
 // https ping a remote d3ck... it can have multiple
@@ -3962,6 +4019,14 @@ function create_d3ck_by_ip(req, res, next) {
 
     log.info("creating d3ck hopefully found @ " + ip_addr)
 
+    // ping the remote to see if it's a d3ck at all
+    var _remote_d3ck = pre_ping(ip_addr)
+
+    if (def(_remote_d3ck.did)) {
+        log.err("remote system " + ip_addr + "wasn't a d3ck: " + JSON.stringify(_remote_d3ck))
+        return 
+    }
+
     // need a secret they'll send back if they say yes
     var secret = generate_friend_request(ip_addr)
 
@@ -3981,6 +4046,9 @@ function create_d3ck_by_ip(req, res, next) {
         service   : 'friend request',
         secret    :  secret
     }
+
+    log.info('local install stuff')
+    install_client(ip_addr, _remote_d3ck.did, secret) 
 
     log.info('knocking @ ' + url)
     log.info('with: ' + JSON.stringify(options))
@@ -4130,50 +4198,9 @@ function create_d3ck_locally(ip_addr, secret, did) {
     return deferred.promise;
 
 }
-    // do all the create stuff
-//    create_d3ck_locally(ip_addr).then(function(data) {
-//
-//        if (typeof data.error != "undefined") {
-//            log.error(data.error)
-//            deferred.reject({error: "error creating d3ck: " + JSON.stringify(data.error)})
-//            return
-//        }
-//
-//        //log.info('created local -> ' + JSON.stringify(data))
-//
-//        if (typeof data.did == "undefined" || typeof data.owner.name == "undefined") {
-//            log.error('error creating d3ck, bailing...')
-//            deferred.reject({ error: "couldnt get remote d3ck ID or owner name"} )
-//            return
-//        }
-//
-//
-//        //
-//        // get client keys
-//        //
-//        log.info("posting our d3ck data to the d3ck we just added with create_d3ck.sh....")
-//
-//        var cmd  = d3ck_bin + '/create_client_d3ck.sh'
-//
-//        argz = [bwana_d3ck.D3CK_ID,
-//                bwana_d3ck.image,
-//                bwana_d3ck.ip_addr,
-//                "\"all_ips\": [" + my_ips + "]",
-//                bwana_d3ck.owner.name,
-//                bwana_d3ck.owner.email,
-//                ip_addr,
-//                data.did,
-//                secret.secret]
-//
-//        d3ck_spawn(cmd, argz)
-//
-//        createEvent(ip_addr, {event_type: "create", d3ck_id: data.did})
-//
-//        d3ck_queue.push({type: 'info', event: 'd3ck_create', 'd3ck_status': d3ck_status})
-//
-//        deferred.resolve();
-//
-//    })
+
+
+
 
 
 //
