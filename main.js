@@ -2983,11 +2983,14 @@ function serviceResponse(req, res, next) {
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
 
+    // from URL
     var answer  = req.params.answer,
-        d3ckid  = req.params.d3ckid,
-        service = req.body.service;
+        d3ckid  = req.params.d3ckid;
 
-    var ip_addr = req.body.ip_addr
+    // from POST
+    var service = req.body.service,
+        secret  = req.body.secret,
+        ip_addr = req.body.ip_addr;
 
     // is it for us, or are we passing it on?
 
@@ -3043,7 +3046,7 @@ function serviceResponse(req, res, next) {
     // onto the next d3ck in line....
     //
     else {
-        console.log(ip2d3ck)
+        log.info('pass it along....')
 
         // do we know their cert? If not, we'd better know a secret or we 
         // probably won't get far
@@ -4504,7 +4507,7 @@ server.get('/ping/:key', auth, echoStatus)
 server.post('/service/request', auth, serviceRequest);
 
 // reply to above
-server.post('/service/response/:d3ckid/:answer/:secret?*', auth, serviceResponse)
+server.post('/service/response/:d3ckid/:answer', auth, serviceResponse)
 
 
 server.post('/vpn/start', auth, startVPN);

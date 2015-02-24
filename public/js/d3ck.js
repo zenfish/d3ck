@@ -2057,7 +2057,7 @@ function confirm_or_deny_or(type, req, element) {
                     }
 
                     answer = 'no'
-                    inform_user('info', 'declined request from: ' + req.ip_addr)
+                    inform_user('info', 'declined request from: ' + req.from_ip)
 
                     $('#timer_countdown').TimeCircles().destroy()
                     $('#alertify-ok').hide()
