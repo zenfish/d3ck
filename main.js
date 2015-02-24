@@ -3068,7 +3068,7 @@ function serviceResponse(req, res, next) {
         if (def(secret)) secret = '/' + secret
         else             secret = ''
 
-        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/reply' + d3ckid + '/' + answer
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/reply/' + d3ckid + '/' + answer
 
         log.info('answer going to : ' + url)
 
