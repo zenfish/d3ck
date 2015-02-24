@@ -2983,6 +2983,8 @@ function serviceResponse(req, res, next) {
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
 
+    var deferred = Q.defer();
+
     // from URL
     var answer  = req.params.answer,
         d3ckid  = req.params.d3ckid;
@@ -2990,7 +2992,7 @@ function serviceResponse(req, res, next) {
     // from POST
     var service = req.body.service,
         secret  = req.body.secret,
-        ip_addr = req.body.ip_addr;
+        ip_addr = req.body.from_ip;
 
     // is it for us, or are we passing it on?
 
@@ -3007,14 +3009,24 @@ function serviceResponse(req, res, next) {
         log.info(req.body)
 
         //
-        // let's be friends
+        // let's be friends... if here this means that
         //
         if (service == 'friend request') {
             log.info('routing to friend req')
+
+            log.info(ip_addr, from_ip)
             friend_req(req, res, next)
 
+            if (!def(ip_addr) || !def(from_ip) || !def(secret)) {
+                log.error('post to remote failed:', JSON.stringify(err))
+                res.send(400, { emotion: 'blech' })
+                return
+            }
 
-
+            create_d3ck_locally(ip_addr, secret, d3ckid).then(function(data) {
+                deferred.resolve(data)
+                return
+            })
 
         }
 
@@ -3081,7 +3093,7 @@ function serviceResponse(req, res, next) {
 
         request.post(url, options, function cb (err, resp) {
             if (err) {
-                console.error('post to remote failed:', JSON.stringify(err))
+                log.error('post to remote failed:', JSON.stringify(err))
                 res.send(200, {"err" : err});
                 }
             else {
@@ -3092,8 +3104,8 @@ function serviceResponse(req, res, next) {
         })
     }
 
-
-
+    // not for all
+    return deferred.promise;
 
 }
 

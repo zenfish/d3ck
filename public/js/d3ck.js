@@ -1970,7 +1970,7 @@ function confirm_or_deny_or(type, req, element) {
 
                     // friends
                     if (service == 'friend request') {
-                        inform_user('info', 'exchanging cryptographic keys', 'info')
+                        inform_user('info', 'starting the exchange of crypto certificates', 'info')
                         // xxx - do something friendy to start sending things
                         // friendy(secret)
                         //
