@@ -4018,61 +4018,65 @@ function create_d3ck_by_ip(req, res, next) {
     log.info("creating d3ck hopefully found @ " + ip_addr)
 
     // ping the remote to see if it's a d3ck at all
-    var _remote_d3ck = pre_ping(ip_addr)
-
-    if (!def(_remote_d3ck.did)) {
-        log.err("remote system " + ip_addr + "wasn't a d3ck: " + JSON.stringify(_remote_d3ck))
-        return 
-    }
-    else {
-        log.info('remote system @ ' + ip_addr + ' -> ' + _remote_d3ck.did)
-    }
-
-    // need a secret they'll send back if they say yes
-    var secret = generate_friend_request(ip_addr)
-
-    secret_requests[ip_addr]   = secret
-    secrets2ips[secret.secret] = ip_addr
-
-    var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/request'
-
-    var options  = { url: url }
-
-    options.form = {
-        d3ckid    :  bwana_d3ck.D3CK_ID,
-        from_d3ck :  bwana_d3ck.D3CK_ID,
-        from_ip   :  my_ip,
-        ip_addr   :  ip_addr,
-        owner     :   bwana_d3ck.owner.name,
-        service   : 'friend request',
-        secret    :  secret
-    }
-
-    log.info('local install stuff')
-    install_client(ip_addr, _remote_d3ck.did, secret) 
-
-    log.info('knocking @ ' + url)
-    log.info('with: ' + JSON.stringify(options))
-
-    // grab remote d3ck's data... first we have to ask permission
-    request.post(options, function cb (e, r, body) {
-        if (e) {
-            console.error('friend request failed: ', JSON.stringify(e))
-            d3ck_queue.push({type: 'request', event: 'friend_request', status: 'fail'})
-            deferred.reject({"err" : e});
-            return
+    var _remote_d3ck;
+    pre_ping(ip_addr).then(function(data) {
+        _remote_d3ck = data
+        if (!def(_remote_d3ck.did)) {
+            log.error("remote system " + ip_addr + "wasn't a d3ck: " + JSON.stringify(_remote_d3ck))
+            return 
+        }
+        else {
+            log.info('remote system @ ' + ip_addr + ' -> ' + _remote_d3ck.did)
         }
 
-        log.info(r.statusCode)
 
-        log.info('friend request returned... ' + body)
+        // need a secret they'll send back if they say yes
+        var secret = generate_friend_request(ip_addr)
 
-        // remote will kick off transfer
-        deferred.resolve(body.secret);
+        secret_requests[ip_addr]   = secret
+        secrets2ips[secret.secret] = ip_addr
+
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/request'
+
+        var options  = { url: url }
+
+        options.form = {
+            d3ckid    :  bwana_d3ck.D3CK_ID,
+            from_d3ck :  bwana_d3ck.D3CK_ID,
+            from_ip   :  my_ip,
+            ip_addr   :  ip_addr,
+            owner     :   bwana_d3ck.owner.name,
+            service   : 'friend request',
+            secret    :  secret
+        }
+
+        log.info('local install stuff')
+        install_client(ip_addr, _remote_d3ck.did, secret) 
+
+        log.info('knocking @ ' + url)
+        log.info('with: ' + JSON.stringify(options))
+
+        // grab remote d3ck's data... first we have to ask permission
+        request.post(options, function cb (e, r, body) {
+            if (e) {
+                console.error('friend request failed: ', JSON.stringify(e))
+                d3ck_queue.push({type: 'request', event: 'friend_request', status: 'fail'})
+                deferred.reject({"err" : e});
+                return
+            }
+
+            log.info(r.statusCode)
+
+            log.info('friend request returned... ' + body)
+
+            // remote will kick off transfer
+            deferred.resolve(body.secret);
+
+        })
+
+        back_to_home(res)
 
     })
-
-    back_to_home(res)
 
     return deferred.promise;
 
