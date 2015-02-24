@@ -1347,7 +1347,7 @@ function getGeo(req, res, next) {
         return
     }
 
-    get_https(url, ip_addr).then(function (geo_data) {
+    get_https(url).then(function (geo_data) {
 
         log.info('geo hmmm....')
 
@@ -1397,7 +1397,7 @@ function resolveGeo(ip_addr) {
 
     var deferred = Q.defer();
 
-    get_https(url, ip2d3ck[ip_addr]).then(function (geo_data) {
+    get_https(url).then(function (geo_data) {
 
         log.info('geo hmmm....')
         log.info({ geo: geo_data } )
@@ -3932,15 +3932,16 @@ function get_https(url) {
     var deferred = Q.defer();
     var str      = ""
 
-
     log.info("https snaggin' " + url)
 
     request(url, function (err, res, body) {
+        log.info('ret from request....')
         if (err) {
+            log.error('diez on: ' + JSON.stringify(err))
             deferred.reject(err)
         }
-    else {
-            // log.info(body)
+        else {
+            log.info('req returned: ' + JSON.stringify(body))
             deferred.resolve(body)
         }
     });
