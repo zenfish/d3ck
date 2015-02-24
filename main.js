@@ -2982,6 +2982,7 @@ function serviceResponse(req, res, next) {
 
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
+    log.info("nice body!  " + req.body)
 
     var deferred = Q.defer();
 
@@ -3015,7 +3016,6 @@ function serviceResponse(req, res, next) {
             log.info('routing to friend req')
 
             log.info(ip_addr, from_ip)
-            friend_req(req, res, next)
 
             if (!def(ip_addr) || !def(from_ip) || !def(secret)) {
                 log.error('post to remote failed:', JSON.stringify(err))
@@ -3024,6 +3024,7 @@ function serviceResponse(req, res, next) {
             }
 
             create_d3ck_locally(ip_addr, secret, d3ckid).then(function(data) {
+                log.info('created...!')
                 deferred.resolve(data)
                 return
             })
@@ -3067,7 +3068,7 @@ function serviceResponse(req, res, next) {
         if (def(secret)) secret = '/' + secret
         else             secret = ''
 
-        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/reply' + d3ckid + '/' + answer + secret
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/reply' + d3ckid + '/' + answer
 
         log.info('answer going to : ' + url)
 
@@ -3075,6 +3076,7 @@ function serviceResponse(req, res, next) {
         var d3ck_response   = {
             knock       : true,
             answer      : answer,
+            secret      : secret,
             did         : bwana_d3ck.D3CK_ID
         }
 

@@ -1992,6 +1992,7 @@ function confirm_or_deny_or(type, req, element) {
 
                             post_data.d3ck_action = "CREATE"
                             post_data.secret      = req.secret
+                            post_data.from_ip     = req.from_ip
                             post_data.service     = 'friend request'
                             post_data             = JSON.stringify(post_data)
 
