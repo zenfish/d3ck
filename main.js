@@ -2951,7 +2951,6 @@ function serviceResponse(req, res, next) {
         friend_req(req, res, next)
     }
 
-
     // is it for us, or are we passing it on?
 
     //

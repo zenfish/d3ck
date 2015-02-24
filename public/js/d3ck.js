@@ -591,7 +591,7 @@ function d3ck_ping(all_ips, d3ckid) {
     var element_id = 'd3ck_vpn_' + d3ckid
 
     var jqXHR_get_ping = $.ajax({
-        url: ping_url, 
+        url: ping_url,
         cache: false
     })
 
@@ -653,7 +653,7 @@ function d3ck_ping(all_ips, d3ckid) {
                 })
 
 
-                // 
+                //
                 // look up geo along with DNS lookups... once success/fail, won't check again
                 // until you reload page/come back
                 //
@@ -693,7 +693,7 @@ function d3ck_ping(all_ips, d3ckid) {
 
             //
             // haven't seen this before... potential problems with ips in the future... sigh
-            // 
+            //
             // if (typeof draggers[data.ip] == "undefined") {
                 // make it actionable
                 // remove old, add new form
@@ -824,7 +824,7 @@ function ajaxError( jqXHR, textStatus, errorThrown ) {
 //
 
 // the first time you arrive you might want to get some status-updates
-// that aren't in the queue, such as whether or not you're in a VPN 
+// that aren't in the queue, such as whether or not you're in a VPN
 // connected state or something
 first_news = true
 
@@ -1361,7 +1361,7 @@ function fire_d3ck_status(jstatus) {
 //
 // draws the drag-n-drop box...
 //
-function drag_and_d3ck(safe_id, d3ckid, ip) { 
+function drag_and_d3ck(safe_id, d3ckid, ip) {
 
     console.log('DnD3', safe_id, d3ckid, ip)
 
@@ -1482,7 +1482,7 @@ function print_d3ck(id3ck, d3ckinfo, elements) {
 
     var dh = ""
 
-    // XXXXX 
+    // XXXXX
     try {
         dh = d3ckinfo.vpn.dh.join('\n')
     }
@@ -1671,7 +1671,7 @@ function createCORSRequest(method, url){
 // Cat chat (TM) - for moar cat fax.
 //
 function cat_chat() {
-    
+
     console.log('catting as : ' + my_d3ck.D3CK_ID)
 
     // listener, whenever the server emits 'chat_receive', this updates the chat body
@@ -1741,7 +1741,7 @@ function crypto_411(d3ck_id, element) {
         console.log('jxq crypto wootz')
         console.log(data)
 
-        // something like.... 
+        // something like....
         //
         //  {
         //  "signature algorithm": "sha256WithRSAEncryption",
@@ -1815,7 +1815,7 @@ function inform_user(title, message, level, element) {
 
     // for now... the bigger/more important types of messages go onto the desktop if you let them
 
-    // if (level == 'success' || level == 'danger' || level == 'error') {
+    // if (level == 'success' || level == 'danger' || level == 'error')
     if (level == 'wowzer') {
         console.log('this one is a VIP message... sticky & desktop if it can...')
 
@@ -1828,7 +1828,7 @@ function inform_user(title, message, level, element) {
 
     }
 
-    if (level == 'error') {
+    else if (level == 'error') {
         console.log('errz from server...')
         opts.type    = 'error'
         PNotify.prototype.options.delay = PNOTIFY_HIGH;
@@ -1898,7 +1898,7 @@ function inform_user(title, message, level, element) {
         }
     }
     catch(e) {
-        console.log('ah well, try, try again...')
+        console.log('feature not supported... maybe someday?')
     }
 
 }
@@ -1910,6 +1910,7 @@ function inform_user(title, message, level, element) {
 function confirm_or_deny_or(type, req, element) {
 
         // don't pass go
+        console.log(req)
         if (!def(req.service)) {
             inform_user('error', "service type is required", 'error')
         }
@@ -1925,14 +1926,14 @@ function confirm_or_deny_or(type, req, element) {
             // let's be friends?
             if (service == 'friend request') {
                 alertify.set({
-                    buttonReverse   : true, 
+                    buttonReverse   : true,
                     labels          : { ok: 'Confirm', cancel: 'Not Now' }
                 })
             }
             // currently only calls
             else {
                 alertify.set({
-                    buttonReverse   : true, 
+                    buttonReverse   : true,
                     labels          : { ok: 'Answer', cancel: 'Decline' }
                 });
             }
@@ -1944,18 +1945,18 @@ function confirm_or_deny_or(type, req, element) {
             }
 
             if (def(req.owner)) {
-                inform_user(req.owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
+                inform_user('info', req.owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
             }
             else {
-                inform_user(req.did   + ' wants to <b style="color: red;">' + type + '</b> from ' + req.ip_addr + '/' + req.from_d3ck, 'wowzer')
+                inform_user('info', req.did   + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
             }
-
 
 
             //
             // user - allow or deny?
             //
             alertify.confirm(message_request, function (e) {
+
                 console.log('confirm...?')
                 console.log(e)
 
@@ -1963,6 +1964,7 @@ function confirm_or_deny_or(type, req, element) {
 
                 // affirmative...?
                 if (e) {
+
                     console.log('go for it')
                     answer = 'yes'
 
@@ -1974,32 +1976,80 @@ function confirm_or_deny_or(type, req, element) {
                         //
                         //  ... this is it... send the secret received along with your stuff, get theirs
                         //
-                        return answer
+
+                        console.log('friend or foe?')
+
+                        console.log('And... drumroll please.... ' + answer)
+
+                        if (answer == 'yes') {
+
+                            var post_data         = {}
+
+                            // post_data.ip_addr     = req.ip_addr
+                            // post_data.from_ip     = req.from_ip
+                            // post_data.did         = my_d3ck.D3CK_ID
+                            // post_data.server_ip   = window.location.hostname
+
+                            post_data.d3ck_action = "CREATE"
+                            post_data.secret      = req.secret
+                            post_data.service     = 'friend request'
+                            post_data             = JSON.stringify(post_data)
+
+                            // console.log(post_data)
+
+                            $.ajax({
+                                type    : 'POST',
+                                url     : '/service/response/' + req.from_d3ck + '/' + answer,
+                                headers : { 'Content-Type': 'application/json' },
+                                data    : post_data,
+                                success : function(data, status) {
+                                    console.log('suck... sess.... ')
+                                    inform_user('adding d3ck', 'trying to add ' + req.ip_addr)
+                                },
+                                fail: function(data, err) {
+                                    console.log('fuck... me')
+                                    inform_user('failed to add', ip_addr + ' was not added', 'error')
+                                }
+                            })
+                        }
+                        else {
+                            console.log('User said no.... hell no.')
+                        }
+
                     }
 
                     //
                     // else... currently only knocking for call
                     //
                     else if (service == 'knock') {
+
+                        console.log('knock... time to pay the piper...')
+                        // var friend          = req.from
+                        // var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
+                        //                       '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
                         inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
                         lower_shields(req.ip_addr)
-                        return 'yes';
+                        return answer
+
                     }
+
                     else {
                         inform_user('error', 'unknown service request', 'error')
                         return 'no';
                     }
 
+                    $('#timer_countdown').TimeCircles().destroy()
                     $('#alertify-ok').hide()
+
                 }
                 // negative...
                 else {
 
                     if (service == 'friend request') {
-                        log('friend request denied')
+                        console.log('friend request denied')
                     }
                     else if (type == 'knock') {
-                        log('knock knock unknocked')
+                        console.log('knock knock unknocked')
                     }
                     else {
                         inform_user('error', 'unknown service request', 'error')
@@ -2008,7 +2058,10 @@ function confirm_or_deny_or(type, req, element) {
 
                     answer = 'no'
                     inform_user('info', 'declined request from: ' + req.ip_addr)
+
+                    $('#timer_countdown').TimeCircles().destroy()
                     $('#alertify-ok').hide()
+
                     return answer;
 
                 }
@@ -2067,59 +2120,21 @@ function ask_user_4_response(data) {
         return
     }
 
-    console.log(data.d3ck_status)
+    // console.log(data.d3ck_status)
 
     var req = data.d3ck_status.d3ck_requests
 
-    if (req.service == 'friend request') {
-        console.log('friend or foe?')
-        
-        // do eet here... kick off 
-        var answer = confirm_or_deny_or('befriend', req, '#labels')
-        if (answer == 'yes') {
-
-            var post_data         = {}
-
-            post_data.ip_addr     = req.ip_addr
-            post_data.from_ip     = req.from_ip
-            post_data.server_ip   = window.location.hostname
-            post_data.did         = my_d3ck.D3CK_ID
-            post_data.d3ck_action = "CREATE"
-            post_data.secret      = req.secret
-
-            post_data             = JSON.stringify(post_data)
-
-            // console.log(post_data)
-
-            $.ajax({
-                type    : 'POST',
-                url     : '/cli3nt',
-                headers : { 'Content-Type': 'application/json' },
-                data    : post_data,
-                success : function(data, status) {
-                    console.log('suck... sess.... ')
-                    inform_user('adding d3ck', 'trying to add ' + ip_addr)
-                },
-                fail: function(data, err) {
-                    console.log('fuck... me')
-                    inform_user('failed to add', ip_addr + ' was not added', 'error')
-                }
-            })
-
-        }
-
-    }
-    else if (req.event == 'knock') {
-        console.log('knock... time to pay the piper...')
-        // var friend          = req.from
-        // var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
-        //                       '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
+    if (req.service = 'friend request') {
         confirm_or_deny_or('connect', req, '#labels')
     }
-    else {
-        inform_user('request for answer', 'unknown type: ' + req.event, 'warning')
+
+    else if (req.service == 'knock') {
+        confirm_or_deny_or('connect', req, '#labels')
     }
 
+    else {
+        inform_user('internal', 'Unknown type of request', 'error')
+    }
 
 }
 
