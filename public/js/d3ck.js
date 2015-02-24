@@ -540,11 +540,11 @@ function d3ck_create(element, ip_addr) {
         data: post_data,
         success: function(data, status) {
             console.log('suck... sess.... ')
-            inform_user('adding d3ck', 'trying to befriend the d3ck @ ' + ip_addr)
+            inform_user('info', 'adding d3ck', 'trying to befriend the d3ck @ ' + ip_addr)
         },
         fail: function(data, err) {
             console.log('fuck... me')
-            inform_user('failed to add', ip_addr + ' was not added', 'error')
+            inform_user('info', 'failed to add', ip_addr + ' was not added', 'error')
         }
     })
 
@@ -931,25 +931,25 @@ function queue_or_die(queue) {
         console.log('event...? ' + queue.event)
 
         if (queue.event == 'service_request') {
-            inform_user('service_request', 'service request')
+            inform_user('info', 'service_request', 'service request')
         }
 
         else if (queue.event == 'service_response') {
-            inform_user('service_response', 'service response')
+            inform_user('info', 'service_response', 'service response')
         }
 
         else if (queue.event == 'd3ck_create') {
             var remote_ip   = queue.d3ck_status.events.new_d3ck_ip
             var remote_name = queue.d3ck_status.events.new_d3ck_name
 
-            inform_user('D3CK add', '"' + remote_name + '" added your D3CK as a friend', 'success')
+            inform_user('info', 'D3CK add', '"' + remote_name + '" added your D3CK as a friend', 'success')
             // should do this gracefully, not hit it with an ugly stick
             setTimeout(go_d3ck_or_go_home, 3000)
 
         }
 
         else if (queue.event == 'd3ck_delete') {
-            inform_user('deletion', 'd3ck deleted', 'success')
+            inform_user('info', 'deletion', 'd3ck deleted', 'success')
         }
 
         else if (queue.event == 'file_upload') {
@@ -1909,10 +1909,21 @@ function inform_user(title, message, level, element) {
 //
 function confirm_or_deny_or(type, req, element) {
 
-        $("#labels", function () {
+        // don't pass go
+        if (!def(req.service)) {
+            inform_user('error', "service type is required", 'error')
+        }
 
+        var service = req.service
+
+        $(element, function () {
+
+            //
             // defaults
-            if (def(req.service) && req.service == 'friend request') {
+            //
+
+            // let's be friends?
+            if (service == 'friend request') {
                 alertify.set({
                     buttonReverse   : true, 
                     labels          : { ok: 'Confirm', cancel: 'Not Now' }
@@ -1940,94 +1951,82 @@ function confirm_or_deny_or(type, req, element) {
             }
 
 
+
             //
-            // xxx - need to refactor this for generic service requests
-            //
-            // user hit allow or deny?
+            // user - allow or deny?
             //
             alertify.confirm(message_request, function (e) {
                 console.log('confirm...?')
                 console.log(e)
 
                 var answer    = ''
-                var post_data = { 
-                    ip_addr   : my_d3ck.ip_addr, 
-                    from_d3ck : req.did,
-                    did       : my_d3ck.D3CK_ID 
-                }
 
-                post_data     = JSON.stringify(post_data)
-
-                // if they say yes....
+                // affirmative...?
                 if (e) {
                     console.log('go for it')
                     answer = 'yes'
 
-                    if (def(req.service) && req.service == 'friend request') {
-                        inform_user('starting to exchange d3ck data', 'info')
+                    // friends
+                    if (service == 'friend request') {
+                        inform_user('info', 'exchanging cryptographic keys', 'info')
                         // xxx - do something friendy to start sending things
                         // friendy(secret)
                         //
                         //  ... this is it... send the secret received along with your stuff, get theirs
                         //
+                        return answer
+                    }
+
+                    //
+                    // else... currently only knocking for call
+                    //
+                    else if (service == 'knock') {
+                        inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
+                        lower_shields(req.ip_addr)
+                        return 'yes';
                     }
                     else {
-
-                        alertify.set({
-                            buttonReverse   : true,
-                            labels          : { ok: 'Answer', cancel: 'Decline' }
-                        });
-
-                        // xxx - if user hits cancel... ignore for now... probably not optimal, lol
-                        alertify.confirm(message_request, function (e) {
-                            console.log('cancel...?')
-                            console.log(e)
-
-                            var answer    = ''
-
-                            // this will be hidden... only programatically triggered, hopefully
-                            if (e) {
-                                console.log('clicking... ok, ok')
-                            }
-                            else {
-                                inform_user('info', 'you cancelled the call', 'warning')
-                                console.log('give it the ol college try')
-                                event_hang_up(d3ckid)
-                            }
-                        })
-
-
-                        if (type == 'knock') {
-                            inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
-                            lower_shields(req.ip_addr)
-                        }
-
+                        inform_user('error', 'unknown service request', 'error')
+                        return 'no';
                     }
 
                     $('#alertify-ok').hide()
-
-                    return true;
-
                 }
+                // negative...
                 else {
+
+                    if (service == 'friend request') {
+                        log('friend request denied')
+                    }
+                    else if (type == 'knock') {
+                        log('knock knock unknocked')
+                    }
+                    else {
+                        inform_user('error', 'unknown service request', 'error')
+                        return 'no';
+                    }
+
                     answer = 'no'
-                    inform_user('declined request from: ' + req.ip_addr)
-                    return false;
+                    inform_user('info', 'declined request from: ' + req.ip_addr)
+                    $('#alertify-ok').hide()
+                    return answer;
+
                 }
 
-                $.ajax({
-                    type: "POST",
-                    url: '/service/reply/' + req.from_d3ck + '/' + answer,
-                    headers: { 'Content-Type': 'application/json' },
-                    req: post_data,
+//                $.ajax({
+//                    type: "POST",
+//                    url: '/service/response/' + req.from_d3ck + '/' + answer,
+//                    headers: { 'Content-Type': 'application/json' },
+//                    req: post_data,
+//
+//                    success: function(data, status) {
+//                        console.log('vampire suck... sess.... ')
+//                    },
+//                    fail: function(data, err) {
+//                        console.log('vampire fuck... me')
+//                    }
+//                })
 
-                    success: function(data, status) {
-                        console.log('vampire suck... sess.... ')
-                    },
-                    fail: function(data, err) {
-                        console.log('vampire fuck... me')
-                    }
-                })
                 $('#timer_countdown').TimeCircles().destroy();
             });
 
@@ -2076,50 +2075,46 @@ function ask_user_4_response(data) {
         console.log('friend or foe?')
         
         // do eet here... kick off 
-        confirm_or_deny_or('befriend', req, '#labels')
-        // if (confirm_or_deny_or('befriend', req, '#labels'))
+        var answer = confirm_or_deny_or('befriend', req, '#labels')
+        if (answer == 'yes') {
 
-        var post_data         = {}
+            var post_data         = {}
 
-        post_data.ip_addr     = req.ip_addr
-        post_data.from_ip     = req.from_ip
-        post_data.server_ip   = window.location.hostname
-        post_data.did         = my_d3ck.D3CK_ID
-        post_data.d3ck_action = "CREATE"
-        post_data.secret      = req.secret
+            post_data.ip_addr     = req.ip_addr
+            post_data.from_ip     = req.from_ip
+            post_data.server_ip   = window.location.hostname
+            post_data.did         = my_d3ck.D3CK_ID
+            post_data.d3ck_action = "CREATE"
+            post_data.secret      = req.secret
 
-        post_data             = JSON.stringify(post_data)
+            post_data             = JSON.stringify(post_data)
 
-        // console.log(post_data)
+            // console.log(post_data)
 
-        $.ajax({
-            type    : 'POST',
-            url     : '/cli3nt',
-            headers : { 'Content-Type': 'application/json' },
-            data    : post_data,
-            success : function(data, status) {
-                console.log('suck... sess.... ')
-                inform_user('adding d3ck', 'trying to add ' + ip_addr)
-            },
-            fail: function(data, err) {
-                console.log('fuck... me')
-                inform_user('failed to add', ip_addr + ' was not added', 'error')
-            }
-        })
+            $.ajax({
+                type    : 'POST',
+                url     : '/cli3nt',
+                headers : { 'Content-Type': 'application/json' },
+                data    : post_data,
+                success : function(data, status) {
+                    console.log('suck... sess.... ')
+                    inform_user('adding d3ck', 'trying to add ' + ip_addr)
+                },
+                fail: function(data, err) {
+                    console.log('fuck... me')
+                    inform_user('failed to add', ip_addr + ' was not added', 'error')
+                }
+            })
+
+        }
 
     }
-
     else if (req.event == 'knock') {
-
         console.log('knock... time to pay the piper...')
-
         // var friend          = req.from
-
         // var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
         //                       '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
-
         confirm_or_deny_or('connect', req, '#labels')
-
     }
     else {
         inform_user('request for answer', 'unknown type: ' + req.event, 'warning')

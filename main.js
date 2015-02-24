@@ -2932,7 +2932,7 @@ function serviceRequest(req, res, next) {
 // probably asking for another d3ck, so we route it to them using
 // client side certs if we know how to.
 //
-function serviceReply(req, res, next) {
+function serviceResponse(req, res, next) {
 
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
@@ -4450,7 +4450,8 @@ server.get('/ping/:key', auth, echoStatus)
 server.post('/service/request', auth, serviceRequest);
 
 // reply to above
-server.post('/service/reply/:d3ckid/:answer/:secret?*', auth, serviceReply);
+server.post('/service/response/:d3ckid/:answer/:secret?*', auth, serviceResponse)
+
 
 server.post('/vpn/start', auth, startVPN);
 
