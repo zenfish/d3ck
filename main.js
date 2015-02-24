@@ -3600,13 +3600,13 @@ function pre_ping(ip) {
 
     log.debug('pinging  ' + url);
 
-    Q.try(get_https(url, function (ping_data) {
+    get_https(url).then(function (ping_data) {
         // log.info('+++ someday has come for ' + ip + ' ... ping response back')
         log.info(ping_data)
         ping_data = JSON.parse(ping_data)
         deferred.resolve(ping_data)
 
-    })).catch(function(err) {
+    }).catch(function(err) {
         log.error('errz pinging: ' + JSON.stringify(err))
         response = {status: "ping error", "error": err}
         deferred.reject(response)
