@@ -61,3 +61,6 @@ echo '"key strength"         : "'"$key_strength"'",'
 echo '"certificate type"     : "'"$cert_type"'"'
 echo '}') | sed 's/   *//g'
 
+# remove the evidence
+rm -f $tmp_file
+
