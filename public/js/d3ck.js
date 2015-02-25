@@ -1994,6 +1994,7 @@ function confirm_or_deny_or(type, req, element) {
                             post_data.secret      = req.secret
                             post_data.from_ip     = req.from_ip
                             post_data.service     = 'friend request'
+                            post_data.answer      = answer
                             post_data             = JSON.stringify(post_data)
 
                             // console.log(post_data)

@@ -2982,7 +2982,7 @@ function serviceResponse(req, res, next) {
 
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
-    log.info("nice body!  " + req.body)
+    log.info("nice body!  " + JSON.stringify(req.body))
 
     var deferred = Q.defer();
 
@@ -3023,6 +3023,7 @@ function serviceResponse(req, res, next) {
                 return
             }
 
+            log.info('about to create....!')
             create_d3ck_locally(ip_addr, secret, d3ckid).then(function(data) {
                 log.info('created...!')
                 deferred.resolve(data)
