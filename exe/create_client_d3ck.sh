@@ -19,6 +19,10 @@ serverborkage="InternalError"
 
 echo ARGZ: $*
 
+for i in $*; do
+    echo arg: $i
+done
+
 if [ $# -lt 9 ] ; then
    echo "Usage: $0 key picture d3ck-ID IP-addr owner email d3ck-ip d3ck-id secret"
    exit 1
