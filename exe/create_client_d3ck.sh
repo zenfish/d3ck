@@ -43,7 +43,8 @@ d3ck_host=$7
 r_d3ck_id=$8
 secret=$9
 
-new_d3ck="$staging/$r_d3ck_id.tmp"
+# new_d3ck="$staging/$r_d3ck_id.tmp"
+new_d3ck="$D3CK_TMP/_new_d3ck.$$"
 
 d3ck_url="https://$d3ck_host:$d3ck_port/d3ck"
 
