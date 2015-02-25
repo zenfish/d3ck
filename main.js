@@ -4093,7 +4093,7 @@ function create_d3ck_by_ip(req, res, next) {
         log.info('local install stuff')
 
         log.info('knocking @ ' + url)
-        log.info('with: ' + JSON.stringify(options).substring(0,4096) + ' .... '))
+        log.info('with: ' + JSON.stringify(options).substring(0,4096) + ' .... ')
 
         // grab remote d3ck's data... first we have to ask permission
         request.post(options, function cb (e, r, body) {
