@@ -513,6 +513,7 @@ function assign_capabilities(_d3ck, new_capabilities) {
         var capz = {}
 
         log.info('taking from base default trust level: ' + trust.default)
+
         Object.keys(capabilities).forEach(function(k) {
             log.info(k + '\t: ' + capabilities[k][trust.default])
             capz[k] = capabilities[k].trusting
@@ -2827,6 +2828,7 @@ function serviceRequest(req, res, next) {
     // special case - friending... don't know d3ck_id yet... so check for our IP and if its for a friend request
     //
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend request')) {
+
         log.info("for me? You shouldn't have!")
 
         if (!def(d3ck2ip[d3ckid])) ip_addr = d3ck2ip[d3ckid] 
@@ -2834,8 +2836,33 @@ function serviceRequest(req, res, next) {
         var _tmp_d3ck = {}
 
         // friends-to-be don't have an ID we know yet
-        if (service == 'friend request') { _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] }
-        else                             { _tmp_d3ck = all_d3cks[d3ck_id] }
+        if (service == 'friend request') { 
+
+            if (!def(req.body.d3ck_data)) {
+                log.error('no d3ck data passed to us, must refuse the request')
+            }
+            _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] 
+
+
+
+// xxxxxxxx
+// xxxxxxxx
+// xxxxxxxx
+// xxxxxxxx
+// set capabilities, trust, etc.
+// xxxxxxxx
+// xxxxxxxx
+// xxxxxxxx
+// xxxxxxxx
+
+
+
+
+
+        }
+        else { 
+            _tmp_d3ck = all_d3cks[d3ck_id]
+        }
 
         log.info('service: ' + service)
         log.info(_tmp_d3ck.capabilities)
@@ -3766,7 +3793,7 @@ function quikStart(req, res, next) {
     var name       = "JaneDoe",
         email      = "jane@example.com",
         d3ck       = "d3ckimusRex",
-        stance     = "reasonable",
+        stance     = "trusting",
         password   = "",                  // sigh... should allow nulls, but libs don't like it... bah
         d3ck_image = ""
 
@@ -4066,7 +4093,7 @@ function create_d3ck_by_ip(req, res, next) {
         log.info('local install stuff')
 
         log.info('knocking @ ' + url)
-        log.info('with: ' + JSON.stringify(options))
+        log.info('with: ' + JSON.stringify(options).substring(0,4096) + ' .... '))
 
         // grab remote d3ck's data... first we have to ask permission
         request.post(options, function cb (e, r, body) {
