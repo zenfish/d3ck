@@ -6,7 +6,7 @@
 var Tail       = require('./tail').Tail,
     async      = require('async'),
     bcrypt     = require('bcrypt'),
-    child      = require('child_process').spawn,
+    child      = require('child_process').execFileSync,
     compress   = require('compression'),
     cors       = require('cors'),
     crypto     = require('crypto'),
@@ -1860,7 +1860,7 @@ function install_client(ip_addr, did, secret) {
             did,
             secret]
 
-    d3ck_spawn_sync(cmd, argz)
+    d3ck_spawn(cmd, argz)
 
 }
 
@@ -3414,11 +3414,9 @@ function d3ck_spawn(command, argz) {
 
     try {
         // toss in bg; output, errors, etc. get stashed
-        var spawn_o = spawn(command, safe_argz, {
-            detached: true,
-            stdio: [ 'ignore', out, err ]
-        })
-        spawn_o.unref();
+        // var spawn_o = spawn(child, safe_argz, {
+        // spawn_o.unref();
+        child(cmd, safe_argz, { detached: true, stdio: [ 'ignore', out, err ] })
     }
     catch (e) {
         log.error("exec error with " + command + ' => ' + e.message)
@@ -3431,7 +3429,7 @@ function d3ck_spawn(command, argz) {
 //
 function d3ck_spawn_sync(command, argz) {
 
-    argz = sh_escape(argz);
+    // argz = sh_escape(argz);
 
     log.info('a sync emerges... ' + ' (' + command + ')\n\n\t')
 
