@@ -6,12 +6,11 @@
 var Tail       = require('./tail').Tail,
     async      = require('async'),
     bcrypt     = require('bcrypt'),
-    child      = require('child_process').execFileSync,
+    child      = require('child_process').spawn,
     compress   = require('compression'),
     cors       = require('cors'),
     crypto     = require('crypto'),
     dns        = require('native-dns'),
-    sh_escape  = require('shell-escape'),
     express    = require('express'),
     flash      = require('connect-flash'),
     sh         = require('execSync'),
@@ -1854,13 +1853,13 @@ function install_client(ip_addr, did, secret) {
             bwana_d3ck.image,
             bwana_d3ck.ip_addr,
             "\"all_ips\": [" + my_ips + "]",
-            bwana_d3ck.owner.name,
+            '"' + bwana_d3ck.owner.name + '"',
             bwana_d3ck.owner.email,
             ip_addr,
             did,
             secret]
 
-    d3ck_spawn(cmd, argz)
+    d3ck_spawn_sync(cmd, argz)
 
 }
 
@@ -3401,22 +3400,18 @@ function d3ck_spawn(command, argz) {
 
     cmd = command.split('/')[command.split('/').length -1]
 
-    // is it safe?
-    var safe_argz;
-    __.each(argz, function (a) {
-        safe_argz.push(sh_escape(argz))
-    })
-
-    log.info('a spawn o d3ck emerges... ' + ' (' + cmd + ')\n\n\t' + command + ' ' + safe_argz.join(' ') + '\n')
+    log.info('a spawn o d3ck emerges... ' + ' (' + cmd + ')\n\n\t' + command + ' ' + argz.join(' ') + '\n')
 
     var out = fs.createWriteStream(d3ck_logs + '/' + cmd + '.out.log', 'a+')
     var err = fs.createWriteStream(d3ck_logs + '/' + cmd + '.err.log', 'a+')
 
     try {
         // toss in bg; output, errors, etc. get stashed
-        // var spawn_o = spawn(child, safe_argz, {
-        // spawn_o.unref();
-        child(cmd, safe_argz, { detached: true, stdio: [ 'ignore', out, err ] })
+        var spawn_o = spawn(command, argz, {
+            detached: true,
+            stdio: [ 'ignore', out, err ]
+        })
+        spawn_o.unref();
     }
     catch (e) {
         log.error("exec error with " + command + ' => ' + e.message)
@@ -3429,11 +3424,9 @@ function d3ck_spawn(command, argz) {
 //
 function d3ck_spawn_sync(command, argz) {
 
-    // argz = sh_escape(argz);
-
     log.info('a sync emerges... ' + ' (' + command + ')\n\n\t')
 
-    var cmd_string = command + ' ' + argz
+    var cmd_string = command + ' ' + argz.join(' ')
 
     log.info("-->" + cmd_string + "<---\n\n\n")
 
@@ -4100,7 +4093,7 @@ function create_d3ck_by_ip(req, res, next) {
         log.info('local install stuff')
 
         log.info('knocking @ ' + url)
-        log.info('with: ' + JSON.stringify(options).substring(0,4096) + ' .... ')
+        log.info('with: ' + JSON.stringify(options).substring(0,4096) + ' .... '))
 
         // grab remote d3ck's data... first we have to ask permission
         request.post(options, function cb (e, r, body) {
