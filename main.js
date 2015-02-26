@@ -4065,11 +4065,32 @@ function create_d3ck_by_ip(req, res, next) {
             log.info('remote system @ ' + ip_addr + ' -> ' + _remote_d3ck.did)
         }
 
+
+        if (!def(req.body.d3ck_data)) {
+            log.error("Wasn't given remove d3ck data, friend request failed")
+            return 
+        }
+        else {
+            log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
+        }
+
         // need a secret they'll send back if they say yes
         var secret = generate_friend_request(ip_addr)
 
         // generate cert stuff
         install_client(ip_addr, _remote_d3ck.did, secret) 
+
+        create_d3ck_key_store(req.body.d3ck_data)
+
+
+        //
+        // execute a shell script with appropriate args to create a d3ck.
+        //
+        create_full_d3ck(req.body.d3ck_data)
+
+        all_d3cks[c_data.D3CK_ID] = req.body.d3ck_data
+
+
 
         secret_requests[ip_addr]   = secret
         secrets2ips[secret.secret] = ip_addr
