@@ -3398,24 +3398,23 @@ function uploadSchtuff(req, res, next) {
 function d3ck_spawn(command, argz) {
 
 // xxx - add time/date
-    d3ck_spawn_sync(command, argz)
-
-    return
-
 
     cmd = command.split('/')[command.split('/').length -1]
 
     // is it safe?
-    argz = sh_escape(argz);
+    var safe_argz;
+    __.each(argz, function (a) {
+        safe_argz.push(sh_escape(argz))
+    })
 
-    log.info('a spawn o d3ck emerges... ' + ' (' + cmd + ')\n\n\t' + command + ' ' + argz.join(' ') + '\n')
+    log.info('a spawn o d3ck emerges... ' + ' (' + cmd + ')\n\n\t' + command + ' ' + safe_argz.join(' ') + '\n')
 
     var out = fs.createWriteStream(d3ck_logs + '/' + cmd + '.out.log', 'a+')
     var err = fs.createWriteStream(d3ck_logs + '/' + cmd + '.err.log', 'a+')
 
     try {
         // toss in bg; output, errors, etc. get stashed
-        var spawn_o = spawn(command, argz, {
+        var spawn_o = spawn(command, safe_argz, {
             detached: true,
             stdio: [ 'ignore', out, err ]
         })
