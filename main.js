@@ -3398,6 +3398,10 @@ function uploadSchtuff(req, res, next) {
 function d3ck_spawn(command, argz) {
 
 // xxx - add time/date
+    d3ck_spawn_sync(command, argz)
+
+    return
+
 
     cmd = command.split('/')[command.split('/').length -1]
 
@@ -3411,7 +3415,7 @@ function d3ck_spawn(command, argz) {
 
     try {
         // toss in bg; output, errors, etc. get stashed
-        var spawn_o = spawn(command, [argz], {
+        var spawn_o = spawn(command, argz, {
             detached: true,
             stdio: [ 'ignore', out, err ]
         })
