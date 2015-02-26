@@ -1856,7 +1856,7 @@ function install_client(ip_addr, did, secret) {
             bwana_d3ck.owner.email,
             ip_addr,
             did,
-            secret]
+            secret.secret]
 
     d3ck_spawn_sync(cmd, argz)
 
