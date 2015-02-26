@@ -4065,11 +4065,11 @@ function create_d3ck_by_ip(req, res, next) {
             log.info('remote system @ ' + ip_addr + ' -> ' + _remote_d3ck.did)
         }
 
-        // generate cert stuff
-        install_client(ip_addr, _remote_d3ck.did, secret) 
-
         // need a secret they'll send back if they say yes
         var secret = generate_friend_request(ip_addr)
+
+        // generate cert stuff
+        install_client(ip_addr, _remote_d3ck.did, secret) 
 
         secret_requests[ip_addr]   = secret
         secrets2ips[secret.secret] = ip_addr
