@@ -3411,7 +3411,7 @@ function d3ck_spawn(command, argz) {
 
     try {
         // toss in bg; output, errors, etc. get stashed
-        var spawn_o = spawn(command, argz, {
+        var spawn_o = spawn(command, [argz], {
             detached: true,
             stdio: [ 'ignore', out, err ]
         })
@@ -3432,7 +3432,7 @@ function d3ck_spawn_sync(command, argz) {
 
     log.info('a sync emerges... ' + ' (' + command + ')\n\n\t')
 
-    var cmd_string = command + ' ' + argz.join(' ')
+    var cmd_string = command + ' ' + argz
 
     log.info("-->" + cmd_string + "<---\n\n\n")
 
