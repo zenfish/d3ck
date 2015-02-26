@@ -56,7 +56,7 @@ if [ ! -d $d3ck_keystore -o ! -h $d3ck_keystore ] ; then
     cat $hell/vpn*{crt,key} > $keystore/vpn_client/vpn_client.all
 
     # print SHA1 fingerprint
-    openssl x509 -noout -fingerprint -in $d3ck_keystore/d3ck.crt | awk -F= '{printf("%s", $2)}' | sed 's/://g' | tee -a $d3ck_keystore/d3ck.did
+    openssl x509 -noout -fingerprint -sha1 -in $d3ck_keystore/d3ck.crt | awk -F= '{printf("%s", $2)}' | sed 's/://g' | tee -a $d3ck_keystore/d3ck.did
 
     did=`cat $d3ck_keystore/d3ck.did`
     cp $d3ck_keystore/d3ck.did $D3CK_HOME/public/d3ck.did
