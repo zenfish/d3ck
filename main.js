@@ -2844,6 +2844,14 @@ function serviceRequest(req, res, next) {
 
 
 
+            //
+            // execute a shell script with appropriate args to create a d3ck.
+            //
+            create_full_d3ck(req.body.d3ck_data)
+
+            all_d3cks[c_data.D3CK_ID] = req.body.d3ck_data
+
+
 // xxxxxxxx
 // xxxxxxxx
 // xxxxxxxx
@@ -4074,6 +4082,8 @@ function create_d3ck_by_ip(req, res, next) {
             log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
         }
 
+
+
         // need a secret they'll send back if they say yes
         var secret = generate_friend_request(ip_addr)
 
@@ -4081,16 +4091,6 @@ function create_d3ck_by_ip(req, res, next) {
         install_client(ip_addr, _remote_d3ck.did, secret) 
 
         create_d3ck_key_store(req.body.d3ck_data)
-
-
-        //
-        // execute a shell script with appropriate args to create a d3ck.
-        //
-        create_full_d3ck(req.body.d3ck_data)
-
-        all_d3cks[c_data.D3CK_ID] = req.body.d3ck_data
-
-
 
         secret_requests[ip_addr]   = secret
         secrets2ips[secret.secret] = ip_addr
@@ -4107,7 +4107,7 @@ function create_d3ck_by_ip(req, res, next) {
             owner     : bwana_d3ck.owner.name,
             service   : 'friend request',
             secret    : secret,
-            d3ck_data : fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.json").toString()
+            d3ck_data : JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.json").toString())
         }
 
         log.info('local install stuff')
