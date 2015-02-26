@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# create new client certs for potential friends
+# create new bundle o' certs for potential friends
 #
-# Usage: $0 d3ck-id picture IP-addr 'ints-n-ips-in-json' owner email d3ck-ip remote-d3ck-id secret
+# Usage: $0 d3ck-id picture 'ints-n-ips-in-json' owner email d3ck-ip remote-d3ck-id secret
 #
 
 . /etc/d3ck/config.sh
@@ -20,8 +20,8 @@ serverborkage="InternalError"
 echo ARGZ: $*
 
 # between shell and node... jesus, quoting is a mess.
-if [ $# -lt 9 ] ; then
-   echo "Usage: $0 key picture d3ck-ID IP-addr owner email d3ck-ip d3ck-id secret"
+if [ $# -lt 6 ] ; then
+   echo "Usage: $0 key picture IP-addrs owner email d3ck-id secret"
    exit 1
 fi
 
@@ -35,14 +35,12 @@ echo creating d3ck on remote host
 #
 d3ck_id=$1
 image=$2
-ip_addr=$3
-all_net=$4
-name=$5
-email=$6
-d3ck_ip=$7
-d3ck_host=$7
-r_d3ck_id=$8
-secret=$9
+all_net=$3
+name=$4
+email=$5
+d3ck_host=$6
+r_d3ck_id=$7
+secret=$8
 
 # new_d3ck="$staging/$r_d3ck_id.tmp"
 new_d3ck="$D3CK_TMP/_new_d3ck.$$"
