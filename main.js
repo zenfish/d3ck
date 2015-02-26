@@ -1853,7 +1853,7 @@ function install_client(ip_addr, did, secret) {
             bwana_d3ck.image,
             bwana_d3ck.ip_addr,
             "\"all_ips\": [" + my_ips + "]",
-            '"' + bwana_d3ck.owner.name + '"',
+            "\"" + bwana_d3ck.owner.name + "\"",
             bwana_d3ck.owner.email,
             ip_addr,
             did,
