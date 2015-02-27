@@ -4074,8 +4074,8 @@ function create_d3ck_by_ip(req, res, next) {
     pre_ping(ip_addr).then(function(data) {
 
         console.log(data)
-        console.log(typeof data)
-        _remote_d3ck = JSON.parse(data)
+
+        _remote_d3ck = data
 
         if (!def(_remote_d3ck.did)) {
             log.error("remote system " + ip_addr + "wasn't a d3ck: " + JSON.stringify(_remote_d3ck))
@@ -4088,11 +4088,11 @@ function create_d3ck_by_ip(req, res, next) {
         // need a secret they'll send back if they say yes
         var secret = generate_friend_request(ip_addr)
 
+        log.info('installing client...')
         // generate cert stuff
         install_client(ip_addr, _remote_d3ck.did, secret.secret) 
 
         create_d3ck_key_store(req.body.d3ck_data)
-
 
         secret_requests[ip_addr]   = secret
         secrets2ips[secret.secret] = ip_addr
