@@ -4072,7 +4072,11 @@ function create_d3ck_by_ip(req, res, next) {
     // ping the remote to see if it's a d3ck at all
     var _remote_d3ck;
     pre_ping(ip_addr).then(function(data) {
+
+        console.log(data)
+        console.log(typeof data)
         _remote_d3ck = JSON.parse(data)
+
         if (!def(_remote_d3ck.did)) {
             log.error("remote system " + ip_addr + "wasn't a d3ck: " + JSON.stringify(_remote_d3ck))
             return 
