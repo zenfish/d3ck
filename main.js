@@ -4090,9 +4090,27 @@ function create_d3ck_by_ip(req, res, next) {
 
         log.info('installing client...')
         // generate cert stuff
-        install_client(ip_addr, _remote_d3ck.did, secret.secret) 
+        command = d3ck_bin + '/bundle_certs.js'
 
-        create_d3ck_key_store(req.body.d3ck_data)
+        
+
+        // create client bundle
+        var keyout = d3ck_spawn_sync(command, [_remote_d3ck.did])
+
+        if (keyout.code) {
+            log.error("error in create_cli3nt_rest!")
+            res.send(420, { error: "couldn't retrieve client certificates" } )
+            return
+        }
+
+        else {
+            log.info('read/writing to ' + d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.all")
+
+            cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.json").toString())
+
+            write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
+            write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
+        }
 
         secret_requests[ip_addr]   = secret
         secrets2ips[secret.secret] = ip_addr
