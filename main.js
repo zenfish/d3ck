@@ -1856,7 +1856,7 @@ function install_client(ip_addr, did, secret) {
             bwana_d3ck.owner.email,
             ip_addr,
             did,
-            secret.secret]
+            secret]
 
     d3ck_spawn_sync(cmd, argz)
 
@@ -2035,7 +2035,7 @@ function create_d3ck_key_store(data) {
     var client_key  = ""
     var client_cert = ""
 
-    // log.info(data)
+    log.info(data)
 
     if (typeof data != 'object') {
          data = JSON.parse(data)
@@ -4072,7 +4072,7 @@ function create_d3ck_by_ip(req, res, next) {
     // ping the remote to see if it's a d3ck at all
     var _remote_d3ck;
     pre_ping(ip_addr).then(function(data) {
-        _remote_d3ck = data
+        _remote_d3ck = JSON.parse(data)
         if (!def(_remote_d3ck.did)) {
             log.error("remote system " + ip_addr + "wasn't a d3ck: " + JSON.stringify(_remote_d3ck))
             return 
@@ -4085,9 +4085,10 @@ function create_d3ck_by_ip(req, res, next) {
         var secret = generate_friend_request(ip_addr)
 
         // generate cert stuff
-        install_client(ip_addr, _remote_d3ck.did, secret) 
+        install_client(ip_addr, _remote_d3ck.did, secret.secret) 
 
         create_d3ck_key_store(req.body.d3ck_data)
+
 
         secret_requests[ip_addr]   = secret
         secrets2ips[secret.secret] = ip_addr
