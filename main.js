@@ -4112,6 +4112,10 @@ function create_d3ck_by_ip(req, res, next) {
             write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
         }
 
+
+//      create_d3ck_key_store(req.body.d3ck_data)
+
+
         secret_requests[ip_addr]   = secret
         secrets2ips[secret.secret] = ip_addr
 
@@ -4353,34 +4357,38 @@ var credentials = {key: key, cert: cert, ca: ca}
 
 
 //
-// Ciphers... is a bit mysterious.
+// all the below is null and void, given that I moved all this crap to nginx, fuck you crypto folks
 //
-// I've cobbled together what I think is a reasonable set of
-// options from a variety of sources. Having ECDHE enabled
-// seems to be a key.  I'm not even sure what the below options
-// do, but testing by hand with openssl, ala:
-//
-//      http://baudehlo.com/2013/06/24/setting-up-perfect-forward-secrecy-for-nginx-or-stud/
-//
-// via:
-//
-//      openssl s_client -connect 127.0.0.1:8080 -cipher AES256-SHA256:RC4-SHA
-//
-// returns a bunch of stuff, including the line:
-//
-//      Secure Renegotiation IS supported
-//
-// which appears to be the magic phrase.
-//
-// TBD - still need to test with qualys openssl labs - https://www.ssllabs.com/ssltest/
-//
-// Some additional info from https://github.com/joyent/node/issues/2727,
-// https://github.com/joyent/node/commit/f41924354a99448f0ee678e0be77fedfab988ad2,
-// and other places ;(
-//
-// Why do crypto people hate us?  Just tell me what to put there for reasonable
-// security... or make it the default ;(
-//
+
+        //
+        // Ciphers... is a bit mysterious.
+        //
+        // I've cobbled together what I think is a reasonable set of
+        // options from a variety of sources. Having ECDHE enabled
+        // seems to be a key.  I'm not even sure what the below options
+        // do, but testing by hand with openssl, ala:
+        //
+        //      http://baudehlo.com/2013/06/24/setting-up-perfect-forward-secrecy-for-nginx-or-stud/
+        //
+        // via:
+        //
+        //      openssl s_client -connect 127.0.0.1:8080 -cipher AES256-SHA256:RC4-SHA
+        //
+        // returns a bunch of stuff, including the line:
+        //
+        //      Secure Renegotiation IS supported
+        //
+        // which appears to be the magic phrase.
+        //
+        // TBD - still need to test with qualys openssl labs - https://www.ssllabs.com/ssltest/
+        //
+        // Some additional info from https://github.com/joyent/node/issues/2727,
+        // https://github.com/joyent/node/commit/f41924354a99448f0ee678e0be77fedfab988ad2,
+        // and other places ;(
+        //
+        // Why do crypto people hate us?  Just tell me what to put there for reasonable
+        // security... or make it the default ;(
+        //
 
 var server_options = {
     // key                 : key,
