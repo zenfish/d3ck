@@ -4106,7 +4106,7 @@ function create_d3ck_by_ip(req, res, next) {
         else {
             log.info('read/writing to ' + d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.all")
             try {
-                cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + "/crt.json").toString())
+                cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + '/' + _remote_d3ck.did + ".crt.json").toString())
             }
             catch (e) {
                 log.error("couldn't read file -> " + JSON.stringify(e))
