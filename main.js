@@ -2857,7 +2857,7 @@ function serviceRequest(req, res, next) {
             //
             create_full_d3ck(req.body.d3ck_data)
 
-            all_d3cks[c_data.D3CK_ID] = req.body.d3ck_data
+            all_d3cks[req.body.d3ck_data.D3CK_ID] = req.body.d3ck_data
 
 
 // xxxxxxxx
