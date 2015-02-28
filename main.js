@@ -3439,7 +3439,7 @@ function d3ck_spawn(command, argz) {
 //
 function d3ck_spawn_sync(command, argz) {
 
-    log.info('a sync emerges... ' + ' (' + command + ')\n\n\t')
+    log.info('a syncd command emerges... ' + ' (' + command + ')\n\n\t')
 
     var cmd_string = command + ' ' + argz.join(' ')
 
@@ -4092,10 +4092,10 @@ function create_d3ck_by_ip(req, res, next) {
         // generate cert stuff
         command = d3ck_bin + '/bundle_certs.js'
 
-        
-
         // create client bundle
         var keyout = d3ck_spawn_sync(command, [_remote_d3ck.did])
+
+        log.info('installed client...')
 
         if (keyout.code) {
             log.error("error in create_cli3nt_rest!")
@@ -4105,11 +4105,11 @@ function create_d3ck_by_ip(req, res, next) {
 
         else {
             log.info('read/writing to ' + d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.all")
-
-            cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.json").toString())
-
-            write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
-            write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
+            try {
+                cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + "/crt.json").toString())
+            catch (e) {
+                log.error("couldn't read file -> " + JSON.stringify(e))
+            }
         }
 
 
