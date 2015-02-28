@@ -59,7 +59,7 @@ catch (e) {
 
 
 //
-// execute command to get client certs
+// execute command to create client certs
 //
 var command = d3ck_home + '/f-u-openssl/rot-client.sh' + ' ' + did
 

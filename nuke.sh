@@ -21,6 +21,12 @@ sudo rm -f /etc/d3ck/logs/redis-server.log
 sudo rm -rf /etc/d3ck/d3cks
 sudo mkdir  /etc/d3ck/d3cks
 
+sudo rm -rf /etc/d3ck/nginx
+sudo mkdir  /etc/d3ck/nginx
+sudo mkdir  /etc/d3ck/nginx/tmp
+sudo mkdir  /etc/d3ck/nginx/cache
+sudo chown -R nobody /etc/d3ck/nginx
+
 sudo rm -rf /etc/d3ck/public/uploads/*
 sudo rm -rf /etc/d3ck/secretz.json
 

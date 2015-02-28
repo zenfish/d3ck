@@ -60,6 +60,11 @@ check_n_link /usr/local/sbin/d3ckd /etc/d3ck/sbin.d3ckd
 
 # check_n_link(/etc/udev/rules.d/10-d3ck-key.rules) tbd
 
+sudo mkdir /etc/d3ck/nginx
+sudo mkdir /etc/d3ck/nginx/tmp
+sudo mkdir /etc/d3ck/nginx/cache
+sudo chown -R nobody /etc/d3ck/nginx
+
 sudo mkdir /etc/d3ck/tmp
 sudo mkdir /etc/d3ck/uploads
 sudo mkdir /etc/d3ck/logs

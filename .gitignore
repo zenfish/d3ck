@@ -79,6 +79,7 @@ config/local.js
 uploads
 uploads/*
 
+nginx
 tmp
 tools
 _test_

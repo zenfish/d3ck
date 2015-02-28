@@ -1,4 +1,3 @@
-
 # misc jinxy stuff
 
 pid                     /etc/d3ck/logs/nginx.pid;
@@ -15,6 +14,9 @@ events {
 #
 http {
 
+    proxy_temp_path     /etc/d3ck/tmp;
+    proxy_cache_path    /var/cache/nginx levels=1:2 keys_zone=one:8m max_size=3000m inactive=600m;
+
     server {
 
         #
@@ -26,7 +28,7 @@ http {
         server_name                 d3ck;
 
         # xxx - todo - drag this in from other confs
-        client_max_body_size 1024M;
+        client_max_body_size        1024M;
 
         #
         # logs
@@ -55,7 +57,7 @@ http {
         # thanks for all the fish, whit
         ssl_dhparam                 /etc/d3ck/d3cks/D3CK/dh.params;
 
-        ssl_session_timeout         5m;
+        # ssl_session_timeout         5m;
 
         #
         # fuck older versions!
@@ -65,11 +67,10 @@ http {
         # from: https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
         #
         ssl_protocols               TLSv1 TLSv1.1 TLSv1.2;
-        ssl_ciphers 'AES128+EECDH:AES128+EDH';
-
+        ssl_ciphers                 'AES128+EECDH:AES128+EDH';
         ssl_prefer_server_ciphers   on;
 
-        ssl_session_cache shared:SSL:10m;
+        # ssl_session_cache shared:SSL:10m;
 
 
         #
@@ -81,16 +82,17 @@ http {
         server_tokens off;
 
         # config to don't allow the browser to render the page inside an frame or iframe
-        add_header X-Frame-Options SAMEORIGIN;
+        # add_header X-Frame-Options SAMEORIGIN;
 
         # when serving user-supplied content, include a X-Content-Type-Options: nosniff header along with the Content-Type: header,
         # to disable content-type sniffing on some browsers.
-        add_header X-Content-Type-Options nosniff;
+        # add_header X-Content-Type-Options nosniff;
 
         # This header enables the Cross-site scripting (XSS) filter built into most recent web browsers.
-        add_header X-XSS-Protection "1; mode=block";
+        # add_header X-XSS-Protection "1; mode=block";
 
-        keepalive_timeout           5m;
+        # keepalive_timeout           5m;
+
 
         ### Set headers to help out nodey
         proxy_set_header            X-SSL-Client-Verify $ssl_client_verify;
@@ -118,8 +120,8 @@ http {
             proxy_redirect          off;
 
             proxy_set_header        Upgrade $http_upgrade;
-            proxy_set_header        Connection "upgrade";
 
+            proxy_set_header        Connection "upgrade";
         }
 
         #
