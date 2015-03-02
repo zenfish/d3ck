@@ -2143,9 +2143,12 @@ function delete_d3ck(req, res, next) {
 
     log.info('NUKE it from orbit!')
 
+    var deferred = Q.defer();
+
     rclient.del(req.params.key, function (err) {
         if (err) {
             log.error(err, 'delete_d3ck: unable to delete %s', req.params.key)
+deferred.resolve({ip: ip, fqdn : fqdn } )
             next(err);
         } else {
             log.info('delete_d3ck: success deleting %s', req.params.key)
@@ -2155,8 +2158,8 @@ function delete_d3ck(req, res, next) {
 
             delete all_d3cks[req.params.key]
 
+            deferred.resolve({status: 'deleted'})
             // XXX -> revoke client keys!
-
             res.send(204);
         }
     });
@@ -3077,7 +3080,7 @@ function serviceResponse(req, res, next) {
     //
     if (d3ckid == bwana_d3ck.D3CK_ID) {
 
-        log.info("about time you answered, I've been knocking!")
+        log.info("about time you answered, I've been waiting!")
         log.info(req.body)
 
         //
@@ -3096,6 +3099,16 @@ function serviceResponse(req, res, next) {
 
             log.info('about to create....!')
             create_d3ck_locally(ip_addr, secret, d3ckid)
+
+
+// xxxxxx
+// xxxxxx
+// xxxxxx
+// xxxxxx have to get post data here for their d3ck and write it to FS!
+// xxxxxx
+// xxxxxx
+// xxxxxx
+
         }
 
         // mark it as an event, which will be picked up by the client
@@ -3147,15 +3160,15 @@ function serviceResponse(req, res, next) {
             did         : bwana_d3ck.D3CK_ID
         }
 
-
-
-// xxxxxxx
-// xxxxxxx
-// xxxxxxx
-//      if (service == 'friend request') {
-//
-//          log.info('answering friend req')
-//
+        if (service == 'friend request') {
+            log.info('responding to friend req')
+            log.info('POST DATA BACK SHOULD GO HERE!')
+            log.info('POST DATA BACK SHOULD GO HERE!')
+            log.info('POST DATA BACK SHOULD GO HERE!')
+            log.info('POST DATA BACK SHOULD GO HERE!')
+            log.info('POST DATA BACK SHOULD GO HERE!')
+        }
+  
 //          create_d3ck_locally(ip_addr, secret, d3ckid).then(function(data) {
 //              log.info('created...!')
 //              deferred.resolve(data)
