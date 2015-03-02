@@ -33,7 +33,6 @@ var Tail       = require('./tail').Tail,
     response   = require('response-time'),
     rest       = require('rest'),
     restler    = require("restler"),
-    sleep      = require('sleep'),
     spawn      = require('child_process').spawn,
     sys        = require('sys'),
     uuid       = require('node-uuid'),
@@ -805,7 +804,6 @@ events    = require('events');
 emitter   = new events.EventEmitter();
 
 wait_for_d3ck = null
-
 
 //
 // suck in our D3CK's data
@@ -2838,26 +2836,48 @@ function serviceRequest(req, res, next) {
         if (service == 'friend request') { 
 
             if (!def(req.body.d3ck_data)) {
-                log.error('no d3ck data passed to us, must refuse the request')
-            }
-            _tmp_d3ck = all_d3cks[bwana_d3ck.D3CK_ID] 
-
-
-
-            if (!def(req.body.d3ck_data)) {
                 log.error("Wasn't given remove d3ck data, friend request failed")
                 return 
             }
             else {
+                _tmp_d3ck = req.body.d3ck_data
                 log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
             }
 
             //
             // execute a shell script with appropriate args to create a d3ck.
             //
-            create_full_d3ck(req.body.d3ck_data)
+            // create_full_d3ck(req.body.d3ck_data)
 
-            all_d3cks[req.body.d3ck_data.D3CK_ID] = req.body.d3ck_data
+            // generate cert stuff
+            command = d3ck_bin + '/bundle_certs.js'
+
+            // create client bundle
+            var keyout = d3ck_spawn_sync(command, [_tmp_d3ck.D3CK_ID])
+
+            log.info('installed client...')
+
+            if (keyout.code) {
+                log.error("error in create_cli3nt_rest!")
+                res.send(420, { error: "couldn't retrieve client certificates" } )
+                return
+            }
+
+            else {
+                log.info('read/writing to ' + d3ck_keystore +'/'+ _tmp_d3ck.D3CK_ID + "/_cli3nt.all")
+                try {
+                    cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _tmp_d3ck.D3CK_ID + "/_cli3nt.json").toString())
+                }
+                catch (e) {
+                    log.error("couldn't read file -> " + JSON.stringify(e))
+                    return
+                }
+            }
+
+            // create it in the DB
+            update_d3ck(_tmp_d3ck)
+
+            all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
 
 
 // xxxxxxxx
@@ -2869,9 +2889,6 @@ function serviceRequest(req, res, next) {
 // xxxxxxxx
 // xxxxxxxx
 // xxxxxxxx
-
-
-
 
 
         }
@@ -3071,6 +3088,10 @@ function serviceResponse(req, res, next) {
             create_d3ck_locally(ip_addr, secret, d3ckid).then(function(data) {
                 log.info('created...!')
                 deferred.resolve(data)
+
+                // create it in the DB
+                update_d3ck(_tmp_d3ck)
+
                 return
             })
 
@@ -4552,8 +4573,7 @@ async.whilst(
             log.info('whilst terminated normally')
         }
     }
-)
-
+) 
 // Ping action - no auth
 server.get('/ping', auth, echoReply)
 
@@ -4659,7 +4679,6 @@ server.post('/login',
         cookie = ""
 
         // cookie baking
-        // rclient.set('session_cookie', req.client._httpMessage.req.sessionID, function(err) {
         rclient.set('session_cookie', gen_somewhat_random(), function(err) {
             if (err) {
                 log.info("these *are* the droids you're looking for, arrest them!" + JSON.stringify(err))
