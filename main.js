@@ -2051,7 +2051,7 @@ function create_d3ck_key_store(data) {
     var tls         = data.vpn.tlsauth.join('\n')
     var cert_dir    = d3ck_keystore + '/' + data.D3CK_ID
 
-    log.info('... news certs are going to live in: ' + d3ck_dir)
+    log.info('... news certs are going to live in: ' + cert_dir)
 
     // has to exist before the below will work...
     mkdirp.sync(cert_dir, function () {
@@ -2075,7 +2075,7 @@ function create_d3ck_key_store(data) {
         write_2_file(cert_dir + '/cli3nt.key',  client_key)
         write_2_file(cert_dir + '/d3ckroot.crt', ca)
         // and the entire json card
-        write_2_file(d3ck_dir + '/' + data.D3CK_ID + '.json', JSON.stringify(data))
+        write_2_file(cert_dir + '/' + data.D3CK_ID + '.json', JSON.stringify(data))
     }
     catch (e) {
         log.error("missing data...?  Couldn't write certs ;(" + JSON.stringify(e))
