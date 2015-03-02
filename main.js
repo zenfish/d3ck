@@ -3087,9 +3087,8 @@ function serviceResponse(req, res, next) {
         // let's be friends... if here this means that
         //
         if (service == 'friend request') {
-            log.info('routing to friend req')
 
-            log.info(ip_addr, from_ip)
+            log.info('routing to friend req')
 
             if (!def(ip_addr) || !def(from_ip) || !def(secret)) {
                 log.error('post to remote failed:', JSON.stringify(err))
@@ -3097,17 +3096,37 @@ function serviceResponse(req, res, next) {
                 return
             }
 
+            if (answer != 'yes') {
+                log.error("they didn't say yes to our friend request... that's... inconceivable!")
+                return
+            }
+
             log.info('about to create....!')
-            create_d3ck_locally(ip_addr, secret, d3ckid)
 
+            var _tmp_d3ck;
 
-// xxxxxx
-// xxxxxx
-// xxxxxx
-// xxxxxx have to get post data here for their d3ck and write it to FS!
-// xxxxxx
-// xxxxxx
-// xxxxxx
+            if (!def(req.body.d3ck_data)) {
+                log.error("Wasn't given remove d3ck data, friend request failed")
+                return
+            }
+            else {
+                _tmp_d3ck = req.body.d3ck_data
+                log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
+            }
+
+            // write it to FS
+            create_d3ck_key_store(_tmp_d3ck)
+
+            write_2_file((d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+
+            // image too
+            write_2_file(d3ck_public + _tmp_d3ck.image, b64_decode(_tmp_d3ck.image_b64))
+
+            // create it in the DB
+            update_d3ck(_tmp_d3ck)
+
+            // put in memory
+            all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
 
         }
 
@@ -3153,36 +3172,13 @@ function serviceResponse(req, res, next) {
         log.info('answer going to : ' + url)
 
         var d3ck_status     = empty_status()
+
         var d3ck_response   = {
             knock       : true,
             answer      : answer,
             secret      : secret,
             did         : bwana_d3ck.D3CK_ID
         }
-
-        if (service == 'friend request') {
-            log.info('responding to friend req')
-            log.info('POST DATA BACK SHOULD GO HERE!')
-            log.info('POST DATA BACK SHOULD GO HERE!')
-            log.info('POST DATA BACK SHOULD GO HERE!')
-            log.info('POST DATA BACK SHOULD GO HERE!')
-            log.info('POST DATA BACK SHOULD GO HERE!')
-        }
-  
-//          create_d3ck_locally(ip_addr, secret, d3ckid).then(function(data) {
-//              log.info('created...!')
-//              deferred.resolve(data)
-//
-//              // create it in the DB
-//              update_d3ck(_tmp_d3ck)
-//
-//              return
-//          })
-//
-//      }
-
-
-
 
         d3ck_status.d3ck_requests = d3ck_response
 
@@ -3196,6 +3192,13 @@ function serviceResponse(req, res, next) {
         var options = {}
 
         options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
+
+        if (service == 'friend request') {
+            log.info('responding to friend req')
+            d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+            log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,4096) + ' .... ')
+        }
+
 
         request.post(url, options, function cb (err, resp) {
             if (err) {
