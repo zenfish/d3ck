@@ -208,7 +208,7 @@ try {
     d3ck_id = d3ck_id.replace(/\n/, '');
 }
 catch (e) {
-    log.error("no D3CK ID for this potential D3CK... you won't get anywhere w/o it....\n")
+    log.error("no D3CK ID this D3CK... you won't get anywhere w/o it.... serving bailin'")
     log.error(e)
     process.exit(2)
 }
@@ -236,7 +236,7 @@ function _get_d3ck(d3ck_id) {
             }
         }
         else {
-            log.error(err, '\t_get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
+            log.error(err, '_get_d3ck: unable to retrieve d3ck: ' + d3ck_id + " -> bailin' out...")
             process.exit(9)
         }
     })
@@ -254,8 +254,8 @@ rclient.get(d3ck_id, function (err, reply) {
     if (!err) {
         // log.info(reply)
         if (reply == null) {
-            log.error('unable to retrieve our d3ck; id: %s', d3ck_id)
-            sys.exit({'error': 'no D3CK Found'})
+            log.error('unable to retrieve our d3ck; id: %s -> bailing out', d3ck_id)
+            process.exit(8)
         }
         else {
             // log.info(reply)
@@ -886,6 +886,10 @@ http.get(get_my_ip, function(res) {
         if (!__.contains(my_ips, my_ip)) {
             log.info("adding " + my_ip + " to list of ips I'll answer to...")
             my_ips[n] = my_ip
+
+            // update the in-memory version, don't think I want to do that for the DB one
+            bwana_d3ck.all_ips = my_ips
+
         }
         log.info(my_ips)
     })
@@ -1415,8 +1419,7 @@ function resolveGeo(ip_addr) {
         deferred.resolve(geo_data)
 
     }).catch(function (error) {
-        log.error('geo err! What or where - is the world coming to?')
-        log.error(error)
+        log.error('geo err! What or where - is the world coming to?  ' + JSON.stringify(error))
         deferred.reject(error)
     })
 
@@ -1821,7 +1824,7 @@ function create_cli3nt_rest(req, res, next) {
 
         // log.info('\n\n\ndisabled for now...\n\n')
         log.info('\n\n\n---> moment o truth <-----\n\n\n')
-        create_d3ck_locally(ip_addr, secret_obj, did)
+        create_d3ck_locally(ip_addr, secret_obj, did) 
 
     }
 
@@ -1831,7 +1834,10 @@ function create_cli3nt_rest(req, res, next) {
 
         res.send(200, JSON.stringify(cli3nt_bundle))
     }
-    catch (e) { log.error('failzor?  ' + JSON.stringify(e)); res.send(200, cli3nt_bundle) }
+    catch (e) { 
+        log.error('failzor?  ' + JSON.stringify(e)); 
+        res.send(200, cli3nt_bundle) 
+    }
 
 }
 
@@ -2275,8 +2281,7 @@ function red_getAsync(lists, cb) {
 
         rclient.lrange(lists[k], 0, -1, function(err, objs) {
             if (err) {
-                log.error('listing errz')
-                log.error(err)
+                log.error('listing errz: ' + JSON.stringify(err))
                 cb({})
             }
             else {
@@ -2353,7 +2358,7 @@ function getEvent(req, res, next) {
     if (typeof req.params.key == "undefined") {
         log.error('type of event required')
         var reply = {error: "missing required event type"}
-        res.send(200, reply);
+        res.send(400, reply);
     }
 
     log.info('getting event: ' + req.params.key)
@@ -2561,9 +2566,8 @@ function stopVPN(req, res, next) {
 
                     res.send(200, {"status": "vpn down"});
                 }
-            }).catch(function (error) {
-                log.error('vpn-stop err')
-                log.error(error)
+            }).catch(function (err) {
+                log.error('vpn-stop err: ' + JSON.stringify(err))
                 res.send(420, {"error": "error bringing down vpn"});
             })
             .done();
@@ -2736,7 +2740,7 @@ function generate_friend_request(ip_addr) {
 
     rclient.set('friend_request_' + ip_addr, friend_request, function(err) {
         if (err) {
-            log.error(err, "friend secret couldn't be saved!  " + JSON.stringify(err));
+            log.error("friend secret couldn't be saved!  " + JSON.stringify(err));
         } else {
             log.info('shared secret saved')
         }
@@ -2826,7 +2830,7 @@ function serviceRequest(req, res, next) {
     //
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend request')) {
 
-        log.info("for me? You shouldn't have!")
+        log.info("you want to be my friend?  You care!  You really care!")
 
         if (!def(d3ck2ip[d3ckid])) ip_addr = d3ck2ip[d3ckid] 
 
@@ -2874,11 +2878,17 @@ function serviceRequest(req, res, next) {
                 }
             }
 
+            // write it to FS
+            create_d3ck_key_store(_tmp_d3ck)
+
+            // image too
+            write_2_file(d3ck_public + _tmp_d3ck.image, b64_decode(_tmp_d3ck.image_b64))
+
             // create it in the DB
             update_d3ck(_tmp_d3ck)
 
+            // put in memory
             all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
-
 
 // xxxxxxxx
 // xxxxxxxx
@@ -3085,16 +3095,7 @@ function serviceResponse(req, res, next) {
             }
 
             log.info('about to create....!')
-            create_d3ck_locally(ip_addr, secret, d3ckid).then(function(data) {
-                log.info('created...!')
-                deferred.resolve(data)
-
-                // create it in the DB
-                update_d3ck(_tmp_d3ck)
-
-                return
-            })
-
+            create_d3ck_locally(ip_addr, secret, d3ckid)
         }
 
         // mark it as an event, which will be picked up by the client
@@ -3145,6 +3146,30 @@ function serviceResponse(req, res, next) {
             secret      : secret,
             did         : bwana_d3ck.D3CK_ID
         }
+
+
+
+// xxxxxxx
+// xxxxxxx
+// xxxxxxx
+//      if (service == 'friend request') {
+//
+//          log.info('answering friend req')
+//
+//          create_d3ck_locally(ip_addr, secret, d3ckid).then(function(data) {
+//              log.info('created...!')
+//              deferred.resolve(data)
+//
+//              // create it in the DB
+//              update_d3ck(_tmp_d3ck)
+//
+//              return
+//          })
+//
+//      }
+
+
+
 
         d3ck_status.d3ck_requests = d3ck_response
 
@@ -3314,7 +3339,6 @@ function uploadSchtuff(req, res, next) {
 
             // skip if too big
             if (target_size > MAX_UPLOAD_SIZE) {
-                // XXX-errz to user
                 log.error('upload size (' + target_size + ') exceeds limit: ' + target_size)
                 continue
             }
@@ -3352,12 +3376,10 @@ function uploadSchtuff(req, res, next) {
                 // also check to see if exists!
                 fs.rename(tmpfile, target_path, function (err) {
                     if (err)  {
-                        log.error('errz - ')
-                        log.error(err)
+                        log.error('errz - ' + JSON.stringify(err))
                     }
                     else {
-                        log.info('rename complete');
-                        log.info('woohoo')
+                        log.info('rename complete, woot');
                     }
                 })
 
@@ -4292,6 +4314,7 @@ function create_d3ck_locally(ip_addr, secret, did) {
                 c_data.all_ips[all_client_ips.length] = ip_addr
             }
 
+            // certs on disk
             create_d3ck_key_store(c_data)
 
             //
