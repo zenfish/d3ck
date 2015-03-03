@@ -595,7 +595,7 @@ function auth(req, res, next) {
 
     var ip = get_client_ip(req)
 
-    if (!DEBUG && (req.path != '/ping' && req.path != '/q' && req.path != '/status'))    // let's not get carried away ;)
+    if (!DEBUG && (req.path != '/ping' && req.path != '/sping' && req.path != '/q' && req.path != '/status'))    // let's not get carried away ;)
         log.info('got auth?  --> ' + req.path + ' <- ' + ip)
 
     //
@@ -2966,8 +2966,6 @@ function serviceRequest(req, res, next) {
         log.info(url)
 
         //
-        //
-        //
         // this should simply pass along the stuff passed to it,
         // optionally filling in things as needed
         //
@@ -3056,9 +3054,11 @@ function serviceResponse(req, res, next) {
 
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
-    log.info("nice body!  " + JSON.stringify(req.body))
+    log.info("nice body!  " + JSON.stringify(req.body).substring(0,4096) + ' .... ')
 
     var deferred = Q.defer();
+
+    var redirect_to_home = false
 
     // from URL
     var answer  = req.params.answer,
@@ -3127,6 +3127,8 @@ function serviceResponse(req, res, next) {
             // put in memory
             all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
 
+            redirect_to_home = true
+
         }
 
         // mark it as an event, which will be picked up by the client
@@ -3151,6 +3153,9 @@ function serviceResponse(req, res, next) {
 
         // ack
         res.send(200, { emotion: "^..^" })
+
+        if (redirect_to_home) res.redirect(302, '/')
+
     }
 
     //
