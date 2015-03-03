@@ -2039,11 +2039,11 @@ function create_d3ck_key_store(data) {
     var client_key  = ""
     var client_cert = ""
 
-    log.info(JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
-
     if (typeof data != 'object') {
          data = JSON.parse(data)
     }
+
+    log.info(JSON.stringify(data).substring(0,4096) + ' .... ')
 
     var ca          = data.vpn.ca.join('\n')
     var key         = data.vpn.key.join('\n')
