@@ -2039,7 +2039,7 @@ function create_d3ck_key_store(data) {
     var client_key  = ""
     var client_cert = ""
 
-    log.info(data)
+    log.info(JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
 
     if (typeof data != 'object') {
          data = JSON.parse(data)
@@ -3115,7 +3115,10 @@ function serviceResponse(req, res, next) {
 
             // write it to FS
             create_d3ck_key_store(_tmp_d3ck)
-            write_2_file((d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+
+            // xxxx
+            // write_2_file((d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+
             // image too
             write_2_file(d3ck_public + _tmp_d3ck.image, b64_decode(_tmp_d3ck.image_b64))
             // create it in the DB
