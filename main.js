@@ -2536,7 +2536,7 @@ function stopVPN(req, res, next) {
 
         var did = req.query.did
 
-        // pass it along to the other side!
+        // pass it to the other side!
         if (did != bwana_d3ck.D3CK_ID) {
 
             log.info('pass the stop along...')
@@ -3081,7 +3081,6 @@ function serviceResponse(req, res, next) {
     if (d3ckid == bwana_d3ck.D3CK_ID) {
 
         log.info("about time you answered, I've been waiting!")
-        log.info(req.body)
 
         //
         // let's be friends... if here this means that
@@ -3106,7 +3105,7 @@ function serviceResponse(req, res, next) {
             var _tmp_d3ck;
 
             if (typeof req.body.d3ck_data === "undefined") {
-                log.error("Wasn't given remove d3ck data, friend request failed")
+                log.error("Wasn't given remove d3ck data, friend response failed")
                 return
             }
             else {
@@ -3193,8 +3192,8 @@ function serviceResponse(req, res, next) {
         if (service == 'friend request') {
             log.info('responding to friend req')
             d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+            options.form.d3ck_data = d3ck_data
             log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,4096) + ' .... ')
-            options.d3ck_data = d3ck_data
         }
 
         request.post(url, options, function cb (err, resp) {
