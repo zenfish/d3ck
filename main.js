@@ -3110,7 +3110,8 @@ function serviceResponse(req, res, next) {
             }
             else {
                 _tmp_d3ck = req.body.d3ck_data
-                log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
+                log.info('remote d3ck_data    ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
+                log.info('remote d3ck_data_d3 ' + JSON.stringify(_tmp_d3ck).substring(0,4096) + ' .... ')
             }
 
             // write it to FS
