@@ -1712,7 +1712,7 @@ function create_cli3nt_rest(req, res, next) {
     //
     if (__.contains(all_authenticated_ips, get_client_ip(req))) {
         console.log('client: ' + get_client_ip(req))
-        if (def(req.body.from_ip)) {
+        if (typeof req.body.from_ip !== "undefined") {
             ip_addr = req.body.from_ip
             log.info('setting ip to remote d3ck -> ' + ip_addr)
         }
@@ -1727,7 +1727,7 @@ function create_cli3nt_rest(req, res, next) {
     var secret;
 
     //
-    if (def(req.body.secret)) {
+    if (typeof req.body.secret !== "undefined") {
         secret_obj = req.body.secret
         secret     = secret_obj.secret
         log.info("POSTY TOASTY SECRETZ! " + secret)
@@ -1738,19 +1738,19 @@ function create_cli3nt_rest(req, res, next) {
     log.info(secrets2ips)
 
     // either use their d3ck id or our own... if from_d3ck defined use that
-    if (def(req.body.from_d3ck)) {
+    if (typeof req.body.from_d3ck !== "undefined") {
         did = req.body.from_d3ck
         log.info('remote d3ck -> ' + did)
     }
-    else if (def(ip2d3ck[ip_addr])) {
+    else if (typeof ip2d3ck[ip_addr] !== "undefined") {
         log.info('loading did from cache')
         did = ip2d3ck[ip_addr]
     }
-    else if (def(secrets2ips[secret])) {
+    else if (typeof secrets2ips[secret] !== "undefined") {
         log.info('loading did from secret lookup')
         did = secrets2ips[secret]
     }
-    else if (def(req.body.did)) {
+    else if (typeof req.body.did !== "undefined") {
         did = req.body.did
         log.info("using our DID! " + did)
     }
@@ -1761,7 +1761,7 @@ function create_cli3nt_rest(req, res, next) {
         log.info('postify')
 
         // die if mismatch or missing
-        if (!def(secret_requests[ip_addr])) {
+        if (typeof secret_requests[ip_addr] === "undefined") {
             log.error("no secret given, friend request unsuccessful")
             res.send(400, { error: "no secret given, friend request unsuccessful" })
             return
@@ -2835,14 +2835,14 @@ function serviceRequest(req, res, next) {
 
         log.info("you want to be my friend?  You care!  You really care!")
 
-        if (!def(d3ck2ip[d3ckid])) ip_addr = d3ck2ip[d3ckid] 
+        if (typeof d3ck2ip[d3ckid] === "undefined") ip_addr = d3ck2ip[d3ckid] 
 
         var _tmp_d3ck = {}
 
         // friends-to-be don't have an ID we know yet
         if (service == 'friend request') { 
 
-            if (!def(req.body.d3ck_data)) {
+            if (typeof req.body.d3ck_data === "undefined") {
                 log.error("Wasn't given remove d3ck data, friend request failed")
                 return 
             }
@@ -3090,7 +3090,7 @@ function serviceResponse(req, res, next) {
 
             log.info('routing to friend req')
 
-            if (!def(ip_addr) || !def(from_ip) || !def(secret)) {
+            if (typeof ip_addr === "undefined" || typeof ip_addr === "undefined" || typeof secret === "undefined") {
                 log.error('post to remote failed:', JSON.stringify(err))
                 res.send(400, { emotion: 'blech' })
                 return
@@ -3105,7 +3105,7 @@ function serviceResponse(req, res, next) {
 
             var _tmp_d3ck;
 
-            if (!def(req.body.d3ck_data)) {
+            if (typeof req.body.d3ck_data === "undefined") {
                 log.error("Wasn't given remove d3ck data, friend request failed")
                 return
             }
@@ -3158,9 +3158,9 @@ function serviceResponse(req, res, next) {
 
         // do we know their cert? If not, we'd better know a secret or we 
         // probably won't get far
-        if (!def(ip_addr)) ip_addr = d3ck2ip[d3ckid] 
+        if (typeof ip_addr === "undefined") ip_addr = d3ck2ip[d3ckid] 
 
-        if (def(secret)) secret = '/' + secret
+        if (typeof secret !== "undefined") secret = '/' + secret
         else             secret = ''
 
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/response/' + d3ckid + '/' + answer
@@ -3226,7 +3226,7 @@ function friend_request(req, res, next) {
 
     log.info("who are you, anyway, I'm not allowed to talk to strangers...")
 
-    if (def(secret) && secret != secret_requests[ip_addr]) {
+    if (typeof secret !== "undefined" && secret != secret_requests[ip_addr]) {
         log.error('error creating d3ck, bailing...')
         res.send(400, { error: "secret mismatch on reply"} )
         return
@@ -4153,7 +4153,7 @@ function create_d3ck_by_ip(req, res, next) {
 
         _remote_d3ck = data
 
-        if (!def(_remote_d3ck.did)) {
+        if (typeof _remote_d3ck.did === "undefined") {
             log.error("remote system " + ip_addr + "wasn't a d3ck: " + JSON.stringify(_remote_d3ck))
             return 
         }
@@ -4996,15 +4996,6 @@ Object.size = function(obj) {
         if (obj.hasOwnProperty(key)) size++;
     }
     return size;
-}
-//
-// is a variable defined or no?  Returns true if it is
-//
-function def(varvar) {
-    // console.log('checking ' + varvar)
-    if (typeof varvar === "undefined")
-        return false
-    return true
 }
 
 
