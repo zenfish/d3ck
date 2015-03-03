@@ -3116,15 +3116,11 @@ function serviceResponse(req, res, next) {
 
             // write it to FS
             create_d3ck_key_store(_tmp_d3ck)
-
             write_2_file((d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
-
             // image too
             write_2_file(d3ck_public + _tmp_d3ck.image, b64_decode(_tmp_d3ck.image_b64))
-
             // create it in the DB
             update_d3ck(_tmp_d3ck)
-
             // put in memory
             all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
 
@@ -3191,14 +3187,15 @@ function serviceResponse(req, res, next) {
         // var options = load_up_cc_cert(d3ckid)
         var options = {}
 
-        options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
+        // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
+        options.form = req.body
 
         if (service == 'friend request') {
             log.info('responding to friend req')
             d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
             log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,4096) + ' .... ')
+            options.d3ck_data = d3ck_data
         }
-
 
         request.post(url, options, function cb (err, resp) {
             if (err) {
