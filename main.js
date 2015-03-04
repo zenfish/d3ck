@@ -2821,31 +2821,6 @@ function serviceRequest(req, res, next) {
         ip2d3ck[ip_addr] = from_d3ck;
     }
 
-    //
-    // XXX - need to check date
-    //
-
-    // if given one, use that
-    if (typeof req.body.secret != 'undefined') { 
-        secret = req.body.secret
-        secret_requests[ip_addr]   = secret
-        secrets2ips[secret.secret] = ip_addr
-        log.info('setting secret w body -> ' + secret)
-    }
-    // else check to see if it's in the all-array o secrets
-    else if (typeof secret_requests[from_ip] != 'undefined') {
-        secret_requests[ip_addr]   = secret
-        secrets2ips[secret.secret] = ip_addr
-        log.info('setting secret w array -> ')
-        log.info(secret)
-    }
-    else {
-        log.error("need a secret from local to make this work, bailin'")
-        res.send(403, { error: "secret missing"})
-        return
-    }
-
-
     if (typeof service == 'undefined') {
         log.error("Service type required when asking for service!")
         res.send(403, { error: "service type required"})
@@ -2853,6 +2828,35 @@ function serviceRequest(req, res, next) {
     }
 
     log.info('service request: ' + service)
+
+    // friends need secretz
+    if (service == 'friend request') {
+
+        //
+        // XXX - need to check date... has it timed out?
+        //
+
+        // if given one, use that
+        if (typeof req.body.secret != 'undefined') { 
+            secret = req.body.secret
+            secret_requests[ip_addr]   = secret
+            secrets2ips[secret.secret] = ip_addr
+            log.info('setting secret w body -> ' + secret)
+        }
+        // else check to see if it's in the all-array o secrets
+        else if (typeof secret_requests[from_ip] != 'undefined') {
+            secret_requests[ip_addr]   = secret
+            secrets2ips[secret.secret] = ip_addr
+            log.info('setting secret w array -> ')
+            log.info(secret)
+        }
+        else {
+            log.error("need a secret from local to make this work, bailin'")
+            res.send(403, { error: "secret missing"})
+            return
+        }
+
+    }
 
     //
     // is it for us, or are we passing it on?
