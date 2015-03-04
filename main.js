@@ -1896,30 +1896,6 @@ function d3ck_into_stone(client_ip, d3ck) {
 
     info.log('carving this d3ck into a stone tablet')
 
-    create_d3ck_image(d3ck.value)
-
-    // can they do this, that, or the other
-    assign_capabilities(d3ck.value)
-
-    // if the IP we get the add from isn't in the ips the other d3ck
-    // says it has... add it in; they may be coming from a NAT or
-    // something weird
-    if (client_ip != '127.0.0.1') {
-        log.info('looking to see if your current ip (' + client_ip  +') is in your pool')
-        var found = false
-        for (var i = 0; i < all_client_ips.length; i++) {
-            if (all_client_ips[i] == client_ip) {
-                log.info('found it!')
-                found = true
-                break
-            }
-        }
-        if (! found) {
-            log.info("[create_d3ck] You're coming from an IP that isn't in your stated IPs... adding [" + client_ip + "] to your IP pool just in case")
-            data.all_ips[all_client_ips.length] = client_ip
-        }
-    }
-
 
 }
 
@@ -1997,6 +1973,30 @@ function create_d3ck(req, res, next) {
 
             // stamp it into fs as well
             d3ck_into_stone(client_ip, data)
+
+            create_d3ck_image(d3ck.value)
+
+            // can they do this, that, or the other
+            assign_capabilities(d3ck.value)
+
+            // if the IP we get the add from isn't in the ips the other d3ck
+            // says it has... add it in; they may be coming from a NAT or
+            // something weird
+            if (client_ip != '127.0.0.1') {
+                log.info('looking to see if your current ip (' + client_ip  +') is in your pool')
+                var found = false
+                for (var i = 0; i < all_client_ips.length; i++) {
+                    if (all_client_ips[i] == client_ip) {
+                        log.info('found it!')
+                        found = true
+                        break
+                    }
+                }
+                if (! found) {
+                    log.info("[create_d3ck] You're coming from an IP that isn't in your stated IPs... adding [" + client_ip + "] to your IP pool just in case")
+                    data.all_ips[all_client_ips.length] = client_ip
+                }
+            }
 
             createEvent(get_client_ip(req), {event_type: "create", d3ck_id: data.D3CK_ID}, d3ck_status)
             d3ck_queue.push({type: 'info', event: 'd3ck_create', 'd3ck_status': d3ck_status})
@@ -2911,6 +2911,23 @@ function serviceRequest(req, res, next) {
                     log.error("couldn't read file -> " + JSON.stringify(e))
                     return
                 }
+            }
+
+            // if the IP we get the add from isn't in the ips the other d3ck
+            // says it has... add it in; they may be coming from a NAT or
+            // something weird
+            log.info('looking 2 see if your current ip is in your pool')
+            var found = false
+            for (var i = 0; i < _tmp_d3ck.all_ips.length; i++) {
+                if (_tmp_d3ck.all_ips[i] == from_ip) {
+                    log.info('remote ip found in d3ck data')
+                    found = true
+                    break
+                }
+            }
+            if (! found) {
+                log.info("You're coming from an IP that isn't in your stated IPs... adding [" + from_ip + "] to your IP pool just in case")
+                _tmp_d3ck.all_ips[_tmp_d3ck.all_ips.length] = ip_addr
             }
 
             // write it to FS
@@ -4353,9 +4370,7 @@ function create_d3ck_locally(ip_addr, secret, did) {
             // says it has... add it in; they may be coming from a NAT or
             // something weird
             log.info('looking 2 see if your current ip is in your pool')
-
             var found = false
-
             for (var i = 0; i < c_data.all_ips.length; i++) {
                 if (c_data.all_ips[i] == ip_addr) {
                     log.info('remote ip found in d3ck data')
@@ -4384,8 +4399,6 @@ function create_d3ck_locally(ip_addr, secret, did) {
             // ... back to the program, dog!
             //
             create_full_d3ck(c_data)
-
-            all_d3cks[c_data.D3CK_ID] = c_data.D3CK_ID
 
             // write image
             log.info('image...')
