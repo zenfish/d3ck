@@ -3045,7 +3045,6 @@ function serviceRequest(req, res, next) {
             from_d3ck : bwana_d3ck.D3CK_ID,
             from      : bwana_d3ck.owner.name,
             url       : url,
-            from_ip   : from_ip,
             owner     : owner,
             service   : service,
             secret    : secret,
