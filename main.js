@@ -2586,7 +2586,7 @@ function stopVPN(req, res, next) {
 
 
             // request.get(url, options, function cb (err, resp) {
-            get_https_certified(url, ip2d3ck[did]).then(function (resp) {
+            get_https_certified(url, d3ck2ip[did]).then(function (resp) {
 
                 if (err) {
                     console.error('vpn stop request failed:', JSON.stringify(err))
@@ -2709,7 +2709,7 @@ function load_up_cc_cert(did) {
 
 function load_up_cert_by_ip(ip) {
 
-    log.info('loading up client cert for ' + ip)
+    log.info('loading up client cert ip for ' + ip)
 
     log.info(ip)
     var certz = {
@@ -2722,7 +2722,7 @@ function load_up_cert_by_ip(ip) {
 
 function load_up_cert_by_did(d3ck) {
 
-    log.info('loading up client cert for ' + d3ck)
+    log.info('loading up client cert by did for ' + d3ck)
     var certz = {
         // ca      : fs.readFileSync(d3ck_keystore +'/'+ d3ck + "/d3ckroot.crt").toString(),
         key     : fs.readFileSync(d3ck_keystore +'/'+ d3ck + "/d3ck.key").toString(),
@@ -2927,7 +2927,7 @@ function serviceRequest(req, res, next) {
             }
             if (! found) {
                 log.info("You're coming from an IP that isn't in your stated IPs... adding [" + from_ip + "] to your IP pool just in case")
-                _tmp_d3ck.all_ips[_tmp_d3ck.all_ips.length] = ip_addr
+                _tmp_d3ck.all_ips[_tmp_d3ck.all_ips.length] = from_ip
             }
 
             // write it to FS
@@ -4139,7 +4139,7 @@ function get_https(url) {
 //
 function get_https_certified(url, d3ckid) {
 
-    // log.info('getting... ' + url)
+    log.info('getting... ' + url + ' for ' + d3ckid)
 
     var deferred = Q.defer();
     var str      = ""
@@ -4378,6 +4378,7 @@ function create_d3ck_locally(ip_addr, secret, did) {
                     break
                 }
             }
+
             if (! found) {
                 log.info("You're coming from an IP that isn't in your stated IPs... adding [" + ip_addr + "] to your IP pool just in case")
                 c_data.all_ips[all_client_ips.length] = ip_addr
