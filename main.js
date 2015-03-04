@@ -3039,8 +3039,20 @@ function serviceRequest(req, res, next) {
         //
         // var options = load_up_cc_cert(d3ckid)
 
-        var options    = {}
-        options.form   = req.body
+        var options = load_up_cc_cert(d3ckid)
+
+        options.url  = url
+        options.form = req.body
+
+        options.form.ip_addr   = ip_addr
+        options.form.d3ckid    = d3ckid
+        options.form.from_d3ck = bwana_d3ck.D3CK_ID
+        options.form.from      = bwana_d3ck.owner.name
+
+        options.from_d3ck = bwana_d3ck.D3CK_ID,
+            from      : bwana_d3ck.owner.name,
+            url       : url,
+        }
 
         log.info(options)
 
