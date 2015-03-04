@@ -649,7 +649,7 @@ function auth(req, res, next) {
     // ... logged in as a user, say, via the web?
     //
     if (req.isAuthenticated()) {
-        // log.info('already chex: ' + req.path)
+        // log.info('already chexed: ' + req.path)
         auth_type = 'owner'
         return next();
     }
@@ -4213,6 +4213,7 @@ function create_d3ck_by_ip(req, res, next) {
             from_d3ck : bwana_d3ck.D3CK_ID,
             from_ip   : my_ip,
             ip_addr   : ip_addr,
+            all_ips   : my_ips,
             owner     : bwana_d3ck.owner.name,
             service   : 'friend request',
             secret    : secret,
