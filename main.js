@@ -1889,6 +1889,39 @@ function create_full_d3ck (data) {
 
 }
 
+//
+// helper, just do a bunch of little things to add a d3ck
+//
+function d3ck_into_stone(client_ip, d3ck) {
+
+    info.log('carving this d3ck into a stone tablet')
+
+    create_d3ck_image(d3ck.value)
+
+    // can they do this, that, or the other
+    assign_capabilities(d3ck.value)
+
+    // if the IP we get the add from isn't in the ips the other d3ck
+    // says it has... add it in; they may be coming from a NAT or
+    // something weird
+    if (client_ip != '127.0.0.1') {
+        log.info('looking to see if your current ip (' + client_ip  +') is in your pool')
+        var found = false
+        for (var i = 0; i < all_client_ips.length; i++) {
+            if (all_client_ips[i] == client_ip) {
+                log.info('found it!')
+                found = true
+                break
+            }
+        }
+        if (! found) {
+            log.info("[create_d3ck] You're coming from an IP that isn't in your stated IPs... adding [" + client_ip + "] to your IP pool just in case")
+            data.all_ips[all_client_ips.length] = client_ip
+        }
+    }
+
+
+}
 
 //
 // Redis D3CKs key are all upper case+digits
@@ -1962,15 +1995,14 @@ function create_d3ck(req, res, next) {
 
             d3ck_status.events = d3ck_events
 
-            create_d3ck_image(d3ck.value)
-
-            // can they do this, that, or the other
-            assign_capabilities(d3ck.value)
+            // stamp it into fs as well
+            d3ck_into_stone(client_ip, data)
 
             createEvent(get_client_ip(req), {event_type: "create", d3ck_id: data.D3CK_ID}, d3ck_status)
             d3ck_queue.push({type: 'info', event: 'd3ck_create', 'd3ck_status': d3ck_status})
 
         }
+
     })
 
     res.send(204);
