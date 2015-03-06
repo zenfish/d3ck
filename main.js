@@ -2867,7 +2867,7 @@ function serviceRequest(req, res, next) {
     //
     // special case - friending... don't know d3ck_id yet... so check for our IP and if its for a friend request
     //
-    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid = '' && service == 'friend request')) {
+    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid == '' && service == 'friend request')) {
 
         log.info("you want to be my friend?  You care!  You really care!")
 
@@ -3017,6 +3017,7 @@ function serviceRequest(req, res, next) {
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/request'
 
         log.info(url)
+        log.info(d3ckid)
 
         //
         // this should simply pass along the stuff passed to it,
