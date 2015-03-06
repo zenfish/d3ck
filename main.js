@@ -2862,12 +2862,17 @@ function serviceRequest(req, res, next) {
     // is it for us, or are we passing it on?
     //
 
-    //
-    // if for us, give to user to answer/see....
-    //
-    // special case - friending... don't know d3ck_id yet... so check for our IP and if its for a friend request
-    //
-    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid == '' && service == 'friend request')) {
+    if (service == 'friend request') {
+
+        //
+        // if for us, give to user to answer/see....
+        //
+        // special case - friending... don't know d3ck_id yet... so check for our IP and if its for a friend request
+        //
+
+        // if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid == '')) {
+        //     log.info('letting me slide...')
+        // }
 
         log.info("you want to be my friend?  You care!  You really care!")
 
@@ -3003,7 +3008,7 @@ function serviceRequest(req, res, next) {
         return
     }
 
-    // else, to another d3ck
+    // until get more services, they all go to another d3ck....
     else {
         log.info('... you want the next door down....')
 
