@@ -2113,6 +2113,9 @@ function create_d3ck_key_store(data) {
     write_2_file(cert_dir + '/d3ck.crt',     cert)
     write_2_file(cert_dir + '/ta.key',       tls)
 
+    log.info('sanity...?')
+    log.info(cert_dir + '/' + data.D3CK_ID + '.json')
+    log.info(JSON.stringify(data).substring(0,4096) + ' .... ')
 
     try {
         client_cert = data.vpn_client.cert.join('\n')
