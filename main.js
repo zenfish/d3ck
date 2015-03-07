@@ -2856,7 +2856,7 @@ function serviceRequest(req, res, next) {
     //
 
     // if true, pass all to another d3ck....
-    if (d3ck != bwana_d3ck.D3CK_ID) {
+    if (d3ckid != bwana_d3ck.D3CK_ID) {
         log.info('... you want the next door down....')
 
         // don't pass it along unless it was us who sent it......
