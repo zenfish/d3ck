@@ -3074,7 +3074,6 @@ function serviceRequest(req, res, next) {
                 from_ip     : from_ip,
                 ip_addr     : ip_addr,
                 owner       : owner,
-                action      : action,
                 from_d3ck   : from_d3ck,
                 service     : service,
                 secret      : secret
