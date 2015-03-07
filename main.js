@@ -2829,11 +2829,17 @@ function serviceRequest(req, res, next) {
 
     log.info('service request: ' + service)
 
+    if (typeof from_d3ck == 'undefined') {
+        log.error("d3ck ID required when requesting a service")
+        res.send(403, { error: "service type required"})
+        return
+    }
+
     //
     // is it for us, or are we passing it on?
     //
     // pass it all along to another d3ck....
-    if (d3ckid != bwana_d3ck.D3CK_ID) {
+    if (from_d3ck != bwana_d3ck.D3CK_ID) {
         log.info('... you want the next door down....')
 
         // friends need secretz
