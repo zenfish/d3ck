@@ -2856,8 +2856,16 @@ function serviceRequest(req, res, next) {
     //
 
     // if true, pass all to another d3ck....
-    if (from_d3ck != bwana_d3ck.D3CK_ID) {
+    if (d3ck != bwana_d3ck.D3CK_ID) {
         log.info('... you want the next door down....')
+
+        // don't pass it along unless it was us who sent it......
+
+        // sanity check... you have to be me... no one else gets a free ride
+        if (!__.contains(my_ips, ip_addr)) {
+            log.error("but wait... lookin in the mirror... you ain't me!")
+            return
+        }
 
         // friends need secretz
         if (service == 'friend request') {
@@ -2948,13 +2956,18 @@ function serviceRequest(req, res, next) {
 
     }
 
+    // sanity check
+    if (! check_certificate(req.headers)) {
+        log.error("wait a minute... you ain't who you say you are!")
+        return
+    }
+
     //
     // is it for us, or are we passing it on?
     //
     if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr)) {
         log.info('for me... hmm... could be a trick...')
 
-        
         //
         // XXX - need to check date... has it timed out?
         //
@@ -4360,7 +4373,7 @@ function create_d3ck_by_ip(req, res, next) {
         var options  = { url: url }
 
         options.form = {
-            d3ckid    : bwana_d3ck.D3CK_ID,
+            d3ckid    : _remote_d3ck.did,
             from_d3ck : bwana_d3ck.D3CK_ID,
             from_ip   : my_ip,
             ip_addr   : ip_addr,
