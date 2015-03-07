@@ -576,6 +576,36 @@ function findByUsername(name, fn) {
 }
 
 
+function check_certificate(headerz) {
+
+    log.info('cert check: ' + JSON.stringify(headerz))
+
+    if (typeof headerz['x-ssl-client-verify'] != "undefined" && headerz['x-ssl-client-verify'] == "SUCCESS") {
+
+        log.info('authentication check for... ' + headerz + ' ... my cert homie...?!!?!')
+
+        var loc_cn    = headerz['x-ssl-client-s-dn'].indexOf('/CN=') + 4
+        var cn        = headerz['x-ssl-client-s-dn'].substr(loc_cn)
+        var c_d3ck_id = cn.split('.')[0]
+
+        // this should be unneccessary....
+        if (typeof all_d3cks[c_d3ck_id] == "undefined") {
+            log.error("d3ck with cert wasnt in the all_d3cks data structure... " + c_d3ck_id)
+            // process.exit(55)
+            return false
+        }
+        else if (c_d3ck_id != bwana_d3ck) {
+            info.log('cert chex out')
+            return true
+        }
+    }
+    else {
+        log.info('no certs in header, moving on')
+        return false
+    }
+
+}
+
 //
 // authenticated or no?
 //
@@ -675,25 +705,9 @@ function auth(req, res, next) {
     // I think it's pretty safe to assume that it's actually the real deal, and
     // we can extract their d3ck id from it.
     //
-    else if (typeof req.headers['x-ssl-client-verify'] != "undefined" && req.headers['x-ssl-client-verify'] == "SUCCESS") {
-
-        log.info('authentication check for... ' + req.path + ' ... my cert homie...?!!?!')
-
-        var loc_cn    = req.headers['x-ssl-client-s-dn'].indexOf('/CN=') + 4
-        var cn        = req.headers['x-ssl-client-s-dn'].substr(loc_cn)
-        var c_d3ck_id = cn.split('.')[0]
-
-        // log.info('CN->d3ckid = ' + c_d3ck_id)
-
-        // this should be unneccessary....
-        if (typeof all_d3cks[c_d3ck_id] == "undefined") {
-            log.error("d3ck with cert wasnt in the all_d3cks data structure... " + c_d3ck_id)
-            // process.exit(55)
-        }
-
-        else if (c_d3ck_id != bwana_d3ck) {
-            return next();
-        }
+    else if (check_certificate(req.headers)) {
+        info.log('cert looks good')
+        return next();
     }
 
     // log.info('x-forw')
@@ -2835,10 +2849,13 @@ function serviceRequest(req, res, next) {
         return
     }
 
+    log.info('d3ck coming from: ' + from_d3ck)
+
     //
     // is it for us, or are we passing it on?
     //
-    // pass it all along to another d3ck....
+
+    // if true, pass all to another d3ck....
     if (from_d3ck != bwana_d3ck.D3CK_ID) {
         log.info('... you want the next door down....')
 
