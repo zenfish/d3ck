@@ -2829,6 +2829,8 @@ function serviceRequest(req, res, next) {
     log.info(d3ckid)
     log.info(ip_addr)
 
+    log.info('bboddy: ' + JSON.stringify(req.body).substring(0,4096) + ' .... ')
+
     // if it's us... no worries
     if (typeof ip_addr != 'undefined' && typeof ip2d3ck[ip_addr] == 'undefined') {
         console.log('loading up ip2d3ck[' + ip_addr + '] = ' + from_d3ck)
@@ -2971,8 +2973,8 @@ function serviceRequest(req, res, next) {
             log.info("you want to be my friend?  You care!  You really care!")
 
             // need a secret
-            if (typeof req.body.secret != 'undefined') { 
-                log.error("need a secret from local to make this work, bailin'")
+            if (typeof req.body.secret == 'undefined') { 
+                log.error("need a secret to be my pal, bailin'")
                 res.send(403, { error: "secret missing"})
                 return
             }
