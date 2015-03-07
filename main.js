@@ -2124,11 +2124,18 @@ function create_d3ck_key_store(data) {
         write_2_file(cert_dir + '/cli3nt.key',  client_key)
         write_2_file(cert_dir + '/d3ckroot.crt', ca)
         // and the entire json card
-        write_2_file(cert_dir + '/' + data.D3CK_ID + '.json', JSON.stringify(data))
     }
     catch (e) {
         log.error("missing data...?  Couldn't write certs ;(" + JSON.stringify(e))
     }
+
+    try {
+        write_2_file(cert_dir + '/' + data.D3CK_ID + '.json', JSON.stringify(data))
+    }
+    catch (e) {
+        log.error("wtf... Couldn't write certs... " + JSON.stringify(e))
+    }
+
 
 }
 
