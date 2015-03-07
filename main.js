@@ -3009,62 +3009,89 @@ function serviceRequest(req, res, next) {
             // create_full_d3ck(req.body.d3ck_data)
 
             // generate cert stuff
-            command = d3ck_bin + '/bundle_certs.js'
 
-            // create client bundle
-            var keyout = d3ck_spawn_sync(command, [_tmp_d3ck.D3CK_ID])
-
-            log.info('installed client...')
-
-            if (keyout.code) {
-                log.error("error in create_cli3nt_rest!")
-                res.send(420, { error: "couldn't retrieve client certificates" } )
-                return
-            }
-
-            else {
-                log.info('read/writing to ' + d3ck_keystore +'/'+ _tmp_d3ck.D3CK_ID + "/_cli3nt.all")
-                try {
-                    cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _tmp_d3ck.D3CK_ID + "/_cli3nt.json").toString())
-                }
-                catch (e) {
-                    log.error("couldn't read file -> " + JSON.stringify(e))
-                    return
-                }
-            }
-
-            // if the IP we get the add from isn't in the ips the other d3ck
-            // says it has... add it in; they may be coming from a NAT or
-            // something weird
-            log.info('looking 2 see if your current ip is in your pool')
-            var found = false
-            for (var i = 0; i < _tmp_d3ck.all_ips.length; i++) {
-                if (_tmp_d3ck.all_ips[i] == from_ip) {
-                    log.info('remote ip found in d3ck data')
-                    found = true
-                    break
-                }
-            }
-            if (! found) {
-                log.info("You're coming from an IP that isn't in your stated IPs... adding [" + from_ip + "] to your IP pool just in case")
-                _tmp_d3ck.all_ips[_tmp_d3ck.all_ips.length] = from_ip
-            }
-
-            // write it to FS
-            create_d3ck_key_store(_tmp_d3ck)
-
-            // image too
-            write_2_file(d3ck_public + _tmp_d3ck.image, b64_decode(_tmp_d3ck.image_b64))
-
-            // create it in the DB
-            update_d3ck(_tmp_d3ck)
-
-            // put in memory
-            all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
+//             command = d3ck_bin + '/bundle_certs.js'
+// 
+//             // create client bundle
+//             var keyout = d3ck_spawn_sync(command, [_tmp_d3ck.D3CK_ID])
+// 
+//             log.info('installed client...')
+// 
+//             if (keyout.code) {
+//                 log.error("error in create_cli3nt_rest!")
+//                 res.send(420, { error: "couldn't retrieve client certificates" } )
+//                 return
+//             }
+// 
+//             else {
+//                 log.info('read/writing to ' + d3ck_keystore +'/'+ _tmp_d3ck.D3CK_ID + "/_cli3nt.all")
+//                 try {
+//                     cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _tmp_d3ck.D3CK_ID + "/_cli3nt.json").toString())
+//                 }
+//                 catch (e) {
+//                     log.error("couldn't read file -> " + JSON.stringify(e))
+//                     return
+//                 }
+//             }
+// 
+//             // if the IP we get the add from isn't in the ips the other d3ck
+//             // says it has... add it in; they may be coming from a NAT or
+//             // something weird
+//             log.info('looking 2 see if your current ip is in your pool')
+//             var found = false
+//             for (var i = 0; i < _tmp_d3ck.all_ips.length; i++) {
+//                 if (_tmp_d3ck.all_ips[i] == from_ip) {
+//                     log.info('remote ip found in d3ck data')
+//                     found = true
+//                     break
+//                 }
+//             }
+//             if (! found) {
+//                 log.info("You're coming from an IP that isn't in your stated IPs... adding [" + from_ip + "] to your IP pool just in case")
+//                 _tmp_d3ck.all_ips[_tmp_d3ck.all_ips.length] = from_ip
+//             }
+// 
+//             // write it to FS
+//             create_d3ck_key_store(_tmp_d3ck)
+// 
+//             // image too
+//             write_2_file(d3ck_public + _tmp_d3ck.image, b64_decode(_tmp_d3ck.image_b64))
+// 
+//             // create it in the DB
+//             update_d3ck(_tmp_d3ck)
+// 
+//             // put in memory
+//             all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
 
             // xxxxxxxx
             // set capabilities, trust, etc....?
             // xxxxxxxx
+
+            // ask user...?
+
+            var d3ck_request    = {
+                knock       : true,
+                from_ip     : from_ip,
+                ip_addr     : ip_addr,
+                owner       : owner,
+                action      : action,
+                from_d3ck   : from_d3ck,
+                service     : service,
+                secret      : secret
+            }
+
+            var d3ck_status            = empty_status()
+
+            d3ck_status.d3ck_requests  = d3ck_request
+
+            createEvent(client_ip, {event_type: "knock", "ip_addr": ip_addr, "from_d3ck": from_d3ck, "d3ck_id": d3ckid}, d3ck_status)
+
+            d3ck_queue.push({type: 'request', event: 'service' , 'd3ck_status': d3ck_status })
+
+            log.info('sending back... <3!!!')
+
+            // XXXX - to do - immediately send back done/success if permissions are just do-eet
+            res.send(200, { emotion: "<3" })
 
             return
 
@@ -4323,7 +4350,7 @@ function create_d3ck_by_ip(req, res, next) {
 
     log.info("creating d3ck hopefully found @ " + ip_addr)
 
-    // ping the remote to see if it's a d3ck at all
+    // ping the remote to see if it's a d3ck at all; if so, grab ID
     var _remote_d3ck;
     pre_ping(ip_addr).then(function(data) {
 
