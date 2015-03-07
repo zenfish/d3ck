@@ -2107,6 +2107,7 @@ function create_d3ck_key_store(data) {
         }
     })
 
+    // first what 
     write_2_file(cert_dir + '/d3ck.did',     data.D3CK_ID)
     write_2_file(cert_dir + '/d3ck.key',     key)
     write_2_file(cert_dir + '/d3ck.crt',     cert)
@@ -2116,8 +2117,14 @@ function create_d3ck_key_store(data) {
     log.info(cert_dir + '/' + data.D3CK_ID + '.json')
     log.info(JSON.stringify(data).substring(0,4096) + ' .... ')
 
-    client_cert = data.vpn_client.cert.join('\n')
-    client_key  = data.vpn_client.key.join('\n')
+    try {
+        client_cert = data.vpn_client.cert.join('\n')
+        client_key  = data.vpn_client.key.join('\n')
+    }
+    catch (e) {
+        client_cert = data.vpn.cert.join('\n')
+        client_key  = data.vpn.key.join('\n')
+    }
 
     write_2_file(cert_dir + '/cli3nt.crt',  client_cert)
     write_2_file(cert_dir + '/cli3nt.key',  client_key)
@@ -4342,7 +4349,7 @@ function create_d3ck_by_ip(req, res, next) {
         // create client bundle
         var keyout = d3ck_spawn_sync(command, [_remote_d3ck.did])
 
-        log.info('installed client...')
+        log.info('installed cli3nt...')
 
         if (keyout.code) {
             log.error("error in create_cli3nt_rest!")
