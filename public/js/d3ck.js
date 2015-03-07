@@ -475,36 +475,36 @@ function get_ip(element) {
 //
 // start the sequence to fire up the VPN
 //
-function d3ck_vpn(element, d3ckid, ipaddr) {
-
-    console.log('starting up VPN to ' + d3ckid + ' : ' + ipaddr)
-
-    $(element).text("connecting...").removeClass("btn-primary").addClass("btn-danger")
-
-    event_connect("outgoing", ipaddr)
-
-    inform_user('VPN', 'starting up VPN to ' + d3ckid + ' : ' + ipaddr, 'vpn')
-
-    // don't change anything until the call efforts pass/fail
-    d3ck_current.busy = true
-
-    var pvpn = $.ajax({
-        type: "POST",
-        url: "/vpn/start",
-        data: {"d3ckid": d3ckid, "ip_addr": ipaddr}
-    })
-
-    pvpn.done(function(msg) {
-        console.log("posto facto: " + JSON.stringify(msg))
-    })
-    pvpn.fail(function(xhr, textStatus, errorThrown) {
-        console.log('failzor -> ' + JSON.stringify(xhr))
-    })
-    pvpn.error(function(xhr, textStatus, errorThrown) {
-        console.log('errzor -> ' + JSON.stringify(xhr))
-    })
-
-}
+// function d3ck_vpn(element, d3ckid, ipaddr) {
+// 
+//     console.log('starting up VPN to ' + d3ckid + ' : ' + ipaddr)
+// 
+//     $(element).text("connecting...").removeClass("btn-primary").addClass("btn-danger")
+// 
+//     event_connect("outgoing", ipaddr)
+// 
+//     inform_user('VPN', 'starting up VPN to ' + d3ckid + ' : ' + ipaddr, 'vpn')
+// 
+//     // don't change anything until the call efforts pass/fail
+//     d3ck_current.busy = true
+// 
+//     var pvpn = $.ajax({
+//         type: "POST",
+//         url: "/vpn/start",
+//         data: {"d3ckid": d3ckid, "ip_addr": ipaddr}
+//     })
+// 
+//     pvpn.done(function(msg) {
+//         console.log("posto facto: " + JSON.stringify(msg))
+//     })
+//     pvpn.fail(function(xhr, textStatus, errorThrown) {
+//         console.log('failzor -> ' + JSON.stringify(xhr))
+//     })
+//     pvpn.error(function(xhr, textStatus, errorThrown) {
+//         console.log('errzor -> ' + JSON.stringify(xhr))
+//     })
+// 
+// }
 
 // whimsey
 function go_d3ck_or_go_home() {

@@ -2829,59 +2829,134 @@ function serviceRequest(req, res, next) {
 
     log.info('service request: ' + service)
 
-    // friends need secretz
-    if (service == 'friend request') {
+    //
+    // is it for us, or are we passing it on?
+    //
+    // pass it all along to another d3ck....
+    if (d3ckid != bwana_d3ck.D3CK_ID) {
+        log.info('... you want the next door down....')
 
-        //
-        // XXX - need to check date... has it timed out?
-        //
+        // friends need secretz
+        if (service == 'friend request') {
+            //
+            // XXX - need to check date... has it timed out?
+            //
 
-        // if given one, use that
-        if (typeof req.body.secret != 'undefined') { 
+            // need a secret
+            if (typeof req.body.secret == 'undefined') { 
+                log.error("need a secret to make this work, bailin'")
+                res.send(403, { error: "secret missing"})
+                return
+            }
+
+            log.info('secret: ' + req.body.secret)
+
             secret = req.body.secret
             secret_requests[ip_addr]   = secret
             secrets2ips[secret.secret] = ip_addr
-            log.info('setting secret w body -> ' + secret)
+
         }
-        // else check to see if it's in the all-array o secrets
-        else if (typeof secret_requests[from_ip] != 'undefined') {
-            secret_requests[ip_addr]   = secret
-            secrets2ips[secret.secret] = ip_addr
-            log.info('setting secret w array -> ')
-            log.info(secret)
+
+
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/request'
+
+        log.info(url)
+        log.info(d3ckid)
+
+        //
+        // Use cert if have it - only initial friend requests won't
+        //
+        var options = {}
+        
+        if (service == 'friend request') {
+            load_up_cc_cert(d3ckid)
         }
-        else {
-            log.error("need a secret from local to make this work, bailin'")
-            res.send(403, { error: "secret missing"})
-            return
+
+        options.url  = url
+        options.form = req.body
+
+        options.form.ip_addr   = ip_addr
+        options.form.d3ckid    = d3ckid
+        options.form.from_d3ck = bwana_d3ck.D3CK_ID
+        options.form.from      = bwana_d3ck.owner.name
+
+        log.info(options)
+
+        var d3ck_request    = {
+            knock       : true,
+            ip_addr     : ip_addr,
+            from_ip     : from_ip,
+            owner       : owner,
+            'from_d3ck' : bwana_d3ck.D3CK_ID,
+            service     : service,
+            secret      : secret,
+            did         : d3ckid
         }
+
+        var d3ck_status            = empty_status()
+        d3ck_status.d3ck_requests  = d3ck_request
+
+        d3ck_queue.push({type: 'request', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
+
+        request.post(options, function cb (err, resp) {
+            if (err) {
+                console.error('post to remote failed:', JSON.stringify(err))
+                d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
+
+                res.send(200, {"err" : err});
+                }
+            else {
+                log.info('knock returned... something - RC: ' + res.statusCode)
+
+                // log.info(res)
+
+                if (resp.statusCode != 200) {
+                    d3ck_queue.push({type: 'info', event: 'service_request_return', service: service, statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
+                    log.info(resp.body)
+                    res.send(resp.statusCode, resp.body)
+                }
+                else {
+                    d3ck_queue.push({type: 'info', event: 'service_request_success',service: service, 'd3ck_status': d3ck_status })
+                    log.info(resp.body)
+                    res.send(200, resp.body)
+                }
+            }
+        })
 
     }
 
     //
     // is it for us, or are we passing it on?
     //
+    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr)) {
+        log.info('for me... hmm... could be a trick...')
 
-    if (service == 'friend request') {
-
+        
         //
-        // if for us, give to user to answer/see....
-        //
-        // special case - friending... don't know d3ck_id yet... so check for our IP and if its for a friend request
+        // XXX - need to check date... has it timed out?
         //
 
-        // if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr) || (d3ckid == '')) {
-        //     log.info('letting me slide...')
-        // }
+        if (service == 'friend request') {
 
-        log.info("you want to be my friend?  You care!  You really care!")
+            log.info("you want to be my friend?  You care!  You really care!")
 
-        if (typeof d3ck2ip[d3ckid] === "undefined") ip_addr = d3ck2ip[d3ckid] 
+            // need a secret
+            if (typeof req.body.secret != 'undefined') { 
+                log.error("need a secret from local to make this work, bailin'")
+                res.send(403, { error: "secret missing"})
+                return
+            }
 
-        var _tmp_d3ck = {}
+            secret                     = req.body.secret
+            secret_requests[ip_addr]   = secret
+            secrets2ips[secret.secret] = ip_addr
 
-        // friends-to-be don't have an ID we know yet
-        if (service == 'friend request') { 
+            log.info('secret: ' + req.body.secret)
+
+
+            if (typeof d3ck2ip[d3ckid] === "undefined") ip_addr = d3ck2ip[d3ckid] 
+
+            var _tmp_d3ck = {}
 
             if (typeof req.body.d3ck_data === "undefined") {
                 log.error("Wasn't given remove d3ck data, friend request failed")
@@ -2951,153 +3026,145 @@ function serviceRequest(req, res, next) {
             // put in memory
             all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
 
-// xxxxxxxx
-// xxxxxxxx
-// xxxxxxxx
-// xxxxxxxx
-// set capabilities, trust, etc.
-// xxxxxxxx
-// xxxxxxxx
-// xxxxxxxx
-// xxxxxxxx
+            // xxxxxxxx
+            // set capabilities, trust, etc....?
+            // xxxxxxxx
 
+            return
 
         }
-        else { 
-            _tmp_d3ck = all_d3cks[d3ck_id]
+
+        //
+        // other services....
+        //
+
+        // are we allowed?
+        if (! look_up_cap(service, d3ckid)) {
+            log.error("you're not allowed, rejected!")
+            return 
         }
 
-        log.info('service: ' + service)
-        log.info(_tmp_d3ck.capabilities)
+        // xxx - add ask user ... 
 
-        //
-        // look up in capabilies... what's the appropriate response?  Ask the user,
-        // do it, throw it away, ....?
-        //
-        var action = _tmp_d3ck.capabilities[service]
+        // else assume it's ok, do it
 
-        //
-        // XXXXX - TODO! If the associated capability for an action is simply accept, 
-        // don't fuck around and wait, until user replies, just do it and inform!
-        //
+        if (service == 'vpn') {
 
-        var d3ck_request    = {
-            knock       : true,
-            from_ip     : from_ip,
-            ip_addr     : ip_addr,
-            owner       : owner,
-            action      : action,
-            'from_d3ck' : from_d3ck,
-            service     : service,
-            secret      : secret
+            //     var pvpn = $.ajax({
+            //         type: "POST",
+            //         url: "/vpn/start",
+            //         data: {"d3ckid": d3ckid, "ip_addr": ipaddr}
+            //     })
+
+            var options          = {}
+
+            options.url          = '/vpn/start'
+            options.form         = {}
+            options.form.ip_addr = ip_addr
+            options.form.d3ckid  = d3ckid
+
+            log.info(options)
+
+            var d3ck_request    = {
+                ip_addr   : ip_addr,
+                from_ip   : from_ip,
+                owner     : owner,
+                from_d3ck : bwana_d3ck.D3CK_ID,
+                service   : service,
+                did       : d3ckid
+            }
+
+            var d3ck_status            = empty_status()
+            d3ck_status.d3ck_requests  = d3ck_request
+
+            d3ck_queue.push({type: 'request', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
+
+            request.post(options, function cb (err, resp) {
+                if (err) {
+                    console.error('post to remote failed:', JSON.stringify(err))
+                    d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
+
+                    res.send(200, {"err" : err});
+                    }
+                else {
+                    log.info('knock returned... something - RC: ' + res.statusCode)
+
+                    // log.info(res)
+
+                    if (resp.statusCode != 200) {
+                        d3ck_queue.push({type: 'info', event: 'service_request_return', service: service, statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
+                        log.info(resp.body)
+                        res.send(resp.statusCode, resp.body)
+                    }
+                    else {
+                        d3ck_queue.push({type: 'info', event: 'service_request_success',service: service, 'd3ck_status': d3ck_status })
+                        log.info(resp.body)
+                        res.send(200, resp.body)
+                    }
+                }
+            })
+
+            createEvent(client_ip, {event_type: "vpn", "ip_addr": ip_addr, "from_d3ck": from_d3ck, "d3ck_id": d3ckid}, d3ck_status)
+
+            d3ck_queue.push({type: 'request', event: 'service' , 'd3ck_status': d3ck_status })
+
+            log.info('vpn off....')
+            // XXXX immediately send back done/success if permissions are just do-eet
+            res.send(200, { emotion: "<3" })
+        }
+        else {
+            log.error("you didn't ask for a service I know about...")
         }
 
-        var d3ck_status            = empty_status()
-
-        d3ck_status.d3ck_requests  = d3ck_request
-
-        createEvent(client_ip, {event_type: "knock", "ip_addr": ip_addr, "from_d3ck": from_d3ck, "d3ck_id": d3ckid}, d3ck_status)
-
-        d3ck_queue.push({type: 'request', event: 'service' , 'd3ck_status': d3ck_status })
-
-        log.info('sending back... <3!!!')
-
-        // XXXX immediately send back done/success if permissions are just do-eet
-        res.send(200, { emotion: "<3" })
-
-        return
+    }
+    // not for another d3ck... not for me...?
+    else {
+        log.error("I'm a bit confused... rejecting service request until the drugs wear off...")
     }
 
-    // until get more services, they all go to another d3ck....
+}
+
+//
+// first look up in capabilies... what's the appropriate response?  
+// Ask the user, do it, throw it away, ....?
+//
+// 3 possible answers: "off", "ask", & "on"
+function look_up_cap(service, d3ckid) {
+
+    log.info('in look_up_cap')
+    
+    var _tmp_d3ck = {}
+
+    if (typeof all_d3cks[d3ckid] === "undefined") {
+        log.error("Wasn't given a d3ck ID, bailin' out")
+        return 
+    }
+
+    var cap         = all_d3cks[d3ck_id].capabilities
+    log.info('remote d3ck capz: ' + JSON.stringify(cap))
+    var service_cap = _tmp_d3ck.capabilities[service]
+    log.info('service cap: ' + service_cap[service])
+
+    // don't even ask, just do it
+    if (service_cap[service] == 'on') {
+        log.info("yes ma'am, right away!")
+        return true
+    }
+
+    else if (service_cap[service] == 'no') {
+        log.info("you're not authorized to do this... guards, execute this sniveling coward!")
+        return false
+    }
+
+    // need to implement
+    else if (service_cap[service] == 'ask') {
+        log.info("I have to ask the powers that be... I'll get some hold music for you...")
+        return false
+    }
+
     else {
-        log.info('... you want the next door down....')
-
-        // if (typeof d3ck2ip[d3ckid] == "undefined") {
-        //     log.info("Can't find IP addr for " + d3ckid)
-        //     res.send(420, { error: "enhance your calm! Can't find IP addr for " + d3ckid })
-        // }
-
-        // var ip = d3ck2ip[d3ckid]
-
-        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/request'
-
-        log.info(url)
-        log.info(d3ckid)
-
-        //
-        // this should simply pass along the stuff passed to it,
-        // optionally filling in things as needed
-        //
-        //
-        //  xxxx
-        //  xxxx
-        //  xxxx
-        //  xxxx
-        //  xxxx
-        //  xxxx
-        //
-        //
-
-        //
-        // ALSO!  Use cert if have it!
-        // ALSO!  Use cert if have it!
-        // ALSO!  Use cert if have it!
-        //
-        // var options = load_up_cc_cert(d3ckid)
-
-        var options = load_up_cc_cert(d3ckid)
-
-        options.url  = url
-        options.form = req.body
-
-        options.form.ip_addr   = ip_addr
-        options.form.d3ckid    = d3ckid
-        options.form.from_d3ck = bwana_d3ck.D3CK_ID
-        options.form.from      = bwana_d3ck.owner.name
-
-        log.info(options)
-
-        var d3ck_request    = {
-            knock       : true,
-            ip_addr     : ip_addr,
-            from_ip     : from_ip,
-            owner       : owner,
-            'from_d3ck' : bwana_d3ck.D3CK_ID,
-            service     : service,
-            secret      : secret,
-            did         : d3ckid
-        }
-
-        var d3ck_status            = empty_status()
-        d3ck_status.d3ck_requests  = d3ck_request
-
-        d3ck_queue.push({type: 'request', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
-
-        request.post(options, function cb (err, resp) {
-            if (err) {
-                console.error('post to remote failed:', JSON.stringify(err))
-                d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
-
-                res.send(200, {"err" : err});
-                }
-            else {
-                log.info('knock returned... something - RC: ' + res.statusCode)
-
-                // log.info(res)
-
-                if (resp.statusCode != 200) {
-                    d3ck_queue.push({type: 'info', event: 'service_request_return', service: service, statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
-                    log.info(resp.body)
-                    res.send(resp.statusCode, resp.body)
-                }
-                else {
-                    d3ck_queue.push({type: 'info', event: 'service_request_success',service: service, 'd3ck_status': d3ck_status })
-                    log.info(resp.body)
-                    res.send(200, resp.body)
-                }
-            }
-        })
-
+        log.error("Don't have an answer for this request, refusing to take action...")
+        return false
     }
 
 }
