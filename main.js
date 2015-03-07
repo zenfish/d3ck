@@ -2107,7 +2107,6 @@ function create_d3ck_key_store(data) {
         }
     })
 
-    // xxx - errs to user!
     write_2_file(cert_dir + '/d3ck.did',     data.D3CK_ID)
     write_2_file(cert_dir + '/d3ck.key',     key)
     write_2_file(cert_dir + '/d3ck.crt',     cert)
@@ -2117,25 +2116,13 @@ function create_d3ck_key_store(data) {
     log.info(cert_dir + '/' + data.D3CK_ID + '.json')
     log.info(JSON.stringify(data).substring(0,4096) + ' .... ')
 
-    try {
-        client_cert = data.vpn_client.cert.join('\n')
-        client_key  = data.vpn_client.key.join('\n')
-        write_2_file(cert_dir + '/cli3nt.crt',  client_cert)
-        write_2_file(cert_dir + '/cli3nt.key',  client_key)
-        write_2_file(cert_dir + '/d3ckroot.crt', ca)
-        // and the entire json card
-    }
-    catch (e) {
-        log.error("missing data...?  Couldn't write certs ;(" + JSON.stringify(e))
-    }
+    client_cert = data.vpn_client.cert.join('\n')
+    client_key  = data.vpn_client.key.join('\n')
 
-    try {
-        write_2_file(cert_dir + '/' + data.D3CK_ID + '.json', JSON.stringify(data))
-    }
-    catch (e) {
-        log.error("wtf... Couldn't write certs... " + JSON.stringify(e))
-    }
-
+    write_2_file(cert_dir + '/cli3nt.crt',  client_cert)
+    write_2_file(cert_dir + '/cli3nt.key',  client_key)
+    write_2_file(cert_dir + '/d3ckroot.crt', ca)
+    write_2_file(cert_dir + '/' + data.D3CK_ID + '.json', JSON.stringify(data))
 
 }
 
