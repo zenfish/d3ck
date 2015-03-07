@@ -2956,12 +2956,6 @@ function serviceRequest(req, res, next) {
 
     }
 
-    // sanity check
-    if (! check_certificate(req.headers)) {
-        log.error("wait a minute... you ain't who you say you are!")
-        return
-    }
-
     //
     // is it for us, or are we passing it on?
     //
@@ -3078,6 +3072,12 @@ function serviceRequest(req, res, next) {
         if (! look_up_cap(service, d3ckid)) {
             log.error("you're not allowed, rejected!")
             return 
+        }
+
+        // sanity check
+        if (! check_certificate(req.headers)) {
+            log.error("wait a minute... you ain't who you say you are!")
+            return
         }
 
         // xxx - add ask user ... 
