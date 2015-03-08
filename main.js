@@ -3218,6 +3218,8 @@ function serviceResponse(req, res, next) {
     log.info("you say... " + req.params.answer)
     log.info("nice body!  " + JSON.stringify(req.body).substring(0,SNIP_LEN) + ' .... ')
 
+    var ip = get_client_ip(req)
+
     var deferred = Q.defer();
 
     var redirect_to_home = false
@@ -3279,19 +3281,19 @@ function serviceResponse(req, res, next) {
             // if the IP we get the add from isn't in the ips the other d3ck
             // says it has... add it in; they may be coming from a NAT or
             // something weird
-            log.info('looking to see if your current ip is in your pool')
+            log.info('looking to see if the ip is in its json package')
             var found = false
             for (var i = 0; i < _tmp_d3ck.all_ips.length; i++) {
-                if (_tmp_d3ck.all_ips[i] == ip_addr) {
-                    log.info('remote ip found in d3ck data')
+                if (_tmp_d3ck.all_ips[i] == ip) {
+                    log.info('remote ip found in json pkg')
                     found = true
                     break
                 }
             }
 
             if (! found) {
-                log.info("they came from an IP that wasn't in their stated IPs... adding [" + ip_addr + "] to the IP pool just in case")
-                _tmp_d3ck.all_ips[all_client_ips.length] = ip_addr
+                log.info("they came from an IP that wasn't in their stated IPs... adding [" + ip + "] to the IP pool just in case")
+                _tmp_d3ck.all_ips[_tmp_d3ck.all_ips.length] = ip
             }
 
             do_everything_client_create(_tmp_d3ck)

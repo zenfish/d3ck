@@ -1,4 +1,21 @@
 
+From:
+
+    https://gist.github.com/martijnvermaat/744dde0fa70df0ebf44a
+
+"The curl version on Ubuntu 14.04 Trusty Tahr has a bug (through gnutls) in its SSLv3 support."
+
+... require curl 7.32 or bugs... sigh.
+
+wget "http://nl.archive.ubuntu.com/ubuntu/pool/main/c/curl/curl_7.32.0-1ubuntu1.4_i386.deb"
+wget "http://nl.archive.ubuntu.com/ubuntu/pool/main/c/curl/libcurl3_7.32.0-1ubuntu1.4_i386.deb"
+wget "http://nl.archive.ubuntu.com/ubuntu/pool/main/c/curl/libcurl3-gnutls_7.32.0-1ubuntu1.4_i386.deb"
+
+
+
+
+
+
 
 To do GEO displacement:
 
