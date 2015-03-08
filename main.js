@@ -42,7 +42,8 @@ var Tail       = require('./tail').Tail,
     d3ck       = require('./modules');
 
 
-var DEBUG = false;
+var DEBUG    = false;
+var SNIP_LEN = 4096;    // used to truncate when printing out long strings
 
 //
 // Initial setup
@@ -2089,7 +2090,7 @@ function create_d3ck_key_store(data) {
          data = JSON.parse(data)
     }
 
-    log.info(JSON.stringify(data).substring(0,4096) + ' .... ')
+    log.info(JSON.stringify(data).substring(0,SNIP_LEN) + ' .... ')
 
     var ca          = data.vpn.ca.join('\n')
     var key         = data.vpn.key.join('\n')
@@ -2115,7 +2116,7 @@ function create_d3ck_key_store(data) {
 
     log.info('sanity...?')
     log.info(cert_dir + '/' + data.D3CK_ID + '.json')
-    log.info(JSON.stringify(data).substring(0,4096) + ' .... ')
+    log.info(JSON.stringify(data).substring(0,SNIP_LEN) + ' .... ')
 
     try {
         client_cert = data.vpn_client.cert.join('\n')
@@ -2833,7 +2834,7 @@ function serviceRequest(req, res, next) {
     log.info(d3ckid)
     log.info(ip_addr)
 
-    log.info('bboddy: ' + JSON.stringify(req.body).substring(0,4096) + ' .... ')
+    log.info('bboddy: ' + JSON.stringify(req.body).substring(0,SNIP_LEN) + ' .... ')
 
     // if it's us... no worries
     if (typeof ip_addr != 'undefined' && typeof ip2d3ck[ip_addr] == 'undefined') {
@@ -2867,7 +2868,7 @@ function serviceRequest(req, res, next) {
 
         // don't pass it along unless it was us who sent it......
 
-        // sanity check... you have to be me... no one else gets a free ride
+        // sanity check... you have to be me to send through me... bits aren't cheap, you know
         if (!__.contains(my_ips, ip_addr)) {
             log.error("but wait... lookin in the mirror... you ain't me!")
             return
@@ -3004,74 +3005,11 @@ function serviceRequest(req, res, next) {
             }
             else {
                 _tmp_d3ck = req.body.d3ck_data
-                log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
+                log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0,SNIP_LEN) + ' .... ')
             }
 
-            //
-            // execute a shell script with appropriate args to create a d3ck.
-            //
-            // create_full_d3ck(req.body.d3ck_data)
-
-            // generate cert stuff
-
-//             command = d3ck_bin + '/bundle_certs.js'
-// 
-//             // create client bundle
-//             var keyout = d3ck_spawn_sync(command, [_tmp_d3ck.D3CK_ID])
-// 
-//             log.info('installed client...')
-// 
-//             if (keyout.code) {
-//                 log.error("error in create_cli3nt_rest!")
-//                 res.send(420, { error: "couldn't retrieve client certificates" } )
-//                 return
-//             }
-// 
-//             else {
-//                 log.info('read/writing to ' + d3ck_keystore +'/'+ _tmp_d3ck.D3CK_ID + "/_cli3nt.all")
-//                 try {
-//                     cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _tmp_d3ck.D3CK_ID + "/_cli3nt.json").toString())
-//                 }
-//                 catch (e) {
-//                     log.error("couldn't read file -> " + JSON.stringify(e))
-//                     return
-//                 }
-//             }
-// 
-//             // if the IP we get the add from isn't in the ips the other d3ck
-//             // says it has... add it in; they may be coming from a NAT or
-//             // something weird
-//             log.info('looking 2 see if your current ip is in your pool')
-//             var found = false
-//             for (var i = 0; i < _tmp_d3ck.all_ips.length; i++) {
-//                 if (_tmp_d3ck.all_ips[i] == from_ip) {
-//                     log.info('remote ip found in d3ck data')
-//                     found = true
-//                     break
-//                 }
-//             }
-//             if (! found) {
-//                 log.info("You're coming from an IP that isn't in your stated IPs... adding [" + from_ip + "] to your IP pool just in case")
-//                 _tmp_d3ck.all_ips[_tmp_d3ck.all_ips.length] = from_ip
-//             }
-// 
-//             // write it to FS
-//             create_d3ck_key_store(_tmp_d3ck)
-// 
-//             // image too
-//             write_2_file(d3ck_public + _tmp_d3ck.image, b64_decode(_tmp_d3ck.image_b64))
-// 
-//             // create it in the DB
-//             update_d3ck(_tmp_d3ck)
-// 
-//             // put in memory
-//             all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
-
-            // xxxxxxxx
-            // set capabilities, trust, etc....?
-            // xxxxxxxx
-
-            // ask user...?
+            // write out the certs they sent us
+            do_everything_client_create(_tmp_d3ck)
 
             var d3ck_request    = {
                 knock       : true,
@@ -3277,7 +3215,7 @@ function serviceResponse(req, res, next) {
 
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
-    log.info("nice body!  " + JSON.stringify(req.body).substring(0,4096) + ' .... ')
+    log.info("nice body!  " + JSON.stringify(req.body).substring(0,SNIP_LEN) + ' .... ')
 
     var deferred = Q.defer();
 
@@ -3331,8 +3269,8 @@ function serviceResponse(req, res, next) {
             }
             else {
                 _tmp_d3ck = req.body.d3ck_data
-                // log.info('remote d3ck_data    ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
-                log.info("writing remote d3ck's certs they sent... : " + JSON.stringify(_tmp_d3ck).substring(0,4096) + ' .... ')
+                // log.info('remote d3ck_data    ' + JSON.stringify(req.body.d3ck_data).substring(0,SNIP_LEN) + ' .... ')
+                log.info("writing remote d3ck's certs they sent... : " + JSON.stringify(_tmp_d3ck).substring(0,SNIP_LEN) + ' .... ')
             }
 
             log.info('going in to create client schtuff....')
@@ -3452,7 +3390,7 @@ function serviceResponse(req, res, next) {
             }
 
             options.form.d3ck_data = d3ck_data
-            log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,4096) + ' .... ')
+            log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
 
         }
 
@@ -4474,7 +4412,7 @@ function create_d3ck_by_ip(req, res, next) {
         log.info('local install stuff')
 
         log.info('knocking @ ' + url)
-        log.info('with: ' + JSON.stringify(options).substring(0,4096) + ' .... ')
+        log.info('with: ' + JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
 
         // grab remote d3ck's data... first we have to ask permission
         request.post(options, function cb (e, r, body) {
