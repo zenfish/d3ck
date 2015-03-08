@@ -3066,12 +3066,13 @@ function serviceRequest(req, res, next) {
             //         data: {"d3ckid": d3ckid, "ip_addr": ipaddr}
             //     })
 
-            var options          = {}
+            var options            = {}
 
-            options.url          = '/vpn/start'
-            options.form         = {}
-            options.form.ip_addr = ip_addr
-            options.form.d3ckid  = d3ckid
+            options.url            = '/vpn/start'
+            options.form           = {}
+            options.form.ip_addr   = ip_addr
+            options.form.d3ckid    = d3ckid
+            options.form.from_d3ck = bwana_d3ck.D3CK_ID
 
             log.info(options)
 
