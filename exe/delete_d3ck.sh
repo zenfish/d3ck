@@ -40,7 +40,7 @@ curl -k -v -H "Accept: application/json" -H "Content-type: application/json" -X 
 # slight bootstrapping problem... fix someday...?
 cd /etc/d3ck/f-u-openssl
 . /etc/d3ck/config.sh
-openssl ca -config stupid.conf -revoke /etc/d3ck/d3cks/d3ck/_cli3nt.crt 
+openssl ca -config stupid.conf -revoke "/etc/d3ck/d3cks/$d3ck/_cli3nt.crt"
 rm -rf /etc/d3ck/d3cks/$d3ck
 
 echo "delete cci-$d3ck" | redis-cli
