@@ -2892,6 +2892,8 @@ function serviceRequest(req, res, next) {
             secret_requests[ip_addr]   = secret
             secrets2ips[secret.secret] = ip_addr
 
+            do_everything_client_create(_tmp_d3ck)
+
         }
 
 
@@ -3240,6 +3242,29 @@ function look_up_cap(service, d3ckid) {
 }
 
 //
+//
+//
+//
+// do it all
+//
+function do_everything_client_create(d3ck) {
+
+    log.info('I do it all...')
+
+    // write it to FS
+    create_d3ck_key_store(d3ck)
+
+    // image too
+    write_2_file(d3ck_public + d3ck.image, b64_decode(d3ck.image_b64))
+
+    // create it in the DB
+    update_d3ck(d3ck)
+
+    // put in memory
+    all_d3cks[d3ck.D3CK_ID] = d3ck
+
+}
+//
 // various services map to various capabilites... here we
 // respond to various requests.
 //
@@ -3298,32 +3323,23 @@ function serviceResponse(req, res, next) {
                 return
             }
 
-            log.info('about to create....!')
-
-            var _tmp_d3ck;
+            var _tmp_d3ck = {}
 
             if (typeof req.body.d3ck_data === "undefined") {
-                log.error("Wasn't given remove d3ck data, friend response failed")
-                return
+                    log.error("Wasn't given remove d3ck data, friend response failed")
+                    return
             }
             else {
                 _tmp_d3ck = req.body.d3ck_data
-                log.info('remote d3ck_data    ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
-                log.info('remote d3ck_data_d3 ' + JSON.stringify(_tmp_d3ck).substring(0,4096) + ' .... ')
+                // log.info('remote d3ck_data    ' + JSON.stringify(req.body.d3ck_data).substring(0,4096) + ' .... ')
+                log.info("writing remote d3ck's certs they sent... : " + JSON.stringify(_tmp_d3ck).substring(0,4096) + ' .... ')
             }
 
-            // write it to FS
-            create_d3ck_key_store(_tmp_d3ck)
+            log.info('going in to create client schtuff....')
 
-            // xxxx
-            // write_2_file((d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+            do_everything_client_create(_tmp_d3ck)
 
-            // image too
-            write_2_file(d3ck_public + _tmp_d3ck.image, b64_decode(_tmp_d3ck.image_b64))
-            // create it in the DB
-            update_d3ck(_tmp_d3ck)
-            // put in memory
-            all_d3cks[_tmp_d3ck.D3CK_ID] = _tmp_d3ck
+            // energize_d3ck()
 
             redirect_to_home = true
 
@@ -4408,6 +4424,7 @@ function create_d3ck_by_ip(req, res, next) {
         var secret = generate_friend_request(ip_addr)
 
         log.info('installing client...')
+
         // generate cert stuff
         command = d3ck_bin + '/bundle_certs.js'
 
@@ -4434,7 +4451,6 @@ function create_d3ck_by_ip(req, res, next) {
 
 
 //      create_d3ck_key_store(req.body.d3ck_data)
-
 
         secret_requests[ip_addr]   = secret
         secrets2ips[secret.secret] = ip_addr

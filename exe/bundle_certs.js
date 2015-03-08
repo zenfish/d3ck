@@ -113,53 +113,53 @@ function suck_d3ck (id, remote_did) {
 
 
 //
-// censor the response
+// redact the response
 //
 function rip_d3ck (d3ck, remote_did) {
 
-    var censored = {}
+    var redacted = {}
 
     var did      = d3ck.D3CK_ID
 
-    console.log('censoring ' + did)
+    console.log('redacting ' + did)
 
 // openvpn --ca /etc/d3ck/d3cks/AC6C4FCA9ECAE6E88BA9D41BA0AA956942EDA9C4/d3ckroot.crt 
 //         --tls-auth /etc/d3ck/d3cks/AC6C4FCA9ECAE6E88BA9D41BA0AA956942EDA9C4/ta.key 
 //         --key /etc/d3ck/d3cks/AC6C4FCA9ECAE6E88BA9D41BA0AA956942EDA9C4/cli3nt.key 
 //         --cert /etc/d3ck/d3cks/AC6C4FCA9ECAE6E88BA9D41BA0AA956942EDA9C4/cli3nt.crt 
 
-    censored.name             = d3ck.name
-    censored.D3CK_ID          = d3ck.D3CK_ID
-    censored.image            = d3ck.image 
-    censored.ip_addr          = d3ck.ip_addr 
-    censored.ip_addr_vpn      = d3ck.ip_addr_vpn 
-    censored.all_ips          = d3ck.all_ips 
-    censored.owner            = d3ck.owner
+    redacted.name             = d3ck.name
+    redacted.D3CK_ID          = d3ck.D3CK_ID
+    redacted.image            = d3ck.image 
+    redacted.ip_addr          = d3ck.ip_addr 
+    redacted.ip_addr_vpn      = d3ck.ip_addr_vpn 
+    redacted.all_ips          = d3ck.all_ips 
+    redacted.owner            = d3ck.owner
 
-    censored.vpn              = {}
-    censored.vpn.port         = d3ck.vpn.port
-    censored.vpn.protocol     = d3ck.vpn.protocol
+    redacted.vpn              = {}
+    redacted.vpn.port         = d3ck.vpn.port
+    redacted.vpn.protocol     = d3ck.vpn.protocol
 
     // give them our CA
-    // censored.vpn.ca           = d3ck.vpn.ca
-    censored.vpn.ca           = fs.readFileSync(d3ck_keystore +'/D3CK/d3ckroot.crt').toString().split('\n')
+    // redacted.vpn.ca           = d3ck.vpn.ca
+    redacted.vpn.ca           = fs.readFileSync(d3ck_keystore +'/D3CK/d3ckroot.crt').toString().split('\n')
 
-    censored.vpn.key          = fs.readFileSync(d3ck_keystore +'/'+ remote_did + "/_cli3nt.key").toString().split('\n')
-    censored.vpn.cert         = fs.readFileSync(d3ck_keystore +'/'+ remote_did + "/_cli3nt.crt").toString().split('\n')
-    censored.vpn.all          = censored.vpn.key.join('\n') + '\n\n' + censored.vpn.cert.join('\n')
+    redacted.vpn.key          = fs.readFileSync(d3ck_keystore +'/'+ remote_did + "/_cli3nt.key").toString().split('\n')
+    redacted.vpn.cert         = fs.readFileSync(d3ck_keystore +'/'+ remote_did + "/_cli3nt.crt").toString().split('\n')
+    redacted.vpn.all          = redacted.vpn.key.join('\n') + '\n\n' + redacted.vpn.cert.join('\n')
 
-    censored.vpn.tlsauth      = d3ck.vpn.tlsauth
-    censored.vpn.vpnclient    = {}
+    redacted.vpn.tlsauth      = d3ck.vpn.tlsauth
+    redacted.vpn.vpnclient    = {}
 
-    censored.image_b64        = d3ck.image_b64
-    censored.capabilities     = d3ck.capabilities
+    redacted.image_b64        = d3ck.image_b64
+    redacted.capabilities     = d3ck.capabilities
 
     // console.log('... final result:')
-    // console.log(censored)
+    // console.log(redacted)
 
     var save_file = d3ck_keystore +'/'+ remote_did + '/_cli3nt.json'
 
-    fs.writeFile(save_file, JSON.stringify(censored), function (err) {
+    fs.writeFile(save_file, JSON.stringify(redacted), function (err) {
         if (err) {
             console.log('err writing to ' + file)
             process.exit(6)
