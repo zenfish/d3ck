@@ -1725,7 +1725,7 @@ function create_cli3nt_rest(req, res, next) {
     // if coming from client, use original requester's ip
     //
     if (__.contains(all_authenticated_ips, get_client_ip(req))) {
-        console.log('client: ' + get_client_ip(req))
+        log.info('client: ' + get_client_ip(req))
         if (typeof req.body.from_ip !== "undefined") {
             ip_addr = req.body.from_ip
             log.info('setting ip to remote d3ck -> ' + ip_addr)
@@ -1797,7 +1797,7 @@ function create_cli3nt_rest(req, res, next) {
 
     // if it's an auth'd user, then they're giving back a response from the user/d3ck
     if (! req.isAuthenticated() && secret == '') {
-        console.error("ain't got none auth")
+        log.error("ain't got none auth")
         res.redirect(302, '/login.html')
         return
     }
@@ -2607,7 +2607,7 @@ function stopVPN(req, res, next) {
             get_https_certified(url, d3ck2ip[did]).then(function (resp) {
 
                 if (err) {
-                    console.error('vpn stop request failed:', JSON.stringify(err))
+                    log.error('vpn stop request failed:', JSON.stringify(err))
                     res.send(200, {"errz": "vpn stop request failed"});
                     }
                 else {
@@ -2837,7 +2837,7 @@ function serviceRequest(req, res, next) {
 
     // if it's us... no worries
     if (typeof ip_addr != 'undefined' && typeof ip2d3ck[ip_addr] == 'undefined') {
-        console.log('loading up ip2d3ck[' + ip_addr + '] = ' + from_d3ck)
+        log.info('loading up ip2d3ck[' + ip_addr + '] = ' + from_d3ck)
         ip2d3ck[ip_addr] = from_d3ck;
     }
 
@@ -2909,12 +2909,13 @@ function serviceRequest(req, res, next) {
             load_up_cc_cert(d3ckid)
         }
 
+
+
         options.url  = url
         options.form = req.body
 
         options.form.ip_addr   = ip_addr
         options.form.d3ckid    = d3ckid
-        options.form.from_d3ck = bwana_d3ck.D3CK_ID
         options.form.from      = bwana_d3ck.owner.name
 
         log.info(options)
@@ -2923,6 +2924,7 @@ function serviceRequest(req, res, next) {
             knock       : true,
             ip_addr     : ip_addr,
             from_ip     : from_ip,
+            from_d3ck   : from_d3ck,
             owner       : owner,
             'from_d3ck' : bwana_d3ck.D3CK_ID,
             service     : service,
@@ -2937,7 +2939,7 @@ function serviceRequest(req, res, next) {
 
         request.post(options, function cb (err, resp) {
             if (err) {
-                console.error('post to remote failed:', JSON.stringify(err))
+                log.error('post to remote failed:', JSON.stringify(err))
                 d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
 
                 res.send(200, {"err" : err});
@@ -3149,7 +3151,7 @@ function serviceRequest(req, res, next) {
 
             request.post(options, function cb (err, resp) {
                 if (err) {
-                    console.error('post to remote failed:', JSON.stringify(err))
+                    log.error('post to remote failed:', JSON.stringify(err))
                     d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
 
                     res.send(200, {"err" : err});
@@ -3371,12 +3373,21 @@ function serviceResponse(req, res, next) {
 
         log.info('answer going to : ' + url)
 
+
+
+        // gotta know where it goes...
+        if (typeof req.body.from_d3ck == 'undefined'){
+            log.error("Missing required d3ck ID in response")
+        }
+        var from_d3ck = req.body.from_d3ck
+
         var d3ck_status     = empty_status()
 
         var d3ck_response   = {
             knock       : true,
             answer      : answer,
             secret      : secret,
+            from_d3ck   : from_d3ck,
             did         : bwana_d3ck.D3CK_ID
         }
 
@@ -3394,11 +3405,39 @@ function serviceResponse(req, res, next) {
         // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
         options.form = req.body
 
+
+
+
         if (service == 'friend request') {
+
+            var d3ck_data = {}
+
             log.info('responding to friend req')
-            d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+
+            // generate cert stuff
+            var command = d3ck_bin + '/bundle_certs.js'
+
+            // create client bundle
+            var keyout = d3ck_spawn_sync(command, [d3ckid])
+
+            if (keyout.code) {
+                log.error("error in bundle-certz")
+                return
+            }
+            else {
+                log.info('read/writing to ' + d3ck_keystore +'/'+ d3ckid + "/_cli3nt.all")
+                try {
+                    d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+                }
+                catch (e) {
+                    log.error("couldn't read -> " + JSON.stringify(e))
+                    return
+                }
+            }
+
             options.form.d3ck_data = d3ck_data
             log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,4096) + ' .... ')
+
         }
 
         request.post(url, options, function cb (err, resp) {
@@ -3643,7 +3682,7 @@ function uploadSchtuff(req, res, next) {
 
                 fs.createReadStream(tmpfile).pipe(request.post(url, options, function cb (err, resp) {
                     if (err) {
-                        console.error('upload failed:', err);
+                        log.error('upload failed:', err);
                         }
                     else {
                         log.info('Upload successful...?')
@@ -3703,12 +3742,12 @@ function d3ck_spawn(command, argz) {
     // Listen for any errors:
     spawn_o.stderr.on('data', function (data) {
         fs.appendFile(d3ck_logs + '/' + cmd + '.err.log', data, function (err) { if (err) log.error(err) });
-        console.log('There was an error: ' + data);
+        log.error('There was an error: ' + data);
     });
 
     // Listen for an exit event:
     spawn_o.on('exit', function (exitCode) {
-        console.log("exited with code: " + exitCode);
+        log.error("exited with code: " + exitCode);
         fs.appendFile(d3ck_logs + '/' + cmd + '.out.log', data, function (err) { if (err) log.error(err) });
     });
 
@@ -4305,7 +4344,7 @@ function get_https_certified(url, d3ckid) {
 
         request(options, function cb (err, resp, body) {
             if (err) {
-                // console.error('CSC nab of remote failzor:', JSON.stringify(err))
+                // log.error('CSC nab of remote failzor:', JSON.stringify(err))
                 deferred.reject(err)
                 }
             else {
@@ -4342,7 +4381,7 @@ function create_d3ck_by_ip(req, res, next) {
 
     // if (__.contains(my_ips, ip_addr)) {
     //     ip_addr = get_client_ip(req)
-    //     console.log('incoming d3ck create... changing to clients ip ->  ' + ip_addr)
+    //     log.info('incoming d3ck create... changing to clients ip ->  ' + ip_addr)
     // }
 
     var deferred = Q.defer();
@@ -4353,7 +4392,7 @@ function create_d3ck_by_ip(req, res, next) {
     var _remote_d3ck;
     pre_ping(ip_addr).then(function(data) {
 
-        console.log(data)
+        log.info(data)
 
         _remote_d3ck = data
 
@@ -4424,7 +4463,7 @@ function create_d3ck_by_ip(req, res, next) {
         // grab remote d3ck's data... first we have to ask permission
         request.post(options, function cb (e, r, body) {
             if (e) {
-                console.error('friend request failed: ', JSON.stringify(e))
+                log.error('friend request failed: ', JSON.stringify(e))
                 d3ck_queue.push({type: 'request', event: 'friend_request', status: 'fail'})
                 deferred.reject({"err" : e});
                 return
@@ -4490,7 +4529,7 @@ function create_d3ck_locally(ip_addr, secret, did) {
         var c_deferred = Q.defer();
 
         if (err) {
-            console.error('friend request failed: ', JSON.stringify(err))
+            log.error('friend request failed: ', JSON.stringify(err))
             d3ck_queue.push({type: 'info', event: 'friend_request', status: 'fail'})
             c_deferred.reject({'error': "err"})
             res.send(200, {"err" : err});
