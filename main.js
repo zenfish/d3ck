@@ -2861,7 +2861,8 @@ function serviceRequest(req, res, next) {
         // don't pass it along unless it was us who sent it......
 
         // sanity check... you have to be me to send through me... bits aren't cheap, you know
-        if (!__.contains(my_ips, ip_addr)) {
+
+        if (!__.contains(my_ips, ip_addr) && !check_certificate(req.headers)) {
             log.error("but wait... lookin in the mirror... you ain't me!")
             return
         }
