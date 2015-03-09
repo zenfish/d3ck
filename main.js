@@ -2597,7 +2597,7 @@ function stopVPN(req, res, next) {
 
 
             // request.get(url, options, function cb (err, resp) {
-            get_https_certified(url, d3ck2ip[did]).then(function (resp) {
+            get_https_certified(url, did).then(function (resp) {
 
                 if (err) {
                     log.error('vpn stop request failed:', JSON.stringify(err))
@@ -2964,7 +2964,7 @@ function serviceRequest(req, res, next) {
     //
     // is it for us, or are we passing it on?
     //
-    if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr)) {
+    else if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr)) {
         log.info('for me... hmm... could be a trick...')
 
         //
@@ -2989,7 +2989,7 @@ function serviceRequest(req, res, next) {
             log.info('secret: ' + req.body.secret)
 
 
-            if (typeof d3ck2ip[d3ckid] === "undefined") ip_addr = d3ck2ip[d3ckid] 
+            // if (typeof d3ck2ip[d3ckid] === "undefined") ip_addr = d3ck2ip[d3ckid] 
 
             var _tmp_d3ck = {}
 
