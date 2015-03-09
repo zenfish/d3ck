@@ -2903,7 +2903,11 @@ function serviceRequest(req, res, next) {
         var options = {}
         
         if (service != 'friend request') {
+            log.info('loadin up the certs, with retsin!')
             load_up_cc_cert(d3ckid)
+        }
+        else {
+            log.warn('doing a non-certified post...')
         }
 
         options.url  = url
