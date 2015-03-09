@@ -3684,23 +3684,7 @@ function d3ck_spawn(command, argz) {
 
     log.info('a spawn o d3ck emerges... ' + ' (' + cmd + ')\n\n\t' + command + ' ' + argz.join(' ') + '\n')
 
-//  var out = fs.createWriteStream(d3ck_logs + '/' + cmd + '.out.log', 'a+')
-//  var err = fs.createWriteStream(d3ck_logs + '/' + cmd + '.err.log', 'a+')
-
-//  try {
-        // toss in bg; output, errors, etc. get stashed
-//      var spawn_o = spawn(command, argz, {
-//          detached: true,
-//          stdio: [ 'ignore', out, err ]
-//      })
-//      spawn_o.unref();
-//  }
-//  catch (e) {
-//      log.error("exec error with " + command + ' => ' + e.message)
-//  }
-
     var spawn_o = spawn(command, argz)
-
 
     // Listen for any response from the child:
     spawn_o.stdout.on('data', function (data) {
@@ -3715,8 +3699,10 @@ function d3ck_spawn(command, argz) {
 
     // Listen for an exit event:
     spawn_o.on('exit', function (exitCode) {
-        log.error("exited with code: " + exitCode);
-        fs.appendFile(d3ck_logs + '/' + cmd + '.out.log', data, function (err) { if (err) log.error(err) });
+        if (exitCode) {
+            log.error("exited with code: " + exitCode);
+            fs.appendFile(d3ck_logs + '/' + cmd + '.err.log', data, function (err) { if (err) log.error(err) });
+        }
     });
 
 }

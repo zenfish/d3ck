@@ -37,7 +37,6 @@ http {
         #
         # access_log                  /etc/d3ck/logs/proxy-access.log;
         # error_log                   /etc/d3ck/logs/proxy-error.log debug;
-        # error_log                   /etc/d3ck/logs/proxy-error.log;
         # turn off
         access_log                    /dev/null;
         error_log                     /dev/null;
