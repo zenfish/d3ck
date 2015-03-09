@@ -3147,22 +3147,21 @@ function look_up_cap(service, d3ckid) {
 
     var cap         = all_d3cks[d3ck_id].capabilities
     log.info('remote d3ck capz: ' + JSON.stringify(cap))
-    var service_cap = _tmp_d3ck.capabilities[service]
-    log.info('service cap: ' + service_cap[service])
+    log.info('service cap: ' + cap[service])
 
     // don't even ask, just do it
-    if (service_cap[service] == 'on') {
+    if (cap[service] == 'on') {
         log.info("yes ma'am, right away!")
         return true
     }
 
-    else if (service_cap[service] == 'no') {
+    else if (cap[service] == 'no') {
         log.info("you're not authorized to do this... guards, execute this sniveling coward!")
         return false
     }
 
     // need to implement
-    else if (service_cap[service] == 'ask') {
+    else if (cap[service] == 'ask') {
         log.info("I have to ask the powers that be... I'll get some hold music for you...")
         return false
     }
