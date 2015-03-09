@@ -1245,7 +1245,7 @@ function load_capabilities(d3ck, element) {
 
         var row = '<td>' + d3ck.owner.name + '</td>'
             row = row + '<td>' + data.cap['friend request'] + '</td>'
-            row = row + '<td>' + data.cap['VPN'] + '</td>'
+            row = row + '<td>' + data.cap['vpn'] + '</td>'
             row = row + '<td>' + data.cap['SIP'] + '</td>'
             row = row + '<td>' + data.cap['webRTC'] + '</td>'
             row = row + '<td>' + data.cap['file transfer'] + '</td>'

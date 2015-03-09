@@ -3136,7 +3136,7 @@ function serviceRequest(req, res, next) {
 // 3 possible answers: "off", "ask", & "on"
 function look_up_cap(service, d3ckid) {
 
-    log.info('in look_up_cap')
+    log.info('in look_up_cap -> ' + service)
     
     var _tmp_d3ck = {}
 
