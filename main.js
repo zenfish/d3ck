@@ -1947,11 +1947,9 @@ function create_d3ck(req, res, next) {
     // something weird
     if (client_ip != '127.0.0.1') {
         log.info('looking to see if your current ip (' + client_ip  +') is in your pool')
-
-
         if (!__.contains(all_client_ips.all_ips, client_ip)) {
             log.info("[create_d3ck] You're coming from an IP that isn't in your stated IPs... adding [" + client_ip + "] to your IP pool just in case")
-            data.all_ips[all_client_ips.length] = client_ip
+            data.all_ips.push(client_ip)
         }
     }
 
@@ -2003,7 +2001,7 @@ function create_d3ck(req, res, next) {
                 }
                 if (! found) {
                     log.info("[create_d3ck] You're coming from an IP that isn't in your stated IPs... adding [" + client_ip + "] to your IP pool just in case")
-                    data.all_ips[all_client_ips.length] = client_ip
+                    data.all_ips.push(client_ip)
                 }
             }
 
@@ -3280,7 +3278,7 @@ function serviceResponse(req, res, next) {
 
             if (!__.contains(_tmp_d3ck.all_ips, ip)) {
                 log.info("they came from an IP that wasn't in their stated IPs... adding [" + ip + "] to the IP pool just in case")
-                _tmp_d3ck.all_ips[_tmp_d3ck.all_ips.length] = ip
+                _tmp_d3ck.all_ips.push(ip)
             }
 
             do_everything_client_create(_tmp_d3ck)
@@ -3395,6 +3393,11 @@ function serviceResponse(req, res, next) {
                     log.error("couldn't read -> " + JSON.stringify(e))
                     return
                 }
+            }
+
+            if (__.contains(d3ck_data.all_ips, ip_addr)) {
+                log.info("the d3ck data doens't contain the IP this is going to... adding [" + ip_addr + "] to IP pool just in case")
+                d3ck_data.all_ips.push(ip_addr)
             }
 
             options.form.d3ck_data = d3ck_data
@@ -4520,7 +4523,7 @@ function create_d3ck_locally(ip_addr, secret, did) {
             log.info('looking 2 see if your current ip is in your pool')
             if (!__.contains(c_data.all_ips, ip_addr)) {
                 log.info("You're coming from an IP that isn't in your stated IPs... adding [" + ip_addr + "] to your IP pool just in case")
-                c_data.all_ips[all_client_ips.length] = ip_addr
+                c_data.all_ips.push(ip_addr)
             }
 
             // certs on disk
