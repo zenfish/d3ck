@@ -688,7 +688,7 @@ function auth(req, res, next) {
     // for now... let in localhost... may rethink
     // log.info('localhost')
     // else if (ip == '127.0.0.1') {
-    else if (__.contains(my_ips, ip)) {
+    if (__.contains(my_ips, ip)) {
         log.info("you ain't from around here, are ya... wait... yes you are... hi, bobby-sue!  " + req.path)
         auth_type = 'local'
         return next();
@@ -706,7 +706,7 @@ function auth(req, res, next) {
     // I think it's pretty safe to assume that it's actually the real deal, and
     // we can extract their d3ck id from it.
     //
-    else if (check_certificate(req.headers)) {
+    if (check_certificate(req.headers)) {
         info.log('cert looks good')
         return next();
     }
