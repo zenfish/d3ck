@@ -3399,6 +3399,9 @@ function serviceResponse(req, res, next) {
                 log.info("the d3ck data doens't contain the IP this is going to... adding [" + ip_addr + "] to IP pool just in case")
                 d3ck_data.all_ips.push(ip_addr)
             }
+            else {
+                log.info("\n\n\t\t!!!!" + ip_addr + ' !-> ' + JSON.stringify(d3ck_data.all_ips))
+            }
 
             options.form.d3ck_data = d3ck_data
             log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')

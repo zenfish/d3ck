@@ -48,11 +48,16 @@ export d3ck_proto="https"
 export d3ck_host="localhost"
 export d3ck_port="8080"
 
+export d3ck_proto_int="http"
+export d3ck_host_int="localhost"
+export d3ck_port_int="5555"
+
 export d3ck_cipher="AES-128-CBC"
 # d3ck_cipher="AES-256-CBC" # ???
 export d3ck_auth="SHA1"
 
 export d3ck_url="$d3ck_proto://$d3ck_host:$d3ck_port"
+export d3ck_url_int="$d3ck_proto_int://$d3ck_host_int:$d3ck_port_int"
 
 export client_keys="$D3CK_HOME/vpn_client"
 

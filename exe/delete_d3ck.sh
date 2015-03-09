@@ -1,14 +1,13 @@
 :
 #
-# revoke a d3ck's client certs
+# remove a client d3ck from db and revoke its certs
 #
 # Usage: $0 d3ck-id
 #
-d3ck_host="https://localhost"
-d3ck_port="8080"
-d3ck_url="$d3ck_host:$d3ck_port/d3ck"
-tmp="/tmp"
-results="$tmp/_d3ck_delete_results.$$"
+# slight bootstrapping problem...
+. /etc/d3ck/config.sh
+
+results="$D3CK_TMP/_d3ck_delete_results.$$"
 
 tmp_files="$results"
 
@@ -35,10 +34,7 @@ d3ck=$1
 #
 # echo "using curl to nuke D3CK..."
 # 
-# curl -k -v -H "Accept: application/json" -H "Content-type: application/json" -X DELETE "$d3ck_url/$d3ck"
-
-# slight bootstrapping problem...
-. /etc/d3ck/config.sh
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X DELETE "$d3ck_url_int/$d3ck"
 
 cd $hell
 . ../config.sh
