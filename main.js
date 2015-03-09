@@ -649,6 +649,15 @@ function auth(req, res, next) {
         }
     })
 
+    //
+    // ... logged in as a user, say, via the web?
+    //
+    if (req.isAuthenticated()) {
+        // log.info('already chexed: ' + req.path)
+        auth_type = 'owner'
+        return next();
+    }
+
     if (open_sesame) {
         if (req.path != '/ping')    // let's not get carried away ;)
             log.info('public property, anyone can go => ' + req.path)
@@ -674,16 +683,7 @@ function auth(req, res, next) {
 
     // log.info("hdrz: " + JSON.stringify(req.headers))
 
-    // OK - which of the 4 types above are you?
-
-    //
-    // ... logged in as a user, say, via the web?
-    //
-    if (req.isAuthenticated()) {
-        // log.info('already chexed: ' + req.path)
-        auth_type = 'owner'
-        return next();
-    }
+    // OK - which of the above types above are you?
 
     // for now... let in localhost... may rethink
     // log.info('localhost')
