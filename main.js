@@ -596,7 +596,7 @@ function check_certificate(headerz) {
             return false
         }
         else if (c_d3ck_id != bwana_d3ck) {
-            info.log('cert chex out')
+            log.info('cert chex out')
             return true
         }
     }
@@ -707,7 +707,7 @@ function auth(req, res, next) {
     // we can extract their d3ck id from it.
     //
     if (check_certificate(req.headers)) {
-        info.log('cert looks good')
+        log.info('cert looks good')
         return next();
     }
 
@@ -1909,7 +1909,7 @@ function create_full_d3ck (data) {
 //
 function d3ck_into_stone(client_ip, d3ck) {
 
-    info.log('carving this d3ck into a stone tablet')
+    log.info('carving this d3ck into a stone tablet')
 
 
 }
