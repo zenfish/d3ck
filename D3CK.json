@@ -32,7 +32,7 @@
 
     "capabilities" : {
         "friend request":       { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
-        "VPN":                  { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
+        "vpn":                  { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
         "SIP":                  { "paranoid": "off", "moderate": "off", "trusting": "on"  },
         "webRTC":               { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
         "file transfer":        { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
@@ -43,7 +43,7 @@
 
     "owner_capabilities" : {
         "friend request"    : "on",
-        "VPN"               : "on",
+        "vpn"               : "on",
         "SIP"               : "on",
         "webRTC"            : "on",
         "file transfer"     : "on",
@@ -93,7 +93,7 @@
 
     "routes2caps": {
         "friend request": ["/ping"],
-        "VPN": ["/vpn"],
+        "vpn": ["/vpn"],
         "file transfer": ["/up"],
         "webRTC": [],
         "messages": [],
