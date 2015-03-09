@@ -2862,9 +2862,13 @@ function serviceRequest(req, res, next) {
 
         // sanity check... you have to be me to send through me... bits aren't cheap, you know
 
-        if (!__.contains(my_ips, ip_addr) && !check_certificate(req.headers)) {
+        if (!__.contains(my_ips, ip_addr)) {
             log.error("but wait... lookin in the mirror... you ain't me!")
-            return
+            if (!check_certificate(req.headers)) {
+                log.error("and you're not you!")
+                res.send(403, { error: "you're not authorized"})
+                return
+            }
         }
 
         // friends need secretz
