@@ -2902,11 +2902,9 @@ function serviceRequest(req, res, next) {
         //
         var options = {}
         
-        if (service == 'friend request') {
+        if (service != 'friend request') {
             load_up_cc_cert(d3ckid)
         }
-
-
 
         options.url  = url
         options.form = req.body
