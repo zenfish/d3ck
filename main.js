@@ -2917,7 +2917,7 @@ function serviceRequest(req, res, next) {
         options.form.d3ckid    = d3ckid
         options.form.from      = bwana_d3ck.owner.name
 
-        log.info(options)
+        log.info(JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
 
         var d3ck_request    = {
             knock       : true,
@@ -3054,7 +3054,7 @@ function serviceRequest(req, res, next) {
 
         // else assume it's ok, do it
 
-        if (service == 'vpn') {
+        if (service == 'VPN') {
 
             //     var pvpn = $.ajax({
             //         type: "POST",
@@ -3120,7 +3120,7 @@ function serviceRequest(req, res, next) {
             res.send(200, { emotion: "<3" })
         }
         else {
-            log.error("you didn't ask for a service I know about...")
+            log.error("you didn't ask for a service I know about -> " + service + " <-")
         }
 
     }
