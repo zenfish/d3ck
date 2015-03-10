@@ -1905,6 +1905,8 @@ function confirm_or_deny_or(type, req, element) {
 
         var service = req.service
 
+        console.log('i can neither confirm nor deny... ' + req.service)
+
         $(element, function () {
 
             //
@@ -1945,8 +1947,7 @@ function confirm_or_deny_or(type, req, element) {
             //
             alertify.confirm(message_request, function (e) {
 
-                console.log('confirm...?')
-                console.log(e)
+                console.log('confirm...? ' + e)
 
                 var answer    = ''
 
@@ -1971,6 +1972,8 @@ function confirm_or_deny_or(type, req, element) {
 
                         if (answer == 'yes') {
 
+                            console.log('Do hÃ»n n')
+
                             var post_data         = {}
 
                             // post_data.ip_addr     = req.ip_addr
@@ -1994,11 +1997,11 @@ function confirm_or_deny_or(type, req, element) {
                                 data    : post_data,
                                 success : function(data, status) {
                                     console.log('suck... sess.... ')
-                                    inform_user('adding d3ck', 'trying to add ' + req.from_ip)
+                                    inform_user(service + ' success from: ' + req.from_ip)
                                 },
                                 fail: function(data, err) {
                                     console.log('fuck... me')
-                                    inform_user('failed to add', req.from_ip + ' was not added', 'error')
+                                    inform_user(service + ' failed from: ', req.from_ip)
                                 }
                             })
                         }
@@ -2114,7 +2117,7 @@ function ask_user_4_response(data) {
 
     var req = data.d3ck_status.d3ck_requests
 
-    if (req.service = 'friend request') {
+    if (req.service == 'friend request') {
         confirm_or_deny_or('connect', req, '#labels')
     }
 
