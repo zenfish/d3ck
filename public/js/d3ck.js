@@ -2121,7 +2121,11 @@ function ask_user_4_response(data) {
         confirm_or_deny_or('connect', req, '#labels')
     }
 
-    else if (req.service == 'knock') {
+//  else if (req.service == 'knock') {
+//      confirm_or_deny_or('connect', req, '#labels')
+//  }
+
+    else if (req.service == 'VPN') {
         confirm_or_deny_or('connect', req, '#labels')
     }
 
