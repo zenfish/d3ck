@@ -3086,30 +3086,30 @@ function serviceRequest(req, res, next) {
 
             d3ck_queue.push({type: 'request', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
 
-            request.post(options, function cb (err, resp) {
-                if (err) {
-                    log.error('post to remote failed:', JSON.stringify(err))
-                    d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
-
-                    res.send(200, {"err" : err});
-                    }
-                else {
-                    log.info('knock returned... something - RC: ' + res.statusCode)
-
-                    // log.info(res)
-
-                    if (resp.statusCode != 200) {
-                        d3ck_queue.push({type: 'info', event: 'service_request_return', service: service, statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
-                        log.info(resp.body)
-                        res.send(resp.statusCode, resp.body)
-                    }
-                    else {
-                        d3ck_queue.push({type: 'info', event: 'service_request_success',service: service, 'd3ck_status': d3ck_status })
-                        log.info(resp.body)
-                        res.send(200, resp.body)
-                    }
-                }
-            })
+//             request.post(options, function cb (err, resp) {
+//                 if (err) {
+//                     log.error('post to remote failed:', JSON.stringify(err))
+//                     d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
+// 
+//                     res.send(200, {"err" : err});
+//                     }
+//                 else {
+//                     log.info('knock returned... something - RC: ' + res.statusCode)
+// 
+//                     // log.info(res)
+// 
+//                     if (resp.statusCode != 200) {
+//                         d3ck_queue.push({type: 'info', event: 'service_request_return', service: service, statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
+//                         log.info(resp.body)
+//                         res.send(resp.statusCode, resp.body)
+//                     }
+//                     else {
+//                         d3ck_queue.push({type: 'info', event: 'service_request_success',service: service, 'd3ck_status': d3ck_status })
+//                         log.info(resp.body)
+//                         res.send(200, resp.body)
+//                     }
+//                 }
+//             })
 
             createEvent(client_ip, {event_type: "vpn", "ip_addr": ip_addr, "from_d3ck": from_d3ck, "d3ck_id": d3ckid}, d3ck_status)
 
