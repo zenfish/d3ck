@@ -2904,7 +2904,7 @@ function serviceRequest(req, res, next) {
         
         if (service != 'friend request') {
             log.info('loadin up the certs, with retsin!')
-            load_up_cc_cert(d3ckid)
+            options = load_up_cc_cert(d3ckid)
         }
         else {
             log.warn('doing a non-certified post...')
