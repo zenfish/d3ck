@@ -1942,6 +1942,8 @@ function confirm_or_deny_or(type, req, element) {
             }
 
 
+            var answer = ''
+
             //
             // user - allow or deny?
             //
@@ -1949,91 +1951,62 @@ function confirm_or_deny_or(type, req, element) {
 
                 console.log('confirm...? ' + e)
 
-                var answer    = ''
+                var answer = 'yes'
 
-                // affirmative...?
+                // user said ja
                 if (e) {
 
                     console.log('go for it')
-                    answer = 'yes'
+
+                    // prepare the bullet
+                    var post_data         = {}
+                    post_data.secret    = req.secret
+                    post_data.from_ip   = req.from_ip
+                    post_data.from_d3ck = req.from_d3ck
+                    post_data.service   = service
+                    post_data.answer    = answer
+                    post_data           = JSON.stringify(post_data)
+
+                    // console.log(post_data)
 
                     // friends
                     if (service == 'friend request') {
                         inform_user('info', 'starting the exchange of crypto certificates', 'info')
-                        // xxx - do something friendy to start sending things
-                        // friendy(secret)
-                        //
-                        //  ... this is it... send the secret received along with your stuff, get theirs
-                        //
-
-                        console.log('friend or foe?')
-
-                        console.log('And... drumroll please.... ' + answer)
-
-                        if (answer == 'yes') {
-
-                            console.log('Do hÃ»n n')
-
-                            var post_data         = {}
-
-                            // post_data.ip_addr     = req.ip_addr
-                            // post_data.from_ip     = req.from_ip
-                            // post_data.did         = my_d3ck.D3CK_ID
-                            // post_data.server_ip   = window.location.hostname
-
-                            post_data.secret    = req.secret
-                            post_data.from_ip   = req.from_ip
-                            post_data.from_d3ck = req.from_d3ck
-                            post_data.service   = service
-                            post_data.answer    = answer
-                            post_data           = JSON.stringify(post_data)
-
-                            // console.log(post_data)
-
-                            $.ajax({
-                                type    : 'POST',
-                                url     : '/service/response/' + req.from_d3ck + '/' + answer,
-                                headers : { 'Content-Type': 'application/json' },
-                                data    : post_data,
-                                success : function(data, status) {
-                                    console.log('suck... sess.... ')
-                                    inform_user(service + ' success from: ' + req.from_ip)
-                                },
-                                fail: function(data, err) {
-                                    console.log('fuck... me')
-                                    inform_user(service + ' failed from: ', req.from_ip)
-                                }
-                            })
-                        }
-                        else {
-                            console.log('User said no.... hell no.')
-                        }
-
                     }
 
                     //
                     // else... currently only knocking for call
                     //
-                    // else if (service == 'knock') {
+                    // else if (service == 'knock') 
                     else if (service == 'VPN') {
-
-                        console.log('knock... time to pay the piper...')
-                        // var friend          = req.from
-                        // var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
-                        //                       '<h2 style="position: relative;">' + req.from + '</h2></span><br />'
                         inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
                         lower_shields(req.ip_addr)
-                        return answer
-
                     }
-
+                    // wtf, as they say
                     else {
                         inform_user('error', 'unknown service request: ' + service, 'error')
                         return 'no';
                     }
 
+                    $.ajax({
+                        type    : 'POST',
+                        url     : '/service/response/' + req.from_d3ck + '/' + answer,
+                        headers : { 'Content-Type': 'application/json' },
+                        data    : post_data,
+                        success : function(data, status) {
+                            console.log('suck... sess.... ')
+                            inform_user(service + ' success from: ' + req.from_ip)
+                        },
+                        fail: function(data, err) {
+                            console.log('fuck... me')
+                            inform_user(service + ' failed from: ', req.from_ip)
+                        }
+                    })
+
                     $('#timer_countdown').TimeCircles().destroy()
                     $('#alertify-ok').hide()
+
+                    return answer
 
                 }
                 // negative...
