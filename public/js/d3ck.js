@@ -2014,7 +2014,8 @@ function confirm_or_deny_or(type, req, element) {
                     //
                     // else... currently only knocking for call
                     //
-                    else if (service == 'knock') {
+                    // else if (service == 'knock') {
+                    else if (service == 'VPN') {
 
                         console.log('knock... time to pay the piper...')
                         // var friend          = req.from
@@ -2027,7 +2028,7 @@ function confirm_or_deny_or(type, req, element) {
                     }
 
                     else {
-                        inform_user('error', 'unknown service request', 'error')
+                        inform_user('error', 'unknown service request: ' + service, 'error')
                         return 'no';
                     }
 
