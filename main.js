@@ -2867,6 +2867,7 @@ function request_generate(did, service){
 function request_save(did, service, req_id) {
 
     log.info('saving request # for ' + did)
+    log.info(did, service, req_id)
     
     if (typeof outstanding_requests[did] === 'undefined') {
         log.info('creating new request space for ' + did)
@@ -2895,15 +2896,19 @@ function request_lookup(did, service, req_id) {
 
     log.info('so, herr doktor, have you ever heard of this?')
     log.info(did, service, req_id)
+    log.info(outstanding_requests[did])
 
     try {
-        outstanding_requests[did][req_id]
-        log.info('found...')
-        log.info(outstanding_requests[did][req_id].time)
+        outstanding_requests[did][req_id]['service']
+        log.info('checks out - request made @ ')
+        outstanding_requests[did][req_id]['time']
         return true
     }
     catch (e) {
+        // try { log.error(JSON.stringify(outstanding_requests)) } catch (e) { log.error(1) }
+        // try { log.error(JSON.stringify(outstanding_requests[did])) } catch (e) { log.error(2) }
         // try { log.error(JSON.stringify(outstanding_requests[did][req_id])) } catch (e) { log.error(6) }
+        try { log.error(JSON.stringify(outstanding_requests[did][req_id])) } catch (e) { log.error(7) }
         log.error('nope')
         return false
     }
@@ -3394,7 +3399,7 @@ function serviceResponse(req, res, next) {
 
         log.info("about time you answered, I've been waiting!")
 
-        if (!request_lookup(bwana_d3ck.D3CK_ID, req_id, service)) {
+        if (!request_lookup(bwana_d3ck.D3CK_ID, service, req_id)) {
             log.error("I've never seen this request before, so I have no response...")
             return
         }
