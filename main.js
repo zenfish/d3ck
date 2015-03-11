@@ -2874,6 +2874,8 @@ function request_save(did, service, req_id) {
     }
 
     // time (we received it) & service name... should pass along time generated...
+    var request = {}
+
     request.time    = moment().format(time_format)
 
     request.service = service
