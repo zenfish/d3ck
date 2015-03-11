@@ -2808,11 +2808,11 @@ function generate_friend_request(ip_addr) {
 // All unanswered requests go into a global var outstanding_requests,
 // an object looking something like:
 //
-//      outstanding_requests[did].requests[random] = (new Date).getTime()
+//      outstanding_requests[did].requests[hashed-random] = (new Date).getTime()
 //
 // Function returns a request #, which is the randomish number generated
-// by the gen_randish.sh shell script (reads from urandom.) Returns -1 if
-// something bad happens.
+// by the gen_randish.sh shell script (reads from urandom) hashed by sha256.
+// Returns -1 if something bad happens.
 //
 // Does simple collision avoidance, but assumes d3ckid is the right one
 //
@@ -2830,7 +2830,8 @@ function generate_request(did, service){
         outstanding_requests[did] = { d3ck_id: did, requests: {} }
     }
 
-    var randy = gen_somewhat_random(REQUEST_BYTES)
+    // and that's a mouthful
+    var randy = crypto.createHash('sha256').update(gen_somewhat_random(REQUEST_BYTES)).digest('hex');
 
     // probably housekeeping error, aka bug
     if (typeof outstanding_requests[did].requests[randy] != 'undefined') {
@@ -3210,7 +3211,7 @@ function serviceRequest(req, res, next) {
 //                 }
 //             })
 
-            createEvent(client_ip, {event_type: service, "ip_addr": ip_addr, "from_d3ck": from_d3ck, "d3ck_id": d3ckid}, d3ck_status)
+            createEvent(client_ip, {event_type: service, ip_addr: ip_addr, from_d3ck: from_d3ck, d3ck_id: d3ckid, req_id: req_id}, d3ck_status)
 
             d3ck_queue.push({type: 'request', event: 'service' , 'd3ck_status': d3ck_status })
 
@@ -3325,12 +3326,11 @@ function serviceResponse(req, res, next) {
     // from POST
     var service = req.body.service,
         secret  = req.body.secret,
-        req_id  = req.body.secret,
-        ip_addr = req.body.from_ip;
+        ip_addr = req.body.from_ip,
+        req_id  = req.body.req_id;
 
 
     // need a request ID to associate it with a given request
-
     if (typeof req_id === 'undefined' || req_id < 0) {
         log.info(req_id)
         log.error("The response had no request ID, bailin'")
