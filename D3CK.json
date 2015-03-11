@@ -57,8 +57,9 @@
         "life_d3ck"           : "365",
         "life_vpn"            : "30",
         "bcrypt_rounds"       : "12",
-        "SESSION_SIZE_BYTES"  : "128",
-        "SHARED_SECRET_BYTES" :  "32"
+        "SESSION_SIZE_BYTES"  : "256",
+        "SHARED_SECRET_BYTES" : "256",
+        "REQUEST_BYTES"       : "256"
     },
 
     "limits": {

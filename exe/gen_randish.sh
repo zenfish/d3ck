@@ -9,7 +9,7 @@
 # Defaults to 16, optional arg for number bytes. Note this will emit N*2 hex characters,
 # not the actual raw bits.
 #
-# No error checking, wants a number as an arg if you give it one.
+# Almost no error checking, wants a number as an arg if you give it one, defaults to 16
 #
 
 if [ "X$1" = "X" ]; then
