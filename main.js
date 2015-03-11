@@ -2826,7 +2826,7 @@ function request_generate(did, service){
     log.info('generating request # for ' + did)
     
     if (typeof outstanding_requests[did] === 'undefined') {
-        info.log('creating new request space for ' + did)
+        log.info('creating new request space for ' + did)
         outstanding_requests[did] = {}
     }
 
@@ -2850,9 +2850,9 @@ function request_generate(did, service){
 
     outstanding_requests[did][randy] = request
 
-    info.log(JSON.stringify(outstanding_requests))
+    log.info(JSON.stringify(outstanding_requests))
 
-    info.log('coolio')
+    log.info('coolio')
 
     return randy
 
