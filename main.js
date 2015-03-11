@@ -3178,6 +3178,7 @@ function serviceRequest(req, res, next) {
                 owner     : owner,
                 from_d3ck : bwana_d3ck.D3CK_ID,
                 service   : service,
+                req_id    : req_id,
                 did       : d3ckid
             }
 
