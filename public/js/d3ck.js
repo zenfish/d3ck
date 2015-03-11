@@ -1961,6 +1961,7 @@ function confirm_or_deny_or(type, req, element) {
                     // prepare the bullet
                     var post_data         = {}
                     post_data.secret    = req.secret
+                    post_data.req_id    = req.req_id
                     post_data.from_ip   = req.from_ip
                     post_data.from_d3ck = req.from_d3ck
                     post_data.service   = service
@@ -2033,21 +2034,8 @@ function confirm_or_deny_or(type, req, element) {
 
                 }
 
-//                $.ajax({
-//                    type: "POST",
-//                    url: '/service/response/' + req.from_d3ck + '/' + answer,
-//                    headers: { 'Content-Type': 'application/json' },
-//                    req: post_data,
-//
-//                    success: function(data, status) {
-//                        console.log('vampire suck... sess.... ')
-//                    },
-//                    fail: function(data, err) {
-//                        console.log('vampire fuck... me')
-//                    }
-//                })
-
                 $('#timer_countdown').TimeCircles().destroy();
+
             });
 
             // return false;
