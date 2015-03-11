@@ -2826,38 +2826,38 @@ function request_generate(did, service){
     log.info('generating request # for ' + did)
     
     if (typeof outstanding_requests[did] === 'undefined') {
-        log.info('creating new request space for ' + did)
-        outstanding_requests[did] = { d3ck_id: did, requests: {} }
+        info.log('creating new request space for ' + did)
+        outstanding_requests[did] = {}
     }
 
-    // and that's a mouthful
-    var randy = crypto.createHash('sha256').update(gen_somewhat_random(REQUEST_BYTES)).digest('hex');
+    var randy = gen_somewhat_random(REQUEST_BYTES)
 
     // probably housekeeping error, aka bug
-    if (typeof outstanding_requests[did].requests[randy] != 'undefined') {
-        log.info('request number already used...?')
+    if (typeof outstanding_requests[did][randy] != 'undefined') {
+        log.warn('request number already used...?')
         // try once more, if this doesn't work, something is screwed, I'd wager
         randy = gen_somewhat_random(REQUEST_BYTES)
-        if (typeof outstanding_requests[did].requests[randy] != 'undefined') {
+        if (typeof outstanding_requests[did][randy] != 'undefined') {
             log.error('request number generation failed, abort, abort...')
-            return -1
+            return 0
         }
     }
 
     var request = {}
     
-    // time & service name
-    request.time    = moment().format(time_format)
-
+    request.time    = (new Date).getTime()
     request.service = service
 
-    outstanding_requests[did].requests[randy]  = request
+    outstanding_requests[did][randy] = request
 
-    // log.info(JSON.stringify(outstanding_requests))
+    info.log(JSON.stringify(outstanding_requests))
+
+    info.log('coolio')
 
     return randy
 
 }
+
 
 //
 // save an incoming request so we can match it
@@ -2896,17 +2896,15 @@ function request_lookup(did, service, req_id) {
     log.info(did, service, req_id)
 
     try {
-        outstanding_requests[did].requests[req_id].service
-        log.info('checks out - request made @ ' + outstanding_requests[did].requests[req_id].time)
+        outstanding_requests[did][req_id].service
+        log.info('checks out - request made @ ' + outstanding_requests[did][req_id].time)
         return true
     }
     catch (e) {
-        log.error(outstanding_requests)
-        log.error(outstanding_requests[did])
-        log.error(outstanding_requests[did].requests)
-        log.error(outstanding_requests[did].requests[req_id])
-        log.error(outstanding_requests[did].requests[req_id].service)
-
+        try { log.error(JSON.stringify(outstanding_requests)) } catch (e) { log.error(1) }
+        try { log.error(JSON.stringify(outstanding_requests[did])) } catch (e) { log.error(2) }
+        try { log.error(JSON.stringify(outstanding_requests[did][req_id])) } catch (e) { log.error(6) }
+        try { log.error(JSON.stringify(outstanding_requests[did][req_id].service)) } catch (e) { log.error(7) }
         log.error('nope')
         return false
     }
