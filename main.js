@@ -2830,7 +2830,7 @@ function request_generate(did, service){
         outstanding_requests[did] = {}
     }
 
-    var randy = gen_somewhat_random(REQUEST_BYTES)
+    var randy = crypto.createHash('sha256').update(gen_somewhat_random(REQUEST_BYTES)).digest('hex');
 
     // probably housekeeping error, aka bug
     if (typeof outstanding_requests[did][randy] != 'undefined') {
@@ -2897,15 +2897,13 @@ function request_lookup(did, service, req_id) {
     log.info(did, service, req_id)
 
     try {
-        outstanding_requests[did][req_id].service
-        log.info('checks out - request made @ ' + outstanding_requests[did][req_id].time)
+        outstanding_requests[did][req_id]
+        log.info('found...')
+        log.info(outstanding_requests[did][req_id].time)
         return true
     }
     catch (e) {
-        try { log.error(JSON.stringify(outstanding_requests)) } catch (e) { log.error(1) }
-        try { log.error(JSON.stringify(outstanding_requests[did])) } catch (e) { log.error(2) }
-        try { log.error(JSON.stringify(outstanding_requests[did][req_id])) } catch (e) { log.error(6) }
-        try { log.error(JSON.stringify(outstanding_requests[did][req_id].service)) } catch (e) { log.error(7) }
+        // try { log.error(JSON.stringify(outstanding_requests[did][req_id])) } catch (e) { log.error(6) }
         log.error('nope')
         return false
     }
