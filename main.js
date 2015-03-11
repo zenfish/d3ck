@@ -2864,7 +2864,7 @@ function request_generate(did, service){
 //
 
 // xxx - something tells me there's an easy DOS attack here.....
-function request_save(did, req_id, service) {
+function request_save(did, service, req_id) {
 
     log.info('saving request # for ' + did)
     
@@ -2888,7 +2888,7 @@ function request_save(did, req_id, service) {
 //
 // does a given request exist?
 //
-function request_lookup(did, req_id, service) {
+function request_lookup(did, service, req_id) {
 
     log.info('so, herr doktor, have you ever heard of this?')
     log.info(bwana_d3ck.D3CK_ID, req_id, service)
@@ -3168,6 +3168,11 @@ function serviceRequest(req, res, next) {
         // other services....
         //
 
+        if (typeof all_d3cks[d3ckid] === 'undefined') {
+            log.error("don't know " + d3ckid + ", ignoring request")
+            return
+        }
+
         // are we allowed?
         if (! look_up_cap(service, d3ckid)) {
             log.error("you're not allowed, rejected!")
@@ -3178,6 +3183,11 @@ function serviceRequest(req, res, next) {
         if (! check_certificate(req.headers)) {
             log.error("wait a minute... you ain't who you say you are!")
             return
+        }
+
+        if (!request_lookup(d3ckid, service, req_id)) {
+            log.info('+++ saving request for ' + d3ckid)
+            request_save(d3ckid, service, req_id)
         }
 
         if (service == 'VPN') {
