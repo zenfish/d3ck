@@ -2893,7 +2893,7 @@ function request_save(did, service, req_id) {
 function request_lookup(did, service, req_id) {
 
     log.info('so, herr doktor, have you ever heard of this?')
-    log.info(bwana_d3ck.D3CK_ID, req_id, service)
+    log.info(did, service, req_id)
 
     try {
         outstanding_requests[did].requests[req_id].service
@@ -2901,6 +2901,12 @@ function request_lookup(did, service, req_id) {
         return true
     }
     catch (e) {
+        log.error(outstanding_requests)
+        log.error(outstanding_requests[did])
+        log.error(outstanding_requests[did].requests)
+        log.error(outstanding_requests[did].requests[req_id])
+        log.error(outstanding_requests[did].requests[req_id].service)
+
         log.error('nope')
         return false
     }
