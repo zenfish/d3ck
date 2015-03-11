@@ -2870,7 +2870,8 @@ function request_save(did, service, req_id) {
     
     if (typeof outstanding_requests[did] === 'undefined') {
         log.info('creating new request space for ' + did)
-        outstanding_requests[did] = { d3ck_id: did, requests: {} }
+        outstanding_requests[did] = {}
+
     }
 
     // time (we received it) & service name... should pass along time generated...
@@ -2880,7 +2881,7 @@ function request_save(did, service, req_id) {
 
     request.service = service
 
-    outstanding_requests[did].requests[req_id] = request
+    outstanding_requests[did][req_id] = request
 
     log.info(JSON.stringify(outstanding_requests))
 
