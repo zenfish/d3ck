@@ -2882,7 +2882,7 @@ function request_save(did, service, req_id) {
 
     outstanding_requests[did].requests[req_id] = request
 
-    // log.info(JSON.stringify(outstanding_requests))
+    log.info(JSON.stringify(outstanding_requests))
 
 }
 
@@ -3190,6 +3190,8 @@ function serviceRequest(req, res, next) {
         if (!request_lookup(d3ckid, service, req_id)) {
             log.info('+++ saving request for ' + d3ckid)
             request_save(d3ckid, service, req_id)
+            log.info('--- and the result....?')
+            log.info(JSON.stringify(outstanding_requests))
         }
 
         if (service == 'VPN') {
