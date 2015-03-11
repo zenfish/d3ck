@@ -2821,7 +2821,7 @@ function generate_friend_request(ip_addr) {
 // xxx - really should do some sort of checking to clear out old or answered requests
 //
 
-function generate_request(did, service){
+function request_generate(did, service){
 
     log.info('generating request # for ' + did)
     
@@ -2860,9 +2860,35 @@ function generate_request(did, service){
 }
 
 //
+// save an incoming request so we can match it
+//
+
+// xxx - something tells me there's an easy DOS attack here.....
+function request_save(did, req_id, service) {
+
+    log.info('saving request # for ' + did)
+    
+    if (typeof outstanding_requests[did] === 'undefined') {
+        log.info('creating new request space for ' + did)
+        outstanding_requests[did] = { d3ck_id: did, requests: {} }
+    }
+
+    // time (we received it) & service name... should pass along time generated...
+    request.time    = moment().format(time_format)
+
+    request.service = service
+
+    outstanding_requests[did].requests[req_id] = request
+
+    // log.info(JSON.stringify(outstanding_requests))
+
+}
+
+
+//
 // does a given request exist?
 //
-function lookup_request(did, req_id, service) {
+function request_lookup(did, req_id, service) {
 
     log.info('so, herr doktor, have you ever heard of this?')
     log.info(bwana_d3ck.D3CK_ID, req_id, service)
@@ -2938,7 +2964,7 @@ function serviceRequest(req, res, next) {
 
     // if doesn't have a request ID it needs to be coming from the user, or refuse
     if (req.isAuthenticated()) {
-        req_id = generate_request(from_d3ck, service)
+        req_id = request_generate(from_d3ck, service)
     }
 
     if (typeof req_id === 'undefined' || req_id < 0) {
@@ -3351,7 +3377,7 @@ function serviceResponse(req, res, next) {
 
         log.info("about time you answered, I've been waiting!")
 
-        if (!lookup_request(bwana_d3ck.D3CK_ID, req_id, service)) {
+        if (!request_lookup(bwana_d3ck.D3CK_ID, req_id, service)) {
             log.error("I've never seen this request before, so I have no response...")
             return
         }
