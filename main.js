@@ -3325,6 +3325,7 @@ function serviceResponse(req, res, next) {
     // from POST
     var service = req.body.service,
         secret  = req.body.secret,
+        req_id  = req.body.secret,
         ip_addr = req.body.from_ip;
 
 
