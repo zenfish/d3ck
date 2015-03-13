@@ -33,8 +33,8 @@ var d3ck_keystore     = d3ck_home + config.D3CK.keystore
 var d3ck_logs         = d3ck_home + config.D3CK.logs
 
 // oh, the tangled web we weave... "we"?  Well, I.
-var friendz_ip   = config.fri3nd_find3r.ip
-var friendz_port = config.fri3nd_find3r.port
+var friendz_ip   = config.fri3nds.ip
+var friendz_port = config.fri3nds.port
 
 //
 // TODO - 

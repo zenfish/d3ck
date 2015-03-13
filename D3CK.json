@@ -21,9 +21,10 @@
         "FRIEND_REQUEST_EXPIRES" : 259200
     },
 
-    "fri3nd_find3r" : {
-        "ip":   "54.203.255.17",
-        "port": "8080"
+    "fri3nds" : {
+        "friend request" : { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
+        "ip"             : "54.203.255.17",
+        "port"           : "8080"
     },
 
     "trust" : {
@@ -31,14 +32,13 @@
     },
 
     "capabilities" : {
-        "friend request":       { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
-        "VPN":                  { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
-        "SIP":                  { "paranoid": "off", "moderate": "off", "trusting": "on"  },
-        "webRTC":               { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
-        "file transfer":        { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
-        "messages":             { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
-        "command execution":    { "paranoid": "off", "moderate": "off", "trusting": "ask" },
-        "Geo-translocation":    { "paranoid": "off", "moderate": "off", "trusting": "ask" }
+        "VPN":               { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
+        "SIP":               { "paranoid": "off", "moderate": "off", "trusting": "on"  },
+        "webRTC":            { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
+        "file transfer":     { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
+        "messages":          { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
+        "command execution": { "paranoid": "off", "moderate": "off", "trusting": "ask" },
+        "Geo-translocation": { "paranoid": "off", "moderate": "off", "trusting": "ask" }
     },
 
     "owner_capabilities" : {
