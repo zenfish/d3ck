@@ -2187,7 +2187,7 @@ function show_user_sequence(d3ckid) {
 function lower_shields(ip) {
 
     console.log('lowering shieldz to ' + ip)
-    var url = '/shields/up'
+    var url = '/shields/down'
 
     var jqXHR_shields = $.ajax({ url: url })
 
@@ -2218,7 +2218,7 @@ function raise_shields(ip) {
 
     console.log('raising shields against ' + ip)
 
-    var url = '/shields/down'
+    var url = '/shields/up'
 
     var jqXHR_shields = $.ajax({ url: url })
 
