@@ -3510,11 +3510,14 @@ function friend_request(req, res, next) {
         // write out the certs they sent us
         do_everything_client_create(_tmp_d3ck)
 
+        var owner     = _tmp_d3ck.owner.name
+        var from_d3ck = _tmp_d3ck.D3CK_ID
+
         var d3ck_request    = {
             from_ip     : from_ip,
             ip_addr     : ip_addr,
-            owner       : _tmp_d3ck.owner.name,
-            from_d3ck   : _tmp_d3ck.D3CK_ID,
+            owner       : owner,
+            from_d3ck   : from_d3ck,
             secret      : secret
         }
 
