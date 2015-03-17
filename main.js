@@ -3866,9 +3866,8 @@ function uploadSchtuff(req, res, next) {
 //
 // execute a command in the background, log stuff
 //
-function d3ck_spawn(command, argz) {
 
-// xxx - add time/date
+function d3ck_spawn(command, argz) {
 
     cmd = command.split('/')[command.split('/').length -1]
 
@@ -3878,20 +3877,22 @@ function d3ck_spawn(command, argz) {
 
     // Listen for any response from the child:
     spawn_o.stdout.on('data', function (data) {
-        fs.appendFile(d3ck_logs + '/' + cmd + '.out.log', data, function (err) { if (err) log.error(err) });
+        fs.appendFile(d3ck_logs + '/' + cmd + '.out.log', data, function (err) { if (err) log.info(err) });
     });
 
     // Listen for any errors:
     spawn_o.stderr.on('data', function (data) {
-        fs.appendFile(d3ck_logs + '/' + cmd + '.err.log', data, function (err) { if (err) log.error(err) });
-        log.error('There was an error: ' + data);
+        fs.appendFile(d3ck_logs + '/' + cmd + '.err.log', data, function (err) { if (err) log.info(err) });
     });
 
     // Listen for an exit event:
     spawn_o.on('exit', function (exitCode) {
+        log.error("exited with code: " + exitCode);
         if (exitCode) {
-            log.error("exited with code: " + exitCode);
             fs.appendFile(d3ck_logs + '/' + cmd + '.err.log', data, function (err) { if (err) log.error(err) });
+        }
+        else {
+            fs.appendFile(d3ck_logs + '/' + cmd + '.out.log', data, function (err) { if (err) log.error(err) });
         }
     });
 
