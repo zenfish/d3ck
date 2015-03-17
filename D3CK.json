@@ -82,7 +82,7 @@
         "^/img/.*",
         "^/images/.*",
         "^/js/.*",
-        "^/friend/request",
+        "^/fri3nd/request",
         "^/login",
         "^/login.html",
         "^/ping",

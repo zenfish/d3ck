@@ -4591,7 +4591,7 @@ function create_d3ck_by_ip(req, res, next) {
         secret_requests[_remote_d3ck.did] = secret
         secrets2d3cks[secret.secret]      = _remote_d3ck.did;
 
-        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/friend/request'
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/fri3nd/request'
 
         var options  = { url: url }
 
