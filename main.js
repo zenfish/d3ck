@@ -3447,6 +3447,7 @@ function friend_request(req, res, next) {
 
     var d3ckid  = req.body.d3ckid,
         secret  = req.body.secret,
+        from_ip = req.body.from_ip,
         ip_addr = req.body.ip_addr;
 
     log.info("who are you, anyway, I'm not allowed to talk to strangers...?")
@@ -3455,31 +3456,20 @@ function friend_request(req, res, next) {
     // XXX - need to check date... has it timed out?
     //
 
-    // need IP
-    if (typeof req.body.ip_addr == 'undefined') { 
-        log.error("need a target ip address to make this work, bailin'")
-        res.send(403, { error: "ip address missing"})
-        return
+    // need various bits and pieces....
+    if (typeof d3ckid  === "undefined" || 
+        typeof secret  === "undefined" || 
+        typeof from_ip === "undefined" ||
+        typeof ip_addr === "undefined") {
+            log.error('missing one of: d3ckid, secret, from-ip or ip addr:', JSON.stringify(err))
+            res.send(400, { emotion: 'you suck' })
+            return
     }
 
-    // need a secret
-    if (typeof req.body.secret == 'undefined') { 
-        log.error("need a secret to make this work, bailin'")
-        res.send(403, { error: "secret missing"})
-        return
-    }
+    log.info('bitz: ', d3ckid, secret, from_ip, ip_addr)
 
-    // and d3ckid
-    if (typeof req.body.d3ckid == 'undefined') { 
-        log.error("need a d3ckid to make this work, bailin'")
-        res.send(403, { error: "d3ckid missing"})
-        return
-    }
-
-    log.info('secret: ' + req.body.secret)
-
-    secret = req.body.secret
-    secret_requests[ip_addr]   = secret
+    secret                       = req.body.secret
+    secret_requests[ip_addr]     = secret
     secrets2d3cks[secret.secret] = ip_addr
 
     // do sanity check here....
