@@ -3494,18 +3494,6 @@ function friend_request(req, res, next) {
         //
         log.info("you want to be my friend?  You care!  You really care!")
 
-        // need a secret
-        if (typeof req.body.secret == 'undefined') { 
-            log.error("need a secret to be my pal, bailin'")
-            res.send(403, { error: "secret missing"})
-            return
-        }
-
-        secret = req.body.secret
-
-        log.info('secret: ' + req.body.secret)
-
-
         // if (typeof d3ck2ip[d3ckid] === "undefined") ip_addr = d3ck2ip[d3ckid] 
 
         var _tmp_d3ck = {}
@@ -3523,12 +3511,10 @@ function friend_request(req, res, next) {
         do_everything_client_create(_tmp_d3ck)
 
         var d3ck_request    = {
-            knock       : true,
             from_ip     : from_ip,
             ip_addr     : ip_addr,
             owner       : _tmp_d3ck.owner.name,
-            from_d3ck   : from_d3ck,
-            req_id      : req_id,
+            from_d3ck   : _tmp_d3ck.D3CK_ID,
             secret      : secret
         }
 
@@ -3887,7 +3873,7 @@ function d3ck_spawn(command, argz) {
 
     // Listen for an exit event:
     spawn_o.on('exit', function (exitCode) {
-        log.error("exited with code: " + exitCode);
+        log.info("exited with code: " + exitCode);
         if (exitCode) {
             fs.appendFile(d3ck_logs + '/' + cmd + '.err.log', data, function (err) { if (err) log.error(err) });
         }
@@ -5015,7 +5001,7 @@ server.get('/d3ck', auth, list_d3cks)
 server.get('/d3ck/:key', auth, get_d3ck);
 
 // Delete a d3ck by key
-server.delete('/d3ck/:key', auth, delete_d3ck);
+server.del('/d3ck/:key', auth, delete_d3ck);
 
 // Destroy everything
 server.delete('/d3ck', auth, deleteAll, function respond(req, res, next) {

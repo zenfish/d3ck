@@ -34,7 +34,7 @@ d3ck=$1
 #
 # echo "using curl to nuke D3CK..."
 # 
-curl -v -H "Accept: application/json" -H "Content-type: application/json" -X DELETE "$d3ck_url_int/$d3ck"
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X DELETE "$d3ck_url_int/d3ck/$d3ck"
 
 cd $hell
 . ../config.sh
