@@ -5056,10 +5056,10 @@ server.post('/service/request', auth, serviceRequest);
 server.post('/service/response/:d3ckid/:answer', auth, serviceResponse)
 
 // friend request
-server.post('/fri3nd/request', auth, serviceRequest);
+server.post('/fri3nd/request', auth, friend_request);
 
 // friend response
-server.post('/fri3nd/response', auth, serviceResponse)
+server.post('/fri3nd/response', auth, friend_response)
 
 
 server.post('/vpn/start', auth, startVPN);
