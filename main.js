@@ -3526,7 +3526,7 @@ function friend_request(req, res, next) {
             knock       : true,
             from_ip     : from_ip,
             ip_addr     : ip_addr,
-            owner       : owner,
+            owner       : _tmp_d3ck.owner.name,
             from_d3ck   : from_d3ck,
             req_id      : req_id,
             secret      : secret
