@@ -3449,7 +3449,7 @@ function friend_request(req, res, next) {
         secret  = req.body.secret,
         ip_addr = req.body.ip_addr;
 
-    log.info("who are you, anyway, I'm not allowed to talk to strangers...")
+    log.info("who are you, anyway, I'm not allowed to talk to strangers...?")
 
     //
     // XXX - need to check date... has it timed out?
@@ -3484,12 +3484,16 @@ function friend_request(req, res, next) {
 
     // do sanity check here....
     //
-    // also check if it's ask, accept, etc.
+    // xxxxxxx
+    // xxxxxxx among other things...
+    //
+    //              length... don't want to suck up too much, should use limit set somewhere....
+    //              is it a valid request?
+    //              white/blacklists?
     //
     // xxxxxxx
     // xxxxxxx
-    // xxxxxxx
-    // xxxxxxx
+    //
 
     // for this d3ck?
     if (d3ckid == bwana_d3ck.D3CK_ID) {
@@ -4283,8 +4287,6 @@ function quikStart(req, res, next) {
 
 
     log.info('quicky!')
-
-    log.info(req.body)
 
     if (typeof req.body.user_name == "undefined") {
         log.info('user name is required, but using defaults')
