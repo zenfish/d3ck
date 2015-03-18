@@ -1856,13 +1856,15 @@ function inform_user(title, message, level, element) {
         level != 'success'    &&
         level != 'info'       &&
         level != 'warning')) {
-            console.log(level + " isn't a recognized level... setting to default/null")
+            console.log(level + " isn't a recognized level... setting to info")
             opts.type = 'info'     // default
+
+                PNotify.prototype.options.delay = PNOTIFY_HIGH;
         }
 
-    if (opts.type == 'success') {
-        PNotify.prototype.options.delay = PNOTIFY_HIGH;
-    }
+//  if (opts.type == 'success') {
+//      PNotify.prototype.options.delay = PNOTIFY_HIGH;
+//  }
 
     console.log(opts)
 
@@ -1969,13 +1971,15 @@ function confirm_or_deny_or(type, req, element) {
                     // friends
                     if (service == 'friend request') {
                         inform_user('info', 'starting the exchange of crypto certificates', 'info')
+// function inform_user(title, message, level, element) {
+
                         url = '/fri3nd/response'
                     }
 
                     //
                     // else... currently only knocking for call
                     //
-                    if (service == 'VPN') {
+                    else if (service == 'VPN') {
                         d3ckid  = req.body.d3ckid,
                         secret  = req.body.secret,
                         ip_addr = req.body.ip_addr

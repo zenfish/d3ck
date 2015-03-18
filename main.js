@@ -3562,19 +3562,51 @@ function friend_request(req, res, next) {
 //
 function friend_response(req, res, next) {
 
+
+//TEST
+//TEST    is coming from cli3nt?  If so, pass
+//TEST
+//TEST
+
+//
+//This should be d3ck <-> d3ck only:
+
+//    // knock knock proto to request access to a service
+//    server.post('/service/request', auth, serviceRequest);
+//
+//    // reply to above
+//    server.post('/service/response/:d3ckid/:answer', auth, serviceResponse)
+//
+//    // friend request
+//    server.post('/fri3nd/request', auth, friend_request);
+//
+//    // friend response
+//    server.post('/fri3nd/response', auth, friend_response)
+//
+//
+//With another simple one that simply informs or asks user, and an answer place:
+//
+//    server.post('/cli3nt_response')
+//
+//
+//
+
     var answer  = req.body.answer,
-        d3ckid  = req.body.d3ckid,
+        d3ckid  = req.body.from_d3ckid,
         secret  = req.body.secret,
-        ip_addr = req.body.ip_addr
+        ip_addr = req.body.from_ip;
 
     log.info('... an answer to friend request...?')
 
+    log.info(req.body)
+
     if (typeof answer === "undefined" || typeof ip_addr === "undefined" || typeof secret === "undefined" || typeof d3ckid === "undefined") {
-        log.error('missing one of: answer, d3ckid, secret, and ip addr:', JSON.stringify(err))
+        log.error('missing one of: answer, from_d3ckid, secret, and ip addr:')
         res.send(400, { emotion: 'blech' })
         return
     }
 
+    // xxx -> kill-off-tmp-cert-stuff
     if (answer != 'yes') {
         log.error(ip_addr + '/' + d3ckid + "refused friend request... inconceivable!")
         return
@@ -3594,7 +3626,7 @@ function friend_response(req, res, next) {
     var _tmp_d3ck = {}
 
     if (typeof req.body.d3ck_data === "undefined") {
-        log.error("Wasn't given remove d3ck data, friend response failed")
+        log.error("Wasn't given remote d3ck data, friend response failed")
         return
     }
     else {
@@ -3617,6 +3649,7 @@ function friend_response(req, res, next) {
 
     do_everything_client_create(_tmp_d3ck)
 
+    // xxx -> energize() -> make certz live
     // energize_d3ck()
 
     redirect_to_home = true
