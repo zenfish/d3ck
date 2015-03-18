@@ -3527,12 +3527,9 @@ function friend_request(req, res, next) {
         d3ck_status.d3ck_requests  = d3ck_request
 
 
-
+        // tell the user and log it
         createEvent(client_ip, {event_type: 'request', "ip_addr": ip_addr, "from_d3ck": from_d3ck, "d3ck_id": d3ckid}, d3ck_status)
-
         d3ck_queue.push({type: 'request', event: 'friend request' , 'd3ck_status': d3ck_status })
-
-
 
 
         log.info('sending back... <3!!!')
