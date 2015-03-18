@@ -1088,7 +1088,7 @@ function queue_or_die(queue) {
 
     }
 
-    // request user feedback
+    // request user feedback (friend request, etc.)
     else if (queue.type == "request") {
         console.log('event: ' + JSON.stringify(queue))
         ask_user_4_response(queue)
@@ -1106,14 +1106,6 @@ function queue_or_die(queue) {
         inform_user('error', queue.message, 'error')
         return
     }
-
-//  // friend request
-//  else if (queue.service == 'friend request') {
-//      console.log('friend request: ' + JSON.stringify(queue))
-//      ask_user_4_response(queue)
-//      return
-//  }
-
 
     else {
         console.log(':???: ' + JSON.stringify(queue))
@@ -2092,7 +2084,7 @@ function ask_user_4_response(data) {
     }
 
     else {
-        inform_user('internal', 'Unknown type of request', 'error')
+        inform_user('internal', 'Unknown type of request: ' + req.service, 'error')
     }
 
 }
