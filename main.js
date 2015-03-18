@@ -3445,10 +3445,11 @@ function serviceResponse(req, res, next) {
 //
 function friend_request(req, res, next) {
 
-    var d3ckid  = req.body.d3ckid,
-        secret  = req.body.secret,
-        from_ip = req.body.from_ip,
-        ip_addr = req.body.ip_addr;
+    var d3ckid    = req.body.d3ckid,
+        secret    = req.body.secret,
+        from_ip   = req.body.from_ip,
+        from_d3ck = req.body.from_d3ck,
+        ip_addr   = req.body.ip_addr;
 
     log.info("who are you, anyway, I'm not allowed to talk to strangers...?")
 
@@ -3457,11 +3458,12 @@ function friend_request(req, res, next) {
     //
 
     // need various bits and pieces....
-    if (typeof d3ckid  === "undefined" || 
-        typeof secret  === "undefined" || 
-        typeof from_ip === "undefined" ||
-        typeof ip_addr === "undefined") {
-            log.error('missing one of: d3ckid, secret, from-ip or ip addr:', JSON.stringify(err))
+    if (typeof d3ckid    === "undefined" || 
+        typeof secret    === "undefined" || 
+        typeof from_ip   === "undefined" ||
+        typeof from_d3ck === "undefined" ||
+        typeof ip_addr   === "undefined") {
+            log.error('missing one of: d3ckid, secret, from-ip, from-d3ck, or ip addr:', JSON.stringify(err))
             res.send(400, { emotion: 'you suck' })
             return
     }
@@ -3469,7 +3471,7 @@ function friend_request(req, res, next) {
     log.info('bitz: ', d3ckid, secret, from_ip, ip_addr)
 
     secret                       = req.body.secret
-    secret_requests[d3ckid]      = secret
+    secret_requests[from_d3ck]   = secret
     secrets2d3cks[secret.secret] = ip_addr
 
     // do sanity check here....
@@ -3615,6 +3617,7 @@ function friend_response(req, res, next) {
     //
     // secret has to match... no riff-raff allowed
     //
+    log.info(secret_requests)
 
     // die if mismatch
     if (secret_requests[d3ckid].secret != secret) {

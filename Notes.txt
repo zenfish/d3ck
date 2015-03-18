@@ -15,6 +15,19 @@ wget "http://nl.archive.ubuntu.com/ubuntu/pool/main/c/curl/libcurl3-gnutls_7.32.
 
 
 
+# debugging... 3 programs -
+#
+# As user:
+#
+
+    google-chrome http://127.0.0.1:5555/debug?port=5858 &
+
+# root:
+
+    node-inspector -p 3000 --web-host 0.0.0.0 &
+    node --debug main.js &
+
+
 
 
 To do GEO displacement:
