@@ -1971,22 +1971,20 @@ function confirm_or_deny_or(type, req, element) {
                         inform_user('info', 'starting the exchange of crypto certificates', 'info')
                         url = '/fri3nd/response'
                     }
-                    else {
-                        d3ckid  = req.body.d3ckid,
-                        secret  = req.body.secret,
-                        ip_addr = req.body.ip_addr
-                        url = '/service/response/' + req.from_d3ck + '/' + answer
-                    }
-
 
                     //
                     // else... currently only knocking for call
                     //
-                    // else if (service == 'knock') 
-                    else if (service == 'VPN') {
+                    if (service == 'VPN') {
+                        d3ckid  = req.body.d3ckid,
+                        secret  = req.body.secret,
+                        ip_addr = req.body.ip_addr
+                        url = '/service/response/' + req.from_d3ck + '/' + answer
+
                         inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
                         lower_shields(req.ip_addr)
                     }
+
                     // wtf, as they say
                     else {
                         inform_user('error', 'unknown service request: ' + service, 'error')
