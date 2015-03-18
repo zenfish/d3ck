@@ -3518,6 +3518,7 @@ function friend_request(req, res, next) {
             ip_addr     : ip_addr,
             owner       : owner,
             from_d3ck   : from_d3ck,
+            service     : 'friend request',
             secret      : secret
         }
 
