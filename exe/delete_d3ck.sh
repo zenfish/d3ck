@@ -41,6 +41,8 @@ cd $hell
 openssl ca -config stupid.conf -revoke "/etc/d3ck/d3cks/$d3ck/_cli3nt.crt"
 rm -rf /etc/d3ck/d3cks/$d3ck
 
+rm -rf "/etc/d3ck/public/certz/$d3ck.crt.json"
+
 echo "delete cci-$d3ck" | redis-cli
 
 # not sure how to check success/fail yet....
