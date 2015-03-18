@@ -1785,7 +1785,7 @@ function create_cli3nt_rest(req, res, next) {
             return
         }
 
-        else if (secret_requests[ip_addr].secret != secret) {
+        else if (secret_requests[did].secret != secret) {
             log.error("secret mismatch, friend request unsuccessful")
             res.send(400, { error: "secret mismatch, friend request unsuccessful" })
             return
@@ -3469,7 +3469,7 @@ function friend_request(req, res, next) {
     log.info('bitz: ', d3ckid, secret, from_ip, ip_addr)
 
     secret                       = req.body.secret
-    secret_requests[ip_addr]     = secret
+    secret_requests[d3ckid]      = secret
     secrets2d3cks[secret.secret] = ip_addr
 
     // do sanity check here....
@@ -3592,7 +3592,7 @@ function friend_response(req, res, next) {
 //
 
     var answer  = req.body.answer,
-        d3ckid  = req.body.from_d3ckid,
+        d3ckid  = req.body.from_d3ck,
         secret  = req.body.secret,
         ip_addr = req.body.from_ip;
 
