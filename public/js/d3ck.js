@@ -1987,7 +1987,7 @@ function confirm_or_deny_or(type, req, element) {
 
                     $.ajax({
                         type    : 'POST',
-                        url     : '/service/response/' + req.from_d3ck + '/' + answer,
+                        url     : url,
                         headers : { 'Content-Type': 'application/json' },
                         data    : post_data,
                         success : function(data, status) {
