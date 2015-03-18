@@ -3620,7 +3620,7 @@ function friend_response(req, res, next) {
     log.info(secret_requests)
 
     // die if mismatch
-    if (secret_requests[d3ckid].secret != secret) {
+    if (secret_requests[d3ckid].secret != secret.secret) {
         log.error("secret mismatch, friend request unsuccessful")
         res.send(400, { error: "secret mismatch, friend request unsuccessful" })
         return
