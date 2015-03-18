@@ -1952,6 +1952,7 @@ function confirm_or_deny_or(type, req, element) {
 
                     // prepare the bullet
                     var post_data         = {}
+
                     post_data.secret    = req.secret
                     post_data.req_id    = req.req_id
                     post_data.from_ip   = req.from_ip
@@ -1961,6 +1962,11 @@ function confirm_or_deny_or(type, req, element) {
                     post_data           = JSON.stringify(post_data)
 
 
+                    d3ckid  = req.body.d3ckid,
+                    secret  = req.body.secret,
+                    ip_addr = req.body.ip_addr
+
+
                     var url = '/service/response/' + req.from_d3ck + '/' + answer
 
                     // console.log(post_data)
@@ -1968,7 +1974,7 @@ function confirm_or_deny_or(type, req, element) {
                     // friends
                     if (service == 'friend request') {
                         inform_user('info', 'starting the exchange of crypto certificates', 'info')
-                        url = '/fri3nd/response/' + req.from_d3ck + '/' + answer
+                        url = '/fri3nd/response'
                     }
 
                     //
