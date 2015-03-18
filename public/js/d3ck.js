@@ -1960,11 +1960,15 @@ function confirm_or_deny_or(type, req, element) {
                     post_data.answer    = answer
                     post_data           = JSON.stringify(post_data)
 
+
+                    var url = '/service/response/' + req.from_d3ck + '/' + answer
+
                     // console.log(post_data)
 
                     // friends
                     if (service == 'friend request') {
                         inform_user('info', 'starting the exchange of crypto certificates', 'info')
+                        url = '/fri3nd/response/' + req.from_d3ck + '/' + answer
                     }
 
                     //
