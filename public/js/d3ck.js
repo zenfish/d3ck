@@ -1962,20 +1962,22 @@ function confirm_or_deny_or(type, req, element) {
                     post_data           = JSON.stringify(post_data)
 
 
-                    d3ckid  = req.body.d3ckid,
-                    secret  = req.body.secret,
-                    ip_addr = req.body.ip_addr
-
-
-                    var url = '/service/response/' + req.from_d3ck + '/' + answer
-
                     // console.log(post_data)
+
+                    var url = ''
 
                     // friends
                     if (service == 'friend request') {
                         inform_user('info', 'starting the exchange of crypto certificates', 'info')
                         url = '/fri3nd/response'
                     }
+                    else {
+                        d3ckid  = req.body.d3ckid,
+                        secret  = req.body.secret,
+                        ip_addr = req.body.ip_addr
+                        url = '/service/response/' + req.from_d3ck + '/' + answer
+                    }
+
 
                     //
                     // else... currently only knocking for call
