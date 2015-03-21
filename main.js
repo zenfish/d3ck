@@ -1910,10 +1910,36 @@ function create_full_d3ck (data) {
 //
 // helper, just do a bunch of little things to add a d3ck
 //
-function d3ck_into_stone(client_ip, d3ck) {
+function cli3nt_into_stone(ip_addr, d3ckid) {
 
-    log.info('carving this d3ck into a stone tablet')
+    log.info('carving cli3nt d3ck into a stone tablet')
 
+    // need a secret they'll send back if they say yes
+    var secret = generate_friend_request(ip_addr)
+
+    // generate cert stuff
+    command = d3ck_bin + '/bundle_certs.js'
+
+    // create client bundle
+    var keyout = d3ck_spawn_sync(command, [d3ckid])
+
+    log.info('installed cli3nt...')
+
+    if (keyout.code) {
+        log.error("error in create_cli3nt_rest!")
+        res.send(420, { error: "couldn't retrieve client certificates" } )
+        return
+    }
+
+    else {
+        log.info('read/writing to ' + d3ck_keystore +'/'+ d3ckid + "/_cli3nt.all")
+        try {
+            cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+        }
+        catch (e) {
+            log.error("couldn't read file -> " + JSON.stringify(e))
+        }
+    }
 
 }
 
@@ -1980,9 +2006,6 @@ function create_d3ck(req, res, next) {
             d3ck_events = { new_d3ck_ip : client_ip, new_d3ck_name: data.name }
 
             d3ck_status.events = d3ck_events
-
-            // stamp it into fs as well
-            d3ck_into_stone(client_ip, data)
 
             create_d3ck_image(d3ck.value)
 
@@ -3628,32 +3651,16 @@ function friend_response(req, res, next) {
 
     var _tmp_d3ck = {}
 
-    if (typeof req.body.d3ck_data === "undefined") {
-        log.error("Wasn't given remote d3ck data, friend response failed")
-        return
-    }
-    else {
-        _tmp_d3ck = req.body.d3ck_data
-        // log.info('remote d3ck_data    ' + JSON.stringify(req.body.d3ck_data).substring(0,SNIP_LEN) + ' .... ')
-        log.info("writing remote d3ck's certs they sent... : " + JSON.stringify(_tmp_d3ck).substring(0,SNIP_LEN) + ' .... ')
-    }
-
     log.info('going in to create client schtuff....')
 
-    // if the IP we get the add from isn't in the ips the other d3ck
-    // says it has... add it in; they may be coming from a NAT or
-    // something weird
-    log.info('looking to see if the ip is in its json package')
-
-    if (!__.contains(_tmp_d3ck.all_ips, ip)) {
-        log.info("they came from an IP that wasn't in their stated IPs... adding [" + ip + "] to the IP pool just in case")
-        _tmp_d3ck.all_ips.push(ip)
-    }
-
-    do_everything_client_create(_tmp_d3ck)
+    // carve it into fs as well
+    cli3nt_into_stone(ip_addr, _remote_d3ck)
 
     // xxx -> energize() -> make certz live
     // energize_d3ck()
+
+    // already done...?
+    // do_everything_client_create(_tmp_d3ck)
 
     redirect_to_home = true
 
@@ -4575,37 +4582,9 @@ function create_d3ck_by_ip(req, res, next) {
             log.info('remote system @ ' + ip_addr + ' -> ' + _remote_d3ck.did)
         }
 
-        // need a secret they'll send back if they say yes
-        var secret = generate_friend_request(ip_addr)
 
-        log.info('installing client...')
-
-        // generate cert stuff
-        command = d3ck_bin + '/bundle_certs.js'
-
-        // create client bundle
-        var keyout = d3ck_spawn_sync(command, [_remote_d3ck.did])
-
-        log.info('installed cli3nt...')
-
-        if (keyout.code) {
-            log.error("error in create_cli3nt_rest!")
-            res.send(420, { error: "couldn't retrieve client certificates" } )
-            return
-        }
-
-        else {
-            log.info('read/writing to ' + d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.all")
-            try {
-                cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.json").toString())
-            }
-            catch (e) {
-                log.error("couldn't read file -> " + JSON.stringify(e))
-            }
-        }
-
-
-//      create_d3ck_key_store(req.body.d3ck_data)
+        // carve it into fs as well
+        cli3nt_into_stone(ip_addr, _remote_d3ck.did)
 
         secret_requests[_remote_d3ck.did] = secret
         secrets2d3cks[secret.secret]      = _remote_d3ck.did;
@@ -4630,7 +4609,7 @@ function create_d3ck_by_ip(req, res, next) {
         log.info('knocking @ ' + url)
         log.info('with: ' + JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
 
-        // grab remote d3ck's data... first we have to ask permission
+        // push our data to remote d3ck, see what they say
         request.post(options, function cb (e, r, body) {
             if (e) {
                 log.error('friend request failed: ', JSON.stringify(e))

@@ -540,11 +540,11 @@ function d3ck_create(element, ip_addr) {
         data: post_data,
         success: function(data, status) {
             console.log('suck... sess.... ')
-            inform_user('info', 'adding d3ck', 'trying to befriend the d3ck @ ' + ip_addr)
+            inform_user('info', 'trying to befriend the d3ck @ ' + ip_addr)
         },
         fail: function(data, err) {
             console.log('fuck... me')
-            inform_user('info', 'failed to add', ip_addr + ' was not added', 'error')
+            inform_user('info', 'failed to add' + ip_addr, 'error')
         }
     })
 
@@ -942,14 +942,14 @@ function queue_or_die(queue) {
             var remote_ip   = queue.d3ck_status.events.new_d3ck_ip
             var remote_name = queue.d3ck_status.events.new_d3ck_name
 
-            inform_user('info', 'D3CK add', '"' + remote_name + '" added your D3CK as a friend', 'success')
+            inform_user('info', remote_name + '" added your D3CK as a friend', 'success')
             // should do this gracefully, not hit it with an ugly stick
             setTimeout(go_d3ck_or_go_home, 3000)
 
         }
 
         else if (queue.event == 'd3ck_delete') {
-            inform_user('info', 'deletion', 'd3ck deleted', 'success')
+            inform_user('info', 'd3ck deleted', 'success')
         }
 
         else if (queue.event == 'file_upload') {
@@ -983,7 +983,7 @@ function queue_or_die(queue) {
                 // alertify.success("starting the VPN connection... to " + did);
 
                 // not really... success... but important?
-                inform_user('VPN', "Remote d3ck agreed to connect" + did)
+                inform_user('VPN', "Remote d3ck agreed to connect: " + did)
                 state_ring(true)    // bang a gong
 
                 var ip = $('#' + did + ' .remote_ip strong:eq(1)').text()
@@ -1970,8 +1970,8 @@ function confirm_or_deny_or(type, req, element) {
 
                     // friends
                     if (service == 'friend request') {
+
                         inform_user('info', 'starting the exchange of crypto certificates', 'info')
-// function inform_user(title, message, level, element) {
 
                         url = '/fri3nd/response'
                     }
@@ -1986,6 +1986,7 @@ function confirm_or_deny_or(type, req, element) {
                         url = '/service/response/' + req.from_d3ck + '/' + answer
 
                         inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
+
                         lower_shields(req.ip_addr)
                     }
 
