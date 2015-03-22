@@ -2962,8 +2962,7 @@ function serviceRequest(req, res, next) {
         from_ip   = req.body.from_ip,
         owner     = req.body.owner,
         service   = req.body.service,
-        req_id    = req.body.req_id,
-        secret    = '';
+        req_id    = req.body.req_id;
 
     log.info(d3ckid)
     log.info(ip_addr)
@@ -2992,12 +2991,16 @@ function serviceRequest(req, res, next) {
 
     log.info('d3ck coming from: ' + from_d3ck)
 
+    var secret = gen_somewhat_random(SHARED_SECRET_BYTES)
+
     // need a request ID to associate it with, along with sanity check
 
+    req_id = request_generate(from_d3ck, service)
+
     // if doesn't have a request ID it needs to be coming from the user, or refuse
-//  if (req.isAuthenticated()) {
-        req_id = request_generate(from_d3ck, service)
-//  }
+    //  if (req.isAuthenticated()) {
+    //  req_id = request_generate(from_d3ck, service)
+    //  }
 
     if (typeof req_id === 'undefined' || req_id < 0) {
         log.info(req_id)
