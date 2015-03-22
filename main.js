@@ -2989,12 +2989,11 @@ function serviceRequest(req, res, next) {
 
     req_id = request_generate(from_d3ck, service)
 
-    // if doesn't have a request ID it needs to be coming from the user, or refuse
-    //  if (req.isAuthenticated()) {
-    //  req_id = request_generate(from_d3ck, service)
-    //  }
-
-    if (typeof req_id === 'undefined' || req_id < 0) {
+    // if doesn't have a request ID it needs to be coming from the user, or it's trouble
+    if (req.isAuthenticated()) {
+        req_id = request_generate(from_d3ck, service)
+    }
+    else if (typeof req_id === 'undefined' || req_id < 0) {
         log.info(req_id)
         log.error("Wasn't given or couldn't generate a request ID, bailing on request")
         return
