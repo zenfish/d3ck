@@ -3142,7 +3142,7 @@ function serviceRequest(req, res, next) {
                 ip_addr   : ip_addr,
                 from_ip   : from_ip,
                 owner     : owner,
-                from_d3ck : bwana_d3ck.D3CK_ID,
+                from_d3ck : from_d3ck,
                 service   : service,
                 req_id    : req_id,
                 did       : d3ckid
@@ -3336,7 +3336,7 @@ function serviceResponse(req, res, next) {
 
         createEvent(ip_addr, {event_type: "service_response", "d3ck_id": d3ckid}, d3ck_status)
 
-        d3ck_queue.push({type: 'info', event: 'service_response', 'from_d3ck': req.body.did_from, 'd3ck_status': d3ck_status})
+        d3ck_queue.push({type: 'info', event: 'service_response', 'from_d3ck': req.body.from_d3ck, 'd3ck_status': d3ck_status})
 
         // ack
         res.send(200, { emotion: "^..^" })
