@@ -1980,7 +1980,6 @@ function confirm_or_deny_or(type, req, element) {
                     // else... currently only knocking for call
                     //
                     else if (service == 'VPN') {
-                        d3ckid  = req.body.d3ckid,
                         secret  = req.body.secret,
                         ip_addr = req.body.ip_addr
                         url = '/service/response/' + req.from_d3ck + '/' + answer
