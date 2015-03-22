@@ -3715,6 +3715,7 @@ function friend_response(req, res, next) {
         var d3ck_response   = {
             knock     : true,
             answer    : answer,
+            secret    : secret,
             from_d3ck : from_d3ck,
             from_ip   : ip_addr,
             did       : bwana_d3ck.D3CK_ID
