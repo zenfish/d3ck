@@ -3556,6 +3556,15 @@ function friend_response(req, res, next) {
 
     log.info(JSON.stringify(req.body).substring(0,SNIP_LEN) + ' .... ')
 
+    if (typeof answer === "undefined")
+        log.error('answer')
+    if (typeof ip_addr === "undefined")
+        log.error('ip_addr')
+    if (typeof secret === "undefined")
+        log.error('secret')
+    if (typeof from_d3ck === "undefined")
+        log.error('from_d3ck')
+
     if (typeof answer === "undefined" || typeof ip_addr === "undefined" || typeof secret === "undefined" || typeof from_d3ck === "undefined") {
         log.error('missing one of: answer, from_d3ck, secret, and ip addr:')
         res.send(400, { emotion: 'blech' })
