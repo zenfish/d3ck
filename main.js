@@ -3352,7 +3352,7 @@ function serviceResponse(req, res, next) {
         log.info('pass it along....')
 
         // do we know their cert? If not, we'd better know a secret or we probably won't get far
-        if (typeof ip_addr === "undefined") ip_addr = d3ck2ip[d3ckid]
+        ip_addr = d3ck2ip[d3ckid]
 
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/response/' + d3ckid + '/' + answer
 
