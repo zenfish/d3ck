@@ -1883,6 +1883,19 @@ function inform_user(title, message, level, element) {
     //     opts.stack    = stack_bottomleft
     // }
 
+    var pn = new PNotify(opts);
+
+    // chrome only, I believe
+    try {
+        pn.desktop.onclick = function(e) {
+        window.focus()
+    }
+    }
+        catch(e) {
+        console.log('ah well, some other time...')
+    }
+
+
 }
 
 
