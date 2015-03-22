@@ -3634,9 +3634,9 @@ function friend_response(req, res, next) {
         var d3ck_status            = empty_status()
         d3ck_status.d3ck_requests  = d3ck_response
 
-        createEvent(ip_addr, {event_type: "service_response", "d3ck_id": from_d3ckid}, d3ck_status)
+        createEvent(ip_addr, {event_type: "service_response", "d3ck_id": from_d3ck}, d3ck_status)
 
-        d3ck_queue.push({type: 'info', event: 'service_response', 'from_d3ck': from_d3ckid, 'd3ck_status': d3ck_status})
+        d3ck_queue.push({type: 'info', event: 'service_response', 'from_d3ck': from_d3ck, 'd3ck_status': d3ck_status})
 
         // ack
         res.send(200, { emotion: "^..^" })
