@@ -1956,7 +1956,6 @@ function confirm_or_deny_or(type, req, element) {
                     var post_data         = {}
 
                     post_data.secret    = req.secret
-                    post_data.req_id    = req.req_id
                     post_data.from_ip   = req.from_ip
                     post_data.from_d3ck = req.from_d3ck
                     post_data.service   = service
@@ -1980,13 +1979,11 @@ function confirm_or_deny_or(type, req, element) {
                     // else... currently only knocking for call
                     //
                     else if (service == 'VPN') {
-                        secret  = req.body.secret,
-                        ip_addr = req.body.ip_addr
                         url = '/service/response/' + req.from_d3ck + '/' + answer
 
-                        inform_user('request', 'lowering shields to ' + req.ip_addr, 'info')
+                        inform_user('request', 'lowering shields to ' + req.from_ip, 'info')
 
-                        lower_shields(req.ip_addr)
+                        lower_shields(req.from_ip)
                     }
 
                     // wtf, as they say

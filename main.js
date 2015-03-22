@@ -2991,8 +2991,6 @@ function serviceRequest(req, res, next) {
 
     log.info('d3ck coming from: ' + from_d3ck)
 
-    var secret = gen_somewhat_random(SHARED_SECRET_BYTES)
-
     // need a request ID to associate it with, along with sanity check
 
     req_id = request_generate(from_d3ck, service)
@@ -3057,7 +3055,6 @@ function serviceRequest(req, res, next) {
             owner     : owner,
             from_d3ck : bwana_d3ck.D3CK_ID,
             service   : service,
-            secret    : secret,
             req_id    : req_id,
             did       : d3ckid
         }
@@ -3152,7 +3149,6 @@ function serviceRequest(req, res, next) {
                 owner     : owner,
                 from_d3ck : bwana_d3ck.D3CK_ID,
                 service   : service,
-                secret    : secret,
                 req_id    : req_id,
                 did       : d3ckid
             }
@@ -3301,7 +3297,6 @@ function serviceResponse(req, res, next) {
 
     // from POST
     var service = req.body.service,
-        secret  = req.body.secret,
         ip_addr = req.body.from_ip,
         req_id  = req.body.req_id;
 
@@ -3340,9 +3335,6 @@ function serviceResponse(req, res, next) {
             did      : req.body.did,
             did_from : req.body.did_from
         }
-
-        // if (typeof req.body.secret != "undefined")
-        //     d3ck_response.secret = req.body.secret
 
         var d3ck_status            = empty_status()
         d3ck_status.d3ck_requests  = d3ck_response
