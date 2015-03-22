@@ -3576,17 +3576,6 @@ function friend_response(req, res, next) {
     }
 
 
-    // is coming from user/cli3nt?  If so, create their certs and stuff and pass them to the other d3ck
-//  if (req.isAuthenticated()) {
-
-        // create and carve certz into fs
-//      cli3nt_into_stone(ip_addr, d3ckid)
-
-
-//  }
-
-//  else {
-
     var _tmp_d3ck = {}
 
     log.info('going in to create client schtuff....')
@@ -3598,9 +3587,9 @@ function friend_response(req, res, next) {
 
 
 
-    if (!__.contains(_tmp_d3ck.all_ips, ip)) {
+    if (!__.contains(_tmp_d3ck.all_ips, ip_addr)) {
         log.info("they came from an IP that wasn't in their stated IPs... adding [" + ip + "] to the IP pool just in case")
-        _tmp_d3ck.all_ips.push(ip)
+        _tmp_d3ck.all_ips.push(ip_addr)
     }
 
 
@@ -3695,9 +3684,6 @@ function friend_response(req, res, next) {
     // do_everything_client_create(_tmp_d3ck)
 
     redirect_to_home = true
-
-
-//  }
 
 
 }
