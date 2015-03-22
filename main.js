@@ -3705,8 +3705,7 @@ function friend_response(req, res, next) {
             knock     : true,
             answer    : answer,
             from_d3ck : from_d3ck,
-            did       : bwana_d3ck.D3CK_ID,
-            d3ck_data : d3ck_data
+            did       : bwana_d3ck.D3CK_ID
         }
 
         d3ck_status.d3ck_requests = d3ck_response
@@ -3717,12 +3716,17 @@ function friend_response(req, res, next) {
         // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
         d3ck_queue.push({type: 'info', event: 'friend_response', 'd3ck_status': d3ck_status})
 
-        var options = {}
+        d3ck_response.d3ck_data = d3ck_data
+
+
+        var options = load_up_cc_cert(from_d3ck)
+
+        options.url  = url
 
         // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
         options.form = d3ck_response
 
-        request.post(url, options, function cb (err, resp) {
+        request.post(options, function cb (err, resp) {
             if (err) {
                 log.error('post to remote failed:', JSON.stringify(err))
                 res.send(200, {"err" : err});
@@ -3954,6 +3958,7 @@ function uploadSchtuff(req, res, next) {
                 var options = load_up_cert_by_did(upload_target)
 
                 options.headers = { 'x-filename': target_file, 'x-filesize': target_size, 'x-d3ckID': bwana_d3ck.D3CK_ID }
+
                 // var file_data = fs.readFileSync(tmpfile)
 
                 log.info('FN: ' + target_file + '  Opts:')
