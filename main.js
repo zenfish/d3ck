@@ -3577,21 +3577,15 @@ function friend_response(req, res, next) {
 
 
     // is coming from user/cli3nt?  If so, create their certs and stuff and pass them to the other d3ck
-    if (req.isAuthenticated()) {
+//  if (req.isAuthenticated()) {
 
         // create and carve certz into fs
-        cli3nt_into_stone(ip_addr, d3ckid)
+//      cli3nt_into_stone(ip_addr, d3ckid)
 
 
-    }
+//  }
 
-    else {
-
-
-
-
-
-
+//  else {
 
     var _tmp_d3ck = {}
 
@@ -3703,7 +3697,7 @@ function friend_response(req, res, next) {
     redirect_to_home = true
 
 
-    }
+//  }
 
 
 }
@@ -4637,15 +4631,6 @@ function create_d3ck_by_ip(req, res, next) {
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/fri3nd/request'
 
         var options  = { url: url }
-
-        log.info(_remote_d3ck.did)
-            log.info(bwana_d3ck.D3CK_ID)
-            log.info(my_ip)
-            log.info(ip_addr)
-            log.info(my_ips)
-            log.info(bwana_d3ck.owner.name)
-            log.info(secret)
-            log.info(JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.json").toString()))
 
         options.form = {
             d3ckid    : _remote_d3ck.did,
