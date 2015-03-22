@@ -3544,10 +3544,10 @@ function friend_request(req, res, next) {
 //
 function friend_response(req, res, next) {
 
-    var answer  = req.body.answer,
-        d3ckid  = req.body.from_d3ck,
-        secret  = req.body.secret;
-        ip_addr = req.body.from_ip;
+    var answer    = req.body.answer,
+        from_d3ck = req.body.from_d3ck,
+        secret    = req.body.secret,
+        ip_addr   = req.body.from_ip;
 
 
     client_ip = get_client_ip(req)
@@ -3556,15 +3556,15 @@ function friend_response(req, res, next) {
 
     log.info(req.body)
 
-    if (typeof answer === "undefined" || typeof ip_addr === "undefined" || typeof secret === "undefined" || typeof d3ckid === "undefined") {
-        log.error('missing one of: answer, from_d3ckid, secret, and ip addr:')
+    if (typeof answer === "undefined" || typeof ip_addr === "undefined" || typeof secret === "undefined" || typeof from_d3ck === "undefined") {
+        log.error('missing one of: answer, from_d3ck, secret, and ip addr:')
         res.send(400, { emotion: 'blech' })
         return
     }
 
     // xxx -> kill-off-tmp-cert-stuff
     if (answer != 'yes') {
-        log.error(d3ckid + " refused friend request... inconceivable!")
+        log.error(from_d3ck + " refused friend request... inconceivable!")
         return
     }
 
@@ -3578,7 +3578,7 @@ function friend_response(req, res, next) {
     //
     // note... other side won't see this... I think this is correct behavior
     //
-    if (secret_requests[d3ckid].secret != secret.secret) {
+    if (secret_requests[from_d3ck].secret != secret.secret) {
         log.error("secret mismatch, friend request unsuccessful")
         res.send(400, { error: "secret mismatch, friend request unsuccessful" })
         return
@@ -3624,12 +3624,12 @@ function friend_response(req, res, next) {
 
         // mark it as an event & toss on queue, which will be picked up by the client
         var d3ck_response   = {
-            knock    : true,
-            answer   : answer,
-            ip_addr  : ip_addr,
-            service  : service,
-            did      : req.body.did,
-            did_from : req.body.did_from
+            knock     : true,
+            answer    : answer,
+            ip_addr   : ip_addr,
+            service   : service,
+            did       : req.body.did,
+            from_d3ck : req.body.from_d3ck
         }
 
         // if (typeof req.body.secret != "undefined")
@@ -3638,9 +3638,9 @@ function friend_response(req, res, next) {
         var d3ck_status            = empty_status()
         d3ck_status.d3ck_requests  = d3ck_response
 
-        createEvent(ip_addr, {event_type: "service_response", "d3ck_id": d3ckid}, d3ck_status)
+        createEvent(ip_addr, {event_type: "service_response", "d3ck_id": from_d3ckid}, d3ck_status)
 
-        d3ck_queue.push({type: 'info', event: 'service_response', 'from_d3ck': req.body.did_from, 'd3ck_status': d3ck_status})
+        d3ck_queue.push({type: 'info', event: 'service_response', 'from_d3ck': from_d3ckid, 'd3ck_status': d3ck_status})
 
         // ack
         res.send(200, { emotion: "^..^" })
