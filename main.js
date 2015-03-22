@@ -3580,19 +3580,6 @@ function friend_response(req, res, next) {
 
     log.info('going in to create client schtuff....')
 
-    // if the IP we get the add from isn't in the ips the other d3ck
-    // says it has... add it in; they may be coming from a NAT or
-    // something weird
-    log.info('looking to see if the ip is in its json package')
-
-
-
-    if (!__.contains(_tmp_d3ck.all_ips, ip_addr)) {
-        log.info("they came from an IP that wasn't in their stated IPs... adding [" + ip_addr + "] to the IP pool just in case")
-        _tmp_d3ck.all_ips.push(ip_addr)
-    }
-
-
     var d3ck_data = {}
 
     log.info('responding to friend req')
@@ -3608,7 +3595,7 @@ function friend_response(req, res, next) {
         return
     }
     else {
-        log.info('read/writing to ' + d3ck_keystore +'/'+ d3ckid + "/_cli3nt.all")
+        log.info('reading ' + d3ck_keystore +'/'+ d3ckid + "/_cli3nt.all")
         try {
             d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
         }
@@ -3630,52 +3617,50 @@ function friend_response(req, res, next) {
     log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
 
 
+    var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/response/' + d3ckid + '/' + answer
 
-        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/response/' + d3ckid + '/' + answer
+    log.info('answer going to : ' + url)
 
-        log.info('answer going to : ' + url)
+    // gotta know where it goes...
+    if (typeof req.body.from_d3ck == 'undefined'){
+        log.error("Missing required d3ck ID in response")
+    }
+    var from_d3ck = req.body.from_d3ck
 
-        // gotta know where it goes...
-        if (typeof req.body.from_d3ck == 'undefined'){
-            log.error("Missing required d3ck ID in response")
-        }
-        var from_d3ck = req.body.from_d3ck
+    var d3ck_status     = empty_status()
 
-        var d3ck_status     = empty_status()
+    var d3ck_response   = {
+        knock       : true,
+        answer      : answer,
+        from_d3ck   : from_d3ck,
+        did         : bwana_d3ck.D3CK_ID
+    }
 
-        var d3ck_response   = {
-            knock       : true,
-            answer      : answer,
-            from_d3ck   : from_d3ck,
-            did         : bwana_d3ck.D3CK_ID
-        }
+    d3ck_status.d3ck_requests = d3ck_response
 
-        d3ck_status.d3ck_requests = d3ck_response
+    // createEvent(ip_addr, {event_type: "service_request", service: service, "d3ck_id": d3ckid}, d3ck_status)
+    createEvent(ip_addr, {event_type: "service_request", "d3ck_id": d3ckid}, d3ck_status)
 
-        // createEvent(ip_addr, {event_type: "service_request", service: service, "d3ck_id": d3ckid}, d3ck_status)
-        createEvent(ip_addr, {event_type: "service_request", "d3ck_id": d3ckid}, d3ck_status)
+    // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
+    d3ck_queue.push({type: 'info', event: 'service_request', 'd3ck_status': d3ck_status})
 
-        // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
-        d3ck_queue.push({type: 'info', event: 'service_request', 'd3ck_status': d3ck_status})
+    // var options = load_up_cc_cert(d3ckid)
+    var options = {}
 
-        // var options = load_up_cc_cert(d3ckid)
-        var options = {}
+    // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
+    options.form = req.body
 
-        // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
-        options.form = req.body
-
-        request.post(url, options, function cb (err, resp) {
-            if (err) {
-                log.error('post to remote failed:', JSON.stringify(err))
-                res.send(200, {"err" : err});
-                }
-            else {
-                log.info('service answer success...!')
-                log.info(resp.body)
-                res.send(200, resp.body)
+    request.post(url, options, function cb (err, resp) {
+        if (err) {
+            log.error('post to remote failed:', JSON.stringify(err))
+            res.send(200, {"err" : err});
             }
-        })
-
+        else {
+            log.info('service answer success...!')
+            log.info(resp.body)
+            res.send(200, resp.body)
+        }
+    })
 
     // xxx -> energize() -> make certz live
     // energize_d3ck()
