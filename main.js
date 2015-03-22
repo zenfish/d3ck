@@ -3687,7 +3687,7 @@ function friend_response(req, res, next) {
             log.info("\n\t\t!\t" + ip_addr + ' -> ' + JSON.stringify(d3ck_data.all_ips))
         }
 
-        log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
+        log.info('local d3ck read in... with: ' + JSON.stringify(d3ck_data).substring(0,SNIP_LEN) + ' .... ')
 
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/friend/response/' + d3ckid + '/' + answer
 
@@ -3702,27 +3702,25 @@ function friend_response(req, res, next) {
         var d3ck_status     = empty_status()
 
         var d3ck_response   = {
-            knock       : true,
-            answer      : answer,
-            from_d3ck   : from_d3ck,
-            did         : bwana_d3ck.D3CK_ID
+            knock     : true,
+            answer    : answer,
+            from_d3ck : from_d3ck,
+            did       : bwana_d3ck.D3CK_ID,
+            d3ck_data : d3ck_data;
         }
 
         d3ck_status.d3ck_requests = d3ck_response
 
         // createEvent(ip_addr, {event_type: "service_request", service: service, "d3ck_id": d3ckid}, d3ck_status)
-        createEvent(ip_addr, {event_type: "service_request", "d3ck_id": d3ckid}, d3ck_status)
+        createEvent(ip_addr, {event_type: "friend_response", "d3ck_id": d3ckid}, d3ck_status)
 
         // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
-        d3ck_queue.push({type: 'info', event: 'service_request', 'd3ck_status': d3ck_status})
+        d3ck_queue.push({type: 'info', event: 'friend_response', 'd3ck_status': d3ck_status})
 
-        // var options = load_up_cc_cert(d3ckid)
         var options = {}
 
         // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
-        options.form = {}
-
-        options.form.d3ck_data = d3ck_response
+        options.form = d3ck_response
 
         request.post(url, options, function cb (err, resp) {
             if (err) {
