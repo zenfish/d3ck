@@ -1914,9 +1914,6 @@ function cli3nt_into_stone(ip_addr, d3ckid) {
 
     log.info('carving cli3nt d3ck into a stone tablet')
 
-    // need a secret they'll send back if they say yes
-    var secret = generate_friend_request(ip_addr)
-
     // generate cert stuff
     command = d3ck_bin + '/bundle_certs.js'
 
@@ -4627,6 +4624,9 @@ function create_d3ck_by_ip(req, res, next) {
             log.info('remote system @ ' + ip_addr + ' -> ' + _remote_d3ck.did)
         }
 
+
+        // need a secret they'll send back if they say yes
+        var secret = generate_friend_request(ip_addr)
 
         // carve it into fs as well
         cli3nt_into_stone(ip_addr, _remote_d3ck.did)
