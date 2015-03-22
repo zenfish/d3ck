@@ -2922,16 +2922,10 @@ function request_lookup(did, service, req_id) {
 
     try {
         outstanding_requests[did][req_id]['service']
-        // log.info('checks out - request made @ ')
-        // outstanding_requests[did][req_id]['time']
         return true
     }
     catch (e) {
-        // try { log.error(JSON.stringify(outstanding_requests)) } catch (e) { log.error(1) }
-        // try { log.error(JSON.stringify(outstanding_requests[did])) } catch (e) { log.error(2) }
-        // try { log.error(JSON.stringify(outstanding_requests[did][req_id])) } catch (e) { log.error(6) }
-        // try { log.error(JSON.stringify(outstanding_requests[did][req_id])) } catch (e) { log.error(7) }
-        log.error('nope')
+        log.warn('nope')
         return false
     }
 
@@ -3138,6 +3132,7 @@ function serviceRequest(req, res, next) {
             options.url            = '/vpn/start'
             options.form           = {}
             options.form.ip_addr   = ip_addr
+            options.form.from_ip   = from_ip
             options.form.d3ckid    = d3ckid
             options.form.from_d3ck = bwana_d3ck.D3CK_ID
 
