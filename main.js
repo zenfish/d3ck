@@ -3623,7 +3623,6 @@ function friend_response(req, res, next) {
         var d3ck_response   = {
             answer    : answer,
             ip_addr   : ip_addr,
-            service   : service,
             secret    : secret,
             did       : req.body.did,
             from_d3ck : req.body.from_d3ck
