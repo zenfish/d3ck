@@ -3691,7 +3691,7 @@ function friend_response(req, res, next) {
 
         log.info('local d3ck read in... with: ' + JSON.stringify(d3ck_data).substring(0,SNIP_LEN) + ' .... ')
 
-        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/friend/response/' + d3ckid + '/' + answer
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/fri3nd/response'
 
         log.info('answer going to : ' + url)
 
@@ -3719,7 +3719,6 @@ function friend_response(req, res, next) {
         d3ck_queue.push({type: 'info', event: 'friend_response', 'd3ck_status': d3ck_status})
 
         d3ck_response.d3ck_data = d3ck_data
-
 
         var options = load_up_cc_cert(from_d3ck)
 
