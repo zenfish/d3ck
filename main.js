@@ -3706,7 +3706,7 @@ function friend_response(req, res, next) {
             answer    : answer,
             from_d3ck : from_d3ck,
             did       : bwana_d3ck.D3CK_ID,
-            d3ck_data : d3ck_data;
+            d3ck_data : d3ck_data
         }
 
         d3ck_status.d3ck_requests = d3ck_response
