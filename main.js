@@ -1824,12 +1824,12 @@ function create_cli3nt_rest(req, res, next) {
         res.send(420, { error: "couldn't retrieve client certificates" } )
         return
     }
-    
+
     else {
         log.info('read/writing to ' + d3ck_keystore +'/'+ did + "/_cli3nt.all")
-    
+
         cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ did + "/_cli3nt.json").toString())
-    
+
         write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
         write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
     }
@@ -1842,7 +1842,7 @@ function create_cli3nt_rest(req, res, next) {
 
         // log.info('\n\n\ndisabled for now...\n\n')
         log.info('\n\n\n---> moment o truth <-----\n\n\n')
-        create_d3ck_locally(ip_addr, secret_obj, did) 
+        create_d3ck_locally(ip_addr, secret_obj, did)
 
     }
 
@@ -1852,9 +1852,9 @@ function create_cli3nt_rest(req, res, next) {
 
         res.send(200, JSON.stringify(cli3nt_bundle))
     }
-    catch (e) { 
-        log.error('failzor?  ' + JSON.stringify(e)); 
-        res.send(200, cli3nt_bundle) 
+    catch (e) {
+        log.error('failzor?  ' + JSON.stringify(e));
+        res.send(200, cli3nt_bundle)
     }
 
 }
@@ -2126,7 +2126,7 @@ function create_d3ck_key_store(data) {
         }
     })
 
-    // first what 
+    // first what
     write_2_file(cert_dir + '/d3ck.did',     data.D3CK_ID)
     write_2_file(cert_dir + '/d3ck.key',     key)
     write_2_file(cert_dir + '/d3ck.crt',     cert)
@@ -2825,7 +2825,7 @@ function generate_friend_request(ip_addr) {
 //
 // generate a request token, which is a d3ck ID + rand() pair.
 // responses must have the same token as well as auth via
-// cert/etc (if applicable; for instance friend requests won't have 
+// cert/etc (if applicable; for instance friend requests won't have
 // auth yet.
 //
 // All unanswered requests go into a global var outstanding_requests,
@@ -2847,7 +2847,7 @@ function generate_friend_request(ip_addr) {
 function request_generate(did, service){
 
     log.info('generating request # for ' + did)
-    
+
     if (typeof outstanding_requests[did] === 'undefined') {
         log.info('creating new request space for ' + did)
         outstanding_requests[did] = {}
@@ -2867,7 +2867,7 @@ function request_generate(did, service){
     }
 
     var request = {}
-    
+
     request.time    = (new Date).getTime()
     request.service = service
 
@@ -2891,7 +2891,7 @@ function request_save(did, service, req_id) {
 
     log.info('saving request # for ' + did)
     log.info(did, service, req_id)
-    
+
     if (typeof outstanding_requests[did] === 'undefined') {
         log.info('creating new request space for ' + did)
         outstanding_requests[did] = {}
@@ -3033,7 +3033,7 @@ function serviceRequest(req, res, next) {
         // Use cert if have it - only initial friend requests won't
         //
         var options = {}
-        
+
         log.info('loadin up the certs, with retsin!')
         options = load_up_cc_cert(d3ckid)
 
@@ -3116,7 +3116,7 @@ function serviceRequest(req, res, next) {
         // are we allowed?
         if (! look_up_cap(service, d3ckid)) {
             log.error("you're not allowed, rejected!")
-            return 
+            return
         }
 
         // sanity check
@@ -3169,14 +3169,14 @@ function serviceRequest(req, res, next) {
 //                 if (err) {
 //                     log.error('post to remote failed:', JSON.stringify(err))
 //                     d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
-// 
+//
 //                     res.send(200, {"err" : err});
 //                     }
 //                 else {
 //                     log.info('knock returned... something - RC: ' + res.statusCode)
-// 
+//
 //                     // log.info(res)
-// 
+//
 //                     if (resp.statusCode != 200) {
 //                         d3ck_queue.push({type: 'info', event: 'service_request_return', service: service, statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
 //                         log.info(resp.body)
@@ -3211,19 +3211,19 @@ function serviceRequest(req, res, next) {
 }
 
 //
-// first look up in capabilies... what's the appropriate response?  
+// first look up in capabilies... what's the appropriate response?
 // Ask the user, do it, throw it away, ....?
 //
 // 3 possible answers: "off", "ask", & "on"
 function look_up_cap(service, d3ckid) {
 
     log.info('in look_up_cap -> ' + service)
-    
+
     var _tmp_d3ck = {}
 
     if (typeof all_d3cks[d3ckid] === "undefined") {
         log.error("Wasn't given a d3ck ID, bailin' out")
-        return 
+        return
     }
 
     var cap         = all_d3cks[d3ck_id].capabilities
@@ -3368,7 +3368,7 @@ function serviceResponse(req, res, next) {
         log.info('pass it along....')
 
         // do we know their cert? If not, we'd better know a secret or we probably won't get far
-        if (typeof ip_addr === "undefined") ip_addr = d3ck2ip[d3ckid] 
+        if (typeof ip_addr === "undefined") ip_addr = d3ck2ip[d3ckid]
 
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/response/' + d3ckid + '/' + answer
 
@@ -3402,48 +3402,6 @@ function serviceResponse(req, res, next) {
 
         // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
         options.form = req.body
-
-
-
-        if (service == 'friend request') {
-
-            var d3ck_data = {}
-
-            log.info('responding to friend req')
-
-            // generate cert stuff
-            var command = d3ck_bin + '/bundle_certs.js'
-
-            // create client bundle
-            var keyout = d3ck_spawn_sync(command, [d3ckid])
-
-            if (keyout.code) {
-                log.error("error in bundle-certz")
-                return
-            }
-            else {
-                log.info('read/writing to ' + d3ck_keystore +'/'+ d3ckid + "/_cli3nt.all")
-                try {
-                    d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
-                }
-                catch (e) {
-                    log.error("couldn't read -> " + JSON.stringify(e))
-                    return
-                }
-            }
-
-            if (__.contains(d3ck_data.all_ips, ip_addr)) {
-                log.info("the d3ck data doens't contain the IP this is going to... adding [" + ip_addr + "] to IP pool just in case")
-                d3ck_data.all_ips.push(ip_addr)
-            }
-            else {
-                log.info("\n\n\t\t!!!!" + ip_addr + ' !-> ' + JSON.stringify(d3ck_data.all_ips))
-            }
-
-            options.form.d3ck_data = d3ck_data
-            log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
-
-        }
 
         request.post(url, options, function cb (err, resp) {
             if (err) {
@@ -3481,8 +3439,8 @@ function friend_request(req, res, next) {
     //
 
     // need various bits and pieces....
-    if (typeof d3ckid    === "undefined" || 
-        typeof secret    === "undefined" || 
+    if (typeof d3ckid    === "undefined" ||
+        typeof secret    === "undefined" ||
         typeof from_ip   === "undefined" ||
         typeof from_d3ck === "undefined" ||
         typeof ip_addr   === "undefined") {
@@ -3519,13 +3477,13 @@ function friend_request(req, res, next) {
         //
         log.info("you want to be my friend?  You care!  You really care!")
 
-        // if (typeof d3ck2ip[d3ckid] === "undefined") ip_addr = d3ck2ip[d3ckid] 
+        // if (typeof d3ck2ip[d3ckid] === "undefined") ip_addr = d3ck2ip[d3ckid]
 
         var _tmp_d3ck = {}
 
         if (typeof req.body.d3ck_data === "undefined") {
             log.error("Wasn't given remote d3ck data, friend request failed")
-            return 
+            return
         }
         else {
             _tmp_d3ck = req.body.d3ck_data
@@ -3587,35 +3545,6 @@ function friend_request(req, res, next) {
 //
 function friend_response(req, res, next) {
 
-
-//TEST
-//TEST    is coming from cli3nt?  If so, pass
-//TEST
-//TEST
-
-//
-//This should be d3ck <-> d3ck only:
-
-//    // knock knock proto to request access to a service
-//    server.post('/service/request', auth, serviceRequest);
-//
-//    // reply to above
-//    server.post('/service/response/:d3ckid/:answer', auth, serviceResponse)
-//
-//    // friend request
-//    server.post('/fri3nd/request', auth, friend_request);
-//
-//    // friend response
-//    server.post('/fri3nd/response', auth, friend_response)
-//
-//
-//With another simple one that simply informs or asks user, and an answer place:
-//
-//    server.post('/cli3nt_response')
-//
-//
-//
-
     var answer  = req.body.answer,
         d3ckid  = req.body.from_d3ck,
         secret  = req.body.secret,
@@ -3649,12 +3578,124 @@ function friend_response(req, res, next) {
         return
     }
 
+
+    // is coming from user/cli3nt?  If so, create their certs and stuff and pass them to the other d3ck
+    if (req.isAuthenticated()) {
+
+        // create and carve certz into fs
+        cli3nt_into_stone(ip_addr, d3ckid)
+
+
+    }
+
+    else {
+
+
+
+
+
+
+
     var _tmp_d3ck = {}
 
     log.info('going in to create client schtuff....')
 
-    // carve it into fs as well
-    cli3nt_into_stone(ip_addr, _remote_d3ck)
+    // if the IP we get the add from isn't in the ips the other d3ck
+    // says it has... add it in; they may be coming from a NAT or
+    // something weird
+    log.info('looking to see if the ip is in its json package')
+
+
+
+    if (!__.contains(_tmp_d3ck.all_ips, ip)) {
+        log.info("they came from an IP that wasn't in their stated IPs... adding [" + ip + "] to the IP pool just in case")
+        _tmp_d3ck.all_ips.push(ip)
+    }
+
+
+    var d3ck_data = {}
+
+    log.info('responding to friend req')
+
+    // generate cert stuff
+    var command = d3ck_bin + '/bundle_certs.js'
+
+    // create client bundle
+    var keyout = d3ck_spawn_sync(command, [d3ckid])
+
+    if (keyout.code) {
+        log.error("error in bundle-certz")
+        return
+    }
+    else {
+        log.info('read/writing to ' + d3ck_keystore +'/'+ d3ckid + "/_cli3nt.all")
+        try {
+            d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+        }
+        catch (e) {
+            log.error("couldn't read -> " + JSON.stringify(e))
+            return
+        }
+    }
+
+    if (__.contains(d3ck_data.all_ips, ip_addr)) {
+        log.info("the d3ck data doens't contain the IP this is going to... adding [" + ip_addr + "] to IP pool just in case")
+        d3ck_data.all_ips.push(ip_addr)
+    }
+    else {
+        log.info("\n\n\t\t!!!!" + ip_addr + ' !-> ' + JSON.stringify(d3ck_data.all_ips))
+    }
+
+    options.form.d3ck_data = d3ck_data
+    log.info('local d3ck read in... with: ' + JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
+
+
+
+        var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/response/' + d3ckid + '/' + answer
+
+        log.info('answer going to : ' + url)
+
+        // gotta know where it goes...
+        if (typeof req.body.from_d3ck == 'undefined'){
+            log.error("Missing required d3ck ID in response")
+        }
+        var from_d3ck = req.body.from_d3ck
+
+        var d3ck_status     = empty_status()
+
+        var d3ck_response   = {
+            knock       : true,
+            answer      : answer,
+            from_d3ck   : from_d3ck,
+            did         : bwana_d3ck.D3CK_ID
+        }
+
+        d3ck_status.d3ck_requests = d3ck_response
+
+        // createEvent(ip_addr, {event_type: "service_request", service: service, "d3ck_id": d3ckid}, d3ck_status)
+        createEvent(ip_addr, {event_type: "service_request", "d3ck_id": d3ckid}, d3ck_status)
+
+        // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
+        d3ck_queue.push({type: 'info', event: 'service_request', 'd3ck_status': d3ck_status})
+
+        // var options = load_up_cc_cert(d3ckid)
+        var options = {}
+
+        // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
+        options.form = req.body
+
+        request.post(url, options, function cb (err, resp) {
+            if (err) {
+                log.error('post to remote failed:', JSON.stringify(err))
+                res.send(200, {"err" : err});
+                }
+            else {
+                log.info('service answer success...!')
+                log.info(resp.body)
+                res.send(200, resp.body)
+            }
+        })
+
 
     // xxx -> energize() -> make certz live
     // energize_d3ck()
@@ -3663,6 +3704,10 @@ function friend_response(req, res, next) {
     // do_everything_client_create(_tmp_d3ck)
 
     redirect_to_home = true
+
+
+    }
+
 
 }
 
@@ -4489,7 +4534,7 @@ function get_https(url) {
             deferred.reject(err)
         }
         else {
-            log.info('req returned: ' + JSON.stringify(body))
+            log.info('req returned: ' + body)
             deferred.resolve(body)
         }
     });
@@ -4576,7 +4621,7 @@ function create_d3ck_by_ip(req, res, next) {
 
         if (typeof _remote_d3ck.did === "undefined") {
             log.error("remote system " + ip_addr + "wasn't a d3ck: " + JSON.stringify(_remote_d3ck))
-            return 
+            return
         }
         else {
             log.info('remote system @ ' + ip_addr + ' -> ' + _remote_d3ck.did)
@@ -4592,6 +4637,15 @@ function create_d3ck_by_ip(req, res, next) {
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/fri3nd/request'
 
         var options  = { url: url }
+
+        log.info(_remote_d3ck.did)
+            log.info(bwana_d3ck.D3CK_ID)
+            log.info(my_ip)
+            log.info(ip_addr)
+            log.info(my_ips)
+            log.info(bwana_d3ck.owner.name)
+            log.info(secret)
+            log.info(JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ _remote_d3ck.did + "/_cli3nt.json").toString()))
 
         options.form = {
             d3ckid    : _remote_d3ck.did,
@@ -4663,7 +4717,7 @@ function create_d3ck_locally(ip_addr, secret, did) {
     var options  = {}
 
     options.url  = c_url
-    options.form = { 
+    options.form = {
         from_d3ck : bwana_d3ck.D3CK_ID,
         secret    : secret,
         did       : did
@@ -4993,7 +5047,7 @@ async.whilst(
             log.info('whilst terminated normally')
         }
     }
-) 
+)
 // Ping action - no auth
 server.get('/ping', auth, echoReply)
 
