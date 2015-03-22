@@ -3588,7 +3588,7 @@ function friend_response(req, res, next) {
 
 
     if (!__.contains(_tmp_d3ck.all_ips, ip_addr)) {
-        log.info("they came from an IP that wasn't in their stated IPs... adding [" + ip + "] to the IP pool just in case")
+        log.info("they came from an IP that wasn't in their stated IPs... adding [" + ip_addr + "] to the IP pool just in case")
         _tmp_d3ck.all_ips.push(ip_addr)
     }
 
