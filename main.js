@@ -3101,12 +3101,6 @@ function serviceRequest(req, res, next) {
     else if (d3ckid == bwana_d3ck.D3CK_ID || __.contains(my_ips, ip_addr)) {
         log.info('for me... hmm... could be a trick...')
 
-
-
-        //
-        // other services....
-        //
-
         if (typeof all_d3cks[d3ckid] === 'undefined') {
             log.error("don't know " + d3ckid + ", ignoring request")
             return
@@ -3155,6 +3149,7 @@ function serviceRequest(req, res, next) {
                 owner     : owner,
                 from_d3ck : bwana_d3ck.D3CK_ID,
                 service   : service,
+                secret    : secret,
                 req_id    : req_id,
                 did       : d3ckid
             }
@@ -3191,10 +3186,10 @@ function serviceRequest(req, res, next) {
 
             createEvent(client_ip, {event_type: service, ip_addr: ip_addr, from_d3ck: from_d3ck, d3ck_id: d3ckid, req_id: req_id}, d3ck_status)
 
-            d3ck_queue.push({type: 'request', event: 'service' , 'd3ck_status': d3ck_status })
+            log.info('vpn started....?')
 
-            log.info('vpn off....')
             // XXXX immediately send back done/success if permissions are just do-eet
+
             res.send(200, { emotion: "<3" })
         }
         else {
