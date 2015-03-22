@@ -2987,8 +2987,6 @@ function serviceRequest(req, res, next) {
 
     // need a request ID to associate it with, along with sanity check
 
-    req_id = request_generate(from_d3ck, service)
-
     // if doesn't have a request ID it needs to be coming from the user, or it's trouble
     if (req.isAuthenticated()) {
         req_id = request_generate(from_d3ck, service)
