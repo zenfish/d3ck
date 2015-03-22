@@ -1959,6 +1959,7 @@ function confirm_or_deny_or(type, req, element) {
                     post_data.from_ip   = req.from_ip
                     post_data.from_d3ck = req.from_d3ck
                     post_data.service   = service
+                    post_data.req_id    = req.req_id
                     post_data.answer    = answer
                     post_data           = JSON.stringify(post_data)
 
