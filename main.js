@@ -592,13 +592,15 @@ function check_certificate(headerz) {
         var cn        = headerz['x-ssl-client-s-dn'].substr(loc_cn)
         var c_d3ck_id = cn.split('.')[0]
 
-        // this should be unneccessary....
-        if (typeof all_d3cks[c_d3ck_id] == "undefined") {
-            log.error("d3ck with cert wasnt in the all_d3cks data structure... " + c_d3ck_id)
-            // process.exit(55)
-            return false
-        }
-        else if (c_d3ck_id != bwana_d3ck) {
+        // this should be unneccessary... friend responses won't be in here... so for now, kill
+//      if (typeof all_d3cks[c_d3ck_id] == "undefined") {
+//          log.error("d3ck with cert wasnt in the all_d3cks data structure... " + c_d3ck_id)
+//          // process.exit(55)
+//          return false
+//      }
+//      else if (c_d3ck_id != bwana_d3ck) {
+
+        if (c_d3ck_id != bwana_d3ck) {
             log.info('cert chex out')
             return true
         }
