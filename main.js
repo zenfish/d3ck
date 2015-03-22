@@ -3037,6 +3037,7 @@ function serviceRequest(req, res, next) {
         options.form.req_id    = req_id
         options.form.ip_addr   = ip_addr
         options.form.d3ckid    = d3ckid
+        options.form.from_d3ck = from_d3ck
         options.form.from      = bwana_d3ck.owner.name
 
         log.info(JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
@@ -3047,7 +3048,6 @@ function serviceRequest(req, res, next) {
             from_ip   : from_ip,
             from_d3ck : from_d3ck,
             owner     : owner,
-            from_d3ck : bwana_d3ck.D3CK_ID,
             service   : service,
             req_id    : req_id,
             did       : d3ckid
