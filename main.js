@@ -3624,10 +3624,10 @@ function friend_response(req, res, next) {
 
         // mark it as an event & toss on queue, which will be picked up by the client
         var d3ck_response   = {
-            knock     : true,
             answer    : answer,
             ip_addr   : ip_addr,
             service   : service,
+            secret    : secret,
             did       : req.body.did,
             from_d3ck : req.body.from_d3ck
         }
