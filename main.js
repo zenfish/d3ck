@@ -3544,8 +3544,11 @@ function friend_response(req, res, next) {
 
     var answer  = req.body.answer,
         d3ckid  = req.body.from_d3ck,
-        secret  = req.body.secret,
+        secret  = req.body.secret;
         ip_addr = req.body.from_ip;
+
+
+    client_ip = get_client_ip(req)
 
     log.info('... an answer to friend request...?')
 
@@ -3559,7 +3562,7 @@ function friend_response(req, res, next) {
 
     // xxx -> kill-off-tmp-cert-stuff
     if (answer != 'yes') {
-        log.error(ip_addr + '/' + d3ckid + "refused friend request... inconceivable!")
+        log.error(d3ckid + " refused friend request... inconceivable!")
         return
     }
 
@@ -3587,6 +3590,9 @@ function friend_response(req, res, next) {
 
         log.info('friend request response...?')
 
+        // the other d3ck responding
+        ip_addr = get_client_ip(req)
+
         var _tmp_d3ck = {}
 
         if (typeof req.body.d3ck_data === "undefined") {
@@ -3595,7 +3601,6 @@ function friend_response(req, res, next) {
         }
         else {
             _tmp_d3ck = req.body.d3ck_data
-            // log.info('remote d3ck_data    ' + JSON.stringify(req.body.d3ck_data).substring(0,SNIP_LEN) + ' .... ')
             log.info("writing remote d3ck's certs they sent... : " + JSON.stringify(_tmp_d3ck).substring(0,SNIP_LEN) + ' .... ')
         }
 
@@ -3717,8 +3722,7 @@ function friend_response(req, res, next) {
         // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
         options.form = {}
 
-        options.form.d3ck_data = d3ck_data
-
+        options.form.d3ck_data = d3ck_response
 
         request.post(url, options, function cb (err, resp) {
             if (err) {
