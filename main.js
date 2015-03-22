@@ -3554,7 +3554,7 @@ function friend_response(req, res, next) {
 
     log.info('... an answer to friend request...?')
 
-    log.info(req.body)
+    log.info(JSON.stringify(req.body).substring(0,SNIP_LEN) + ' .... ')
 
     if (typeof answer === "undefined" || typeof ip_addr === "undefined" || typeof secret === "undefined" || typeof from_d3ck === "undefined") {
         log.error('missing one of: answer, from_d3ck, secret, and ip addr:')
@@ -3707,6 +3707,7 @@ function friend_response(req, res, next) {
             knock     : true,
             answer    : answer,
             from_d3ck : from_d3ck,
+            from_ip   : ip_addr,
             did       : bwana_d3ck.D3CK_ID
         }
 
@@ -3718,11 +3719,11 @@ function friend_response(req, res, next) {
         // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
         d3ck_queue.push({type: 'info', event: 'friend_response', 'd3ck_status': d3ck_status})
 
+        var options             = load_up_cc_cert(from_d3ck)
+
+        options.url             = url
+
         d3ck_response.d3ck_data = d3ck_data
-
-        var options = load_up_cc_cert(from_d3ck)
-
-        options.url  = url
 
         // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: from_d3ck }
         options.form = d3ck_response
