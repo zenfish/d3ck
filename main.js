@@ -3664,16 +3664,16 @@ function friend_response(req, res, next) {
         var command = d3ck_bin + '/bundle_certs.js'
 
         // create client bundle
-        var keyout = d3ck_spawn_sync(command, [d3ckid])
+        var keyout = d3ck_spawn_sync(command, [from_d3ck])
 
         if (keyout.code) {
             log.error("error in bundle-certz")
             return
         }
         else {
-            log.info('reading ' + d3ck_keystore +'/'+ d3ckid + "/_cli3nt.all")
+            log.info('reading ' + d3ck_keystore +'/'+ from_d3ck + "/_cli3nt.all")
             try {
-                d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+                d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ from_d3ck + "/_cli3nt.json").toString())
             }
             catch (e) {
                 log.error("couldn't read -> " + JSON.stringify(e))
