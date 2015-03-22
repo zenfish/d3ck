@@ -3381,8 +3381,7 @@ function serviceResponse(req, res, next) {
         // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
         d3ck_queue.push({type: 'info', event: 'service_request', 'd3ck_status': d3ck_status})
 
-        // var options = load_up_cc_cert(d3ckid)
-        var options = {}
+        var options = load_up_cc_cert(d3ckid)
 
         // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
         options.form = req.body
