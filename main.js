@@ -3341,7 +3341,7 @@ function serviceResponse(req, res, next) {
 
             var options = {}
 
-            options.form = {"d3ckid": d3ckid, "ip_addr": ipaddr}
+            options.form = {"d3ckid": d3ckid, "ip_addr": ip_addr}
 
             request.post(url, options, function cb (err, resp) {
                 if (err) {
