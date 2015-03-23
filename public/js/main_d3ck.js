@@ -148,7 +148,15 @@ $(document).ready(function () {
             type: "POST",
             url: "/service/request",
             // data: {d3ckid: my_d3ck.D3CK_ID, ipaddr: my_d3ck.ip_addr}
-            data: {d3ckid: vd3ckid, from_d3ck: my_d3ck.D3CK_ID, from_ip: my_d3ck.ip_addr, ip_addr: ipaddr, owner: my_d3ck.owner.name, service: 'VPN' }
+            data: {
+                    d3ckid    : vd3ckid,
+                    from_d3ck : my_d3ck.D3CK_ID,
+                    from_ip   : my_d3ck.ip_addr,
+                    ip_addr   : ipaddr,
+                    owner     : my_d3ck.owner.name,
+                    service   : 'VPN',
+                    extras    : { vpn_to: vd3ckid }
+                  }
         })
 
         knock_knock.done(function(msg) {

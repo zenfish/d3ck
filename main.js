@@ -2843,7 +2843,7 @@ function generate_friend_request(ip_addr) {
 // xxx - really should do some sort of checking to clear out old or answered requests
 //
 
-function request_generate(did, service){
+function request_generate(did, service, extras) {
 
     log.info('generating request # for ' + did)
 
@@ -2869,6 +2869,9 @@ function request_generate(did, service){
 
     request.time    = (new Date).getTime()
     request.service = service
+
+    // arguments, extra stuff, etc. that might be useful later
+    request.extras = extras
 
     outstanding_requests[did][randy] = request
 
@@ -2958,6 +2961,7 @@ function serviceRequest(req, res, next) {
         from_ip   = req.body.from_ip,
         owner     = req.body.owner,
         service   = req.body.service,
+        extras    = req.body.extras,
         req_id    = req.body.req_id;
 
     log.info(d3ckid)
@@ -2991,7 +2995,7 @@ function serviceRequest(req, res, next) {
 
     // if doesn't have a request ID it needs to be coming from the user, or it's trouble
     if (req.isAuthenticated()) {
-        req_id = request_generate(from_d3ck, service)
+        req_id = request_generate(from_d3ck, service, extras)
     }
     else if (typeof req_id === 'undefined' || req_id < 0) {
         log.info(req_id)
@@ -3341,7 +3345,21 @@ function serviceResponse(req, res, next) {
 
             var options = {}
 
-            options.form = {"d3ckid": d3ckid, "ip_addr": ip_addr}
+            var extras  = {}
+            try {
+                extras = outstanding_requests[did][req_id]['extras']
+            }
+            catch (e) {
+                log.error('information about who to VPN to is missing, bailing out')
+                return
+            }
+
+            console.log(extras)
+
+            options.form = {
+                "d3ckid"  : extras.vpn_to,
+                "ip_addr" : d3ck2ip[extras.vpn_to]
+            }
 
             log.info('local posting to ' + url)
             log.info(options)
