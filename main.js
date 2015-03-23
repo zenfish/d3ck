@@ -3332,7 +3332,7 @@ function serviceResponse(req, res, next) {
         d3ck_queue.push({type: 'info', event: 'service_response', 'from_d3ck': req.body.from_d3ck, 'd3ck_status': d3ck_status})
 
 
-        var url = 'https://localhost:' + d3ck_port_int + '/vpn/start'
+        var url = 'http://localhost:' + d3ck_port_int + '/vpn/start'
 
         //
         // go through the various known services... which one...?
@@ -3343,9 +3343,12 @@ function serviceResponse(req, res, next) {
 
             options.form = {"d3ckid": d3ckid, "ip_addr": ip_addr}
 
+            log.info('local posting to ' + url)
+            log.info(options)
+
             request.post(url, options, function cb (err, resp) {
                 if (err) {
-                    log.error('post to remote failed:', JSON.stringify(err))
+                    log.error('post to local failed:', JSON.stringify(err))
                     return
                     }
                 else {
