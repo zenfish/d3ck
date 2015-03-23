@@ -1945,7 +1945,7 @@ function confirm_or_deny_or(type, req, element) {
                 inform_user('info', req.owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
             }
             else {
-                inform_user('info', req.did   + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
+                inform_user('info', req.did   + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + 'wowzer')
             }
 
 

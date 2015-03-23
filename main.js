@@ -2914,6 +2914,8 @@ function request_save(did, service, req_id) {
 //
 // does a given request exist?
 //
+//  check if d3ck ID, service, and request ID all match an existing request
+//
 function request_lookup(did, service, req_id) {
 
     log.info('so, herr doktor, have you ever heard of this?')
@@ -3117,12 +3119,6 @@ function serviceRequest(req, res, next) {
         }
 
         if (service == 'VPN') {
-
-            //     var pvpn = $.ajax({
-            //         type: "POST",
-            //         url: "/vpn/start",
-            //         data: {"d3ckid": d3ckid, "ip_addr": ipaddr}
-            //     })
 
             var options            = {}
 
@@ -3334,6 +3330,36 @@ function serviceResponse(req, res, next) {
         createEvent(ip_addr, {event_type: "service_response", "d3ck_id": d3ckid}, d3ck_status)
 
         d3ck_queue.push({type: 'info', event: 'service_response', 'from_d3ck': req.body.from_d3ck, 'd3ck_status': d3ck_status})
+
+
+        var url = 'https://localhost:' + d3ck_port_int + '/vpn/start'
+
+        //
+        // go through the various known services... which one...?
+        //
+        if (service == 'VPN') {
+
+            var options = {}
+
+            options.form = {"d3ckid": d3ckid, "ip_addr": ipaddr}
+
+            request.post(url, options, function cb (err, resp) {
+                if (err) {
+                    log.error('post to remote failed:', JSON.stringify(err))
+                    return
+                    }
+                else {
+                    log.info('service answer success...!')
+                    log.info(resp.body)
+                    return
+                }
+            })
+
+        }
+
+        else {
+            log.error('unknown service: ' + service)
+        }
 
         // ack
         res.send(200, { emotion: "^..^" })
