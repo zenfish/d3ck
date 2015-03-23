@@ -3346,6 +3346,9 @@ function serviceResponse(req, res, next) {
             var options = {}
 
             var extras  = {}
+
+            console.log(oustanding_requests)
+
             try {
                 extras = outstanding_requests[did][req_id]['extras']
             }
