@@ -1039,17 +1039,18 @@ function queue_or_die(queue) {
         }
 
         else if (queue.event == 'vpn_client_connected') {
-            // inform_user('VPN', "your d3ck has established a VPN connection", 'success')
+            console.log('vpn_client_connected....!')
+
+            var did    = queue.d3ck_status.openvpn_client.client_did
+            var friend = all_d3ck_ids[did].owner.name
+            var ip     = queue.d3ck_status.openvpn_client.client
+
+            console.log('to... ', did, friend, ip)
+
             inform_user('VPN', "connection established", 'success')
-
             state_ring(false)    // bang a gong
-
-            var ip = $('#' + did + ' .remote_ip strong:eq(1)').text()
-            console.log('to... ' + ip)
-
-            event_connect('outgoing', $(this).parent().parent().find('.d3ckname').text())
-
             state_vpn('outgoing', browser_ip, queue)
+
         }
 
         else if (queue.event == 'vpn_client_disconnected') {
@@ -1058,13 +1059,14 @@ function queue_or_die(queue) {
         }
 
         else if (queue.event == 'vpn_server_connected') {
+            console.log('vpn_server_connected....!')
+
             var did    = queue.d3ck_status.openvpn_server.client_did
             var friend = all_d3ck_ids[did].owner.name
             var ip     = queue.d3ck_status.openvpn_server.client
 
             inform_user('VPN', 'remote d3ck (' + friend + ' / ' + ip + ' / ' + did + ') established a VPN connection to your d3ck', 'vpn')
             state_ring(false)    // bang a gong
-
             state_vpn('incoming', browser_ip, queue)
 
         }
@@ -1932,15 +1934,15 @@ function confirm_or_deny_or(type, req, element) {
             // let's be friends?
             if (service == 'friend request') {
                 alertify.set({
-                    buttonReverse   : true,
-                    labels          : { ok: 'Confirm', cancel: 'Not Now' }
+                    buttonReverse : true,
+                    labels        : { ok: 'Confirm', cancel: 'Not Now' }
                 })
             }
             // currently only calls
             else {
                 alertify.set({
-                    buttonReverse   : true,
-                    labels          : { ok: 'Answer', cancel: 'Decline' }
+                    buttonReverse : true,
+                    labels        : { ok: 'Answer', cancel: 'Decline' }
                 });
             }
 
@@ -2135,13 +2137,15 @@ function show_user_sequence(d3ckid) {
     //  return
     //
 
-    var message_request = '<h2 style="position: relative;">Calling</h2>' +
-                          '<img style="display: block; margin-left: auto; margin-right: auto; height:64px;" src="' + all_d3ck_ids[d3ckid].image + '">'
+    var message_request = '<h2 style="position: relative;">Calling</h2>' + \
+                          '<img style="display: block; margin-left: auto; margin-right: auto; height:64px;" src="' + \
+                          all_d3ck_ids[d3ckid].image + '">' + \
+                          '<h2 style="position: relative;">'  + all_d3ck_ids[d3ckid].owner.name + '</h2>'
 
     $("#labels", function () {
         alertify.set({
-            // delay           : DEFAULT_RING_TIME,
-            labels          : { ok: "ok", cancel: "Cancel" }
+            // delay : DEFAULT_RING_TIME,
+            labels : { ok: "ok", cancel: "Cancel" }
         });
 
         // if user hits cancel...
