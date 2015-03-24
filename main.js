@@ -181,7 +181,7 @@ var outstanding_requests = {}
 
 // the last client request did+IP pair we tried...
 // will be [did, ip]
-last_vpn_client = ''
+last_vpn_client_server = ''
 
 //
 // URLs that anyone can contact
@@ -1086,7 +1086,7 @@ function watch_logs(logfile, log_type) {
             // Peer Connection Initiated with 192.168.0.141:41595
             if (line.indexOf(magic_client_up) == 0) {
 
-                server_remote_ip = last_vpn_client
+                server_remote_ip = last_vpn_client_server
 
                 // server_remote_ip = line.match(/^Server : ((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))/)[1]
 
@@ -4132,7 +4132,8 @@ function startVPN(req, res, next) {
     // connects, the logs potentially have zero records of either -
     // say, if in EC2, it'll report some 10.X as the server, which
     // does us no good
-    last_vpn_client = d3ckid
+    last_vpn_client_server = ipaddr
+    log.info('setting last_vpn_client_server to: ' + ipaddr)
 
     // fire up vpn
     d3ck_spawn(cmd, args)
