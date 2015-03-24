@@ -2871,7 +2871,7 @@ function request_generate(did, service, extras) {
     request.service = service
 
     // arguments, extra stuff, etc. that might be useful later
-    request.extras = extras
+    request.extras  = extras
 
     outstanding_requests[did][randy] = request
 
@@ -3347,10 +3347,12 @@ function serviceResponse(req, res, next) {
 
             var extras  = {}
 
+            console.log('VPN service request....')
+
             console.log(outstanding_requests)
 
             try {
-                extras = outstanding_requests[from_ip][req_id]['extras']
+                extras = outstanding_requests[d3ckid][req_id]['extras']
             }
             catch (e) {
                 log.error('information about who to VPN to is missing, bailing out')
