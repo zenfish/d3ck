@@ -130,10 +130,26 @@ echo flushing all iptables and cached routes
 #   169.254.0.0/16 dev eth0  scope link  metric 1000 
 #   192.168.0.0/24 dev eth0  proto kernel  scope link  src 192.168.0.250 
 #
-def=$(ip route | awk '/default/ { print $3, $5 }')
-def_int=${def[0]}
-def_ip=${def[1]}
+def=($(ip route | awk '/default/ { print $3, $5 }'))
+def_ip=${def[0]}
+def_int=${def[1]}
 def_mask=$(ifconfig $def_int| awk '/Mask/{print $NF}' |sed 's/Mask://')
+
+# nothing is easy... lol... mask -> cidr
+# http://stackoverflow.com/questions/20762575/explanation-of-convertor-of-cidr-to-netmask-in-linux-shell-netmask2cdir-and-cdir
+# Assumes there's no "255." after a non-255 byte in the mask
+mask2cdr ()
+{
+   local x=${1##*255.}
+   set -- 0^^^128^192^224^240^248^252^254^ $(( (${#1} - ${#x})*2 )) ${x%%.*}
+   x=${1%%$3*}
+   def_cidr=$(( $2 + (${#x}/4) ))
+}
+mask2cdr $def_mask
+echo $def_cidr
+
+echo setting up iptables on $def_int
+iptables -t nat -I POSTROUTING -o tun+ -s $def_ip/$def_cidr -j MASQUERADE
 
 # openvpn --server $base10.0 $mask10 --push "route def" --config S.conf &
 
