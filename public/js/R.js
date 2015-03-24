@@ -4270,7 +4270,7 @@ var swfobject=function(){var D="undefined",r="object",S="Shockwave Flash",W="Sho
       this.xhr.onreadystatechange = stateChange;
     }
 
-    console.log(this.xhr)
+    // console.log(this.xhr)
 
     this.xhr.send(null);
   };

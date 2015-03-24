@@ -1040,6 +1040,16 @@ function queue_or_die(queue) {
 
         else if (queue.event == 'vpn_client_connected') {
             // inform_user('VPN', "your d3ck has established a VPN connection", 'success')
+            inform_user('VPN', "connection established", 'success')
+
+            state_ring(false)    // bang a gong
+
+            var ip = $('#' + did + ' .remote_ip strong:eq(1)').text()
+            console.log('to... ' + ip)
+
+            event_connect('outgoing', $(this).parent().parent().find('.d3ckname').text())
+
+            state_vpn('outgoing', browser_ip, queue)
         }
 
         else if (queue.event == 'vpn_client_disconnected') {
@@ -1065,19 +1075,7 @@ function queue_or_die(queue) {
         }
 
         else if (queue.event == 'vpn_start') {
-            // inform_user('VPN', 'vpn start')
-            state_vpn('outgoing', browser_ip, queue)
-
-            inform_user('VPN', "connection established", 'success')
-            state_ring(false)    // bang a gong
-
-            var ip = $('#' + did + ' .remote_ip strong:eq(1)').text()
-            console.log('to... ' + ip)
-
-            event_connect('outgoing', $(this).parent().parent().find('.d3ckname').text())
-
-            state_vpn('outgoing', browser_ip, queue)
-
+            // ...?
         }
 
         else if (queue.event == 'vpn_stop') {
