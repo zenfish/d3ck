@@ -2059,6 +2059,7 @@ function confirm_or_deny_or(type, req, element) {
         });
 
         $('#alertify').append('<div style="height:150px;width:150px;float:left;" id="timer_countdown" data-timer="' + DEFAULT_RING_TIME + '"></div>')
+
         //  timer circle
         $('#timer_countdown').TimeCircles({
               total_duration  : DEFAULT_RING_TIME + 1,
@@ -2070,6 +2071,7 @@ function confirm_or_deny_or(type, req, element) {
                   Minutes         : { show: false },
                   Seconds         : { show: true, color: "#2b94ea"}
               }
+
           }).addListener(function(unit, value, total) {
               // console.log(DEFAULT_RING_TIME, unit,value,total)
               if (value <= 0) {
@@ -2078,6 +2080,7 @@ function confirm_or_deny_or(type, req, element) {
                   $('#alertify-cancel').click()
               }
           });
+
 }
 
 //
@@ -2132,7 +2135,7 @@ function show_user_sequence(d3ckid) {
             labels          : { ok: "ok", cancel: "Cancel" }
         });
 
-        // if user hits cancel... ignore for now ;)
+        // if user hits cancel...
         alertify.confirm(message_request, function (e) {
             console.log('cancel...?')
             console.log(e)
@@ -2149,19 +2152,6 @@ function show_user_sequence(d3ckid) {
                 event_hang_up(d3ckid)
             }
 
-//          $.ajax({
-//              type: "POST",
-//              url: '/serviceReply/' + req.from_d3ck + '/' + answer,
-//              headers: { 'Content-Type': 'application/json' },
-//              req: post_data,
-
-//              success: function(data, status) {
-//                  console.log('vampire suck... sess.... ')
-//              },
-//              fail: function(data, err) {
-//                  console.log('vampire fuck... me')
-//              }
-//          })
             $('#timer_countdown').TimeCircles().destroy();
         });
 
@@ -2188,7 +2178,7 @@ function show_user_sequence(d3ckid) {
         // console.log(DEFAULT_RING_TIME, unit,value,total)
         if (value <= 0) {
             // alert('wakka!')
-            console.log('clicking... cancel!')
+            console.log('pseudo-clicking... cancel!')
             $('#alertify-cancel').click()
         }
     });
