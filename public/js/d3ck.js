@@ -2137,9 +2137,9 @@ function show_user_sequence(d3ckid) {
     //  return
     //
 
-    var message_request = '<h2 style="position: relative;">Calling</h2>' + \
-                          '<img style="display: block; margin-left: auto; margin-right: auto; height:64px;" src="' + \
-                          all_d3ck_ids[d3ckid].image + '">' + \
+    var message_request = '<h2 style="position: relative;">Calling</h2>' +
+                          '<img style="display: block; margin-left: auto; margin-right: auto; height:64px;" src="' +
+                          all_d3ck_ids[d3ckid].image + '">' +
                           '<h2 style="position: relative;">'  + all_d3ck_ids[d3ckid].owner.name + '</h2>'
 
     $("#labels", function () {
