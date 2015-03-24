@@ -3347,10 +3347,10 @@ function serviceResponse(req, res, next) {
 
             var extras  = {}
 
-            console.log(oustanding_requests)
+            console.log(outstanding_requests)
 
             try {
-                extras = outstanding_requests[did][req_id]['extras']
+                extras = outstanding_requests[from_ip][req_id]['extras']
             }
             catch (e) {
                 log.error('information about who to VPN to is missing, bailing out')
