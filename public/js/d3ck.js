@@ -1041,9 +1041,9 @@ function queue_or_die(queue) {
         else if (queue.event == 'vpn_client_connected') {
             console.log('vpn_client_connected....!')
 
-            var did    = queue.d3ck_status.openvpn_client.client_did
+            var did    = queue.d3ck_status.openvpn_client.server_did
             var friend = all_d3ck_ids[did].owner.name
-            var ip     = queue.d3ck_status.openvpn_client.client
+            var ip     = queue.d3ck_status.openvpn_client.server
 
             console.log('to... ', did, friend, ip)
 
