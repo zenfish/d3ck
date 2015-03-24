@@ -179,6 +179,10 @@ var secrets2d3cks   = {}
 // outstanding requests
 var outstanding_requests = {}
 
+// the last client request did+IP pair we tried...
+// will be [did, ip]
+last_vpn_client = []
+
 //
 // URLs that anyone can contact
 //
@@ -1103,8 +1107,10 @@ function watch_logs(logfile, log_type) {
                     vpn_status : "up",
                     start      : moment_in_time,
                     start_s    : moment_in_secs,
-                    server     : server_remote_ip,
-                    server_did : ip2d3ck[server_remote_ip],
+                    // server     : server_remote_ip,
+                    // server_did : ip2d3ck[server_remote_ip],
+                    server_did : last_vpn_client[0],
+                    server     : last_vpn_client[1],
                     duration   : "n/a",             // this should only hit once per connection
                     stop       : "n/a",
                     stop_s     : "n/a"
@@ -4120,6 +4126,12 @@ function startVPN(req, res, next) {
     }
 
     var cmd   = d3ck_bin + '/start_vpn.sh'
+
+    // ... want to keep the did & IP pair... because if the client
+    // connects, the logs potentially have zero records of either -
+    // say, if in EC2, it'll report some 10.X as the server, which
+    // does us no good
+    last_vpn_client = args
 
     // fire up vpn
     d3ck_spawn(cmd, args)
