@@ -24,7 +24,7 @@ export bits_o_128=$(dd if=/dev/urandom bs=16 count=1 2>/dev/null| hexdump |awk '
 export d3ck_vpn_life_d3ck=365
 export d3ck_vpn_life_tmp=30
 export d3ck_vpn_proto="udp"
-export d3ck_vpn_port="80"
+export d3ck_vpn_port="8080"
 
 # file/dir locations
 export D3CK_HOME="/etc/d3ck"

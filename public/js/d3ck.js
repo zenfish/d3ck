@@ -1040,19 +1040,6 @@ function queue_or_die(queue) {
 
         else if (queue.event == 'vpn_client_connected') {
             // inform_user('VPN', "your d3ck has established a VPN connection", 'success')
-            state_vpn('outgoing', browser_ip, queue)
-
-            inform_user('VPN', "connection established", 'success')
-            state_ring(false)    // bang a gong
-
-            var ip = $('#' + did + ' .remote_ip strong:eq(1)').text()
-            console.log('to... ' + ip)
-
-            event_connect('outgoing', $(this).parent().parent().find('.d3ckname').text())
-
-            d3ck_vpn($('#d3ck_vpn_' + did), did, ip)
-
-            state_vpn('outgoing', browser_ip, queue)
         }
 
         else if (queue.event == 'vpn_client_disconnected') {
@@ -1079,6 +1066,18 @@ function queue_or_die(queue) {
 
         else if (queue.event == 'vpn_start') {
             // inform_user('VPN', 'vpn start')
+            state_vpn('outgoing', browser_ip, queue)
+
+            inform_user('VPN', "connection established", 'success')
+            state_ring(false)    // bang a gong
+
+            var ip = $('#' + did + ' .remote_ip strong:eq(1)').text()
+            console.log('to... ' + ip)
+
+            event_connect('outgoing', $(this).parent().parent().find('.d3ckname').text())
+
+            state_vpn('outgoing', browser_ip, queue)
+
         }
 
         else if (queue.event == 'vpn_stop') {
@@ -2025,11 +2024,11 @@ function confirm_or_deny_or(type, req, element) {
                         data    : post_data,
                         success : function(data, status) {
                             console.log('suck... sess.... ')
-                            inform_user(service + ' success from: ' + req.from_ip)
+                            inform_user(service + ' success from: ' + req.from_ip, 'info')
                         },
                         fail: function(data, err) {
                             console.log('fuck... me')
-                            inform_user(service + ' failed from: ', req.from_ip)
+                            inform_user(service + ' failed from: ', req.from_ip, 'info')
                         }
                     })
 

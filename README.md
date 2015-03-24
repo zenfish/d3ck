@@ -5,6 +5,17 @@ DO NOT USE
 Under construction.....
 
 
+generate certs for ios/phone/whatever...
+========================================
+
+   ./f-u-openssl/gen_ovpn.sh foo
+
+You'll then need to securely transfer the file to your client and install it as well:
+
+
+    /etc/d3ck/d3cks/vpn_client/foo.ovpn
+
+
 
 d3ck
 ====
