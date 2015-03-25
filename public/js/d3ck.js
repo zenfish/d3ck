@@ -1848,7 +1848,6 @@ function inform_user(title, message, level, element) {
         PNotify.prototype.options.delay = PNOTIFY_HIGH;
     }
 
-    console.log(opts)
     else if (level == 'error') {
         console.log('errz from server...')
         opts.type    = 'error'
@@ -1885,6 +1884,7 @@ function inform_user(title, message, level, element) {
         PNotify.prototype.options.delay = PNOTIFY_HIGH;
     }
 
+    console.log(opts)
 
     // messages at RHS side element...?
     // if (level == 'info') {
