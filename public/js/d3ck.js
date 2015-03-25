@@ -941,6 +941,7 @@ function queue_or_die(queue) {
             // vpn sez yes... kill off timer
             if (queue.d3ck_status.d3ck_requests.service == 'VPN' && queue.d3ck_status.d3ck_requests.answer == 'yes') {
                 $('#timer_countdown').TimeCircles().destroy()
+                $('#alertify-ok').hide()
             }
 
         }
@@ -1814,8 +1815,6 @@ function inform_user(title, message, level, element) {
 
     console.log('squawking to user: ' + message + '@' + level)
 
-    PNotify.prototype.options.delay = PNOTIFY;
-
     // var desky     = false   // by default keep all messages in the browser window
     // var hidey     = true    // by default messages go away after a bit
     // var nonblock  = true    // turn transparent/pass through when mouseover
@@ -1830,7 +1829,6 @@ function inform_user(title, message, level, element) {
     if (level == 'info' || level == 'danger' || level == 'success' || level == 'warning') {
         console.log('setting to ' + level)
         opts.type = level
-        PNotify.prototype.options.delay = PNOTIFY_HIGH;
     }
 
     // for now... the bigger/more important types of messages go onto the desktop if you let them
@@ -1845,7 +1843,6 @@ function inform_user(title, message, level, element) {
 
     if (opts.type == 'success') {
         opts.type    = 'info'
-        PNotify.prototype.options.delay = PNOTIFY_HIGH;
     }
 
     else if (level == 'error') {
@@ -1903,16 +1900,9 @@ function inform_user(title, message, level, element) {
 
     var pn = new PNotify(opts);
 
-    // chrome only, I believe
-    try {
-        pn.desktop.onclick = function(e) {
-        window.focus()
-    }
-    }
-        catch(e) {
-        console.log('ah well, some other time...')
-    }
-
+    // chrome only...?
+    try { pn.desktop.onclick = function(e) { window.focus() } }
+    catch(e) { console.log('ah well, some other time...') }
 
 }
 
