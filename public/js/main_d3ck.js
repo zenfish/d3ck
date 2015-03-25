@@ -142,7 +142,7 @@ $(document).ready(function () {
             return
         }
 
-        show_user_sequence(vd3ckid)
+        show_user_sequence(vd3ckid, this)
 
         var knock_knock = $.ajax({
             type: "POST",

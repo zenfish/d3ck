@@ -330,6 +330,7 @@ function state_vpn(state, browser_ip, queue) {
         $('#d3ck_video').addClass('green').addClass('d3_pulse')
         // $('button:contains("connecting"),button:contains("Call")').text('End').addClass("hang_up").removeClass('btn-danger').addClass('btn-warning')
         $('button:contains("connecting")').text('End').addClass("hang_up").removeClass('btn-danger').addClass('btn-warning')
+
         // ... setup bye bye
         // $('button:contains("connecting"),button:contains("Call")').click(false)
 
@@ -2128,7 +2129,7 @@ function ask_user_4_response(data) {
 
 }
 
-function show_user_sequence(d3ckid) {
+function show_user_sequence(d3ckid, element) {
 
     console.log('show the did... ' + d3ckid)
 
@@ -2141,6 +2142,10 @@ function show_user_sequence(d3ckid) {
                           '<img style="display: block; margin-left: auto; margin-right: auto; height:64px;" src="' +
                           all_d3ck_ids[d3ckid].image + '">' +
                           '<h2 style="position: relative;">'  + all_d3ck_ids[d3ckid].owner.name + '</h2>'
+
+
+    $(element).text("connecting...").removeClass("btn-primary").addClass("btn-danger")
+
 
     $("#labels", function () {
         alertify.set({
