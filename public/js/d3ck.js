@@ -2014,7 +2014,7 @@ function confirm_or_deny_or(type, req, element) {
 
                     // wtf, as they say
                     else {
-                        inform_user('error', 'unknown service request: ' + service, 'error')
+                        inform_user('error', 'yes, but unknown service request: ' + service, 'error')
                         return 'no';
                     }
 
@@ -2049,7 +2049,7 @@ function confirm_or_deny_or(type, req, element) {
                         console.log('knock knock unknocked')
                     }
                     else {
-                        inform_user('error', 'unknown service request', 'error')
+                        inform_user('error', 'no, and unknown service request: ' + service, 'error')
                         return 'no';
                     }
 
