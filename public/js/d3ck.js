@@ -932,11 +932,17 @@ function queue_or_die(queue) {
         console.log('event...? ' + queue.event)
 
         if (queue.event == 'service_request') {
-            inform_user('info', 'service_request', 'service request')
+            inform_user('info', 'service request')
         }
 
         else if (queue.event == 'service_response') {
-            inform_user('info', 'service_response', 'service response')
+            inform_user('info', 'service response')
+
+            // vpn sez yes... kill off timer
+            if (queue.d3ck_status.d3ck_requests.service == 'VPN' && queue.d3ck_status.d3ck_requests.answer == 'yes') {
+                $('#timer_countdown').TimeCircles().destroy()
+            }
+
         }
 
         else if (queue.event == 'd3ck_create') {
@@ -944,6 +950,7 @@ function queue_or_die(queue) {
             var remote_name = queue.d3ck_status.events.new_d3ck_name
 
             inform_user('info', remote_name + '" added your D3CK as a friend', 'success')
+
             // should do this gracefully, not hit it with an ugly stick
             setTimeout(go_d3ck_or_go_home, 3000)
 
@@ -962,6 +969,7 @@ function queue_or_die(queue) {
             load_vault()
 
             inform_user('File Upload', '<strong>' + queue.d3ck_status.file_events.file_name + '</strong>  ('  + queue.d3ck_status.file_events.file_size + ' bytes); uploaded', 'success')
+
         }
 
         else if (queue.event == 'knock_request') {
@@ -1802,6 +1810,8 @@ var stack_bar_bottom      = {"dir1": "up",    "dir2": "right", "push": "bottom",
 
 function inform_user(title, message, level, element) {
 
+    if (typeof level == 'undefined') level == 'info'
+
     console.log('squawking to user: ' + message + '@' + level)
 
     PNotify.prototype.options.delay = PNOTIFY;
@@ -1817,21 +1827,28 @@ function inform_user(title, message, level, element) {
         animation:  "fade",
     }
 
-    // for now... the bigger/more important types of messages go onto the desktop if you let them
-
-    // if (level == 'success' || level == 'danger' || level == 'error')
-    if (level == 'wowzer') {
-        console.log('this one is a VIP message... sticky & desktop if it can...')
-
-        PNotify.desktop.permission();     // wow!
-
-        opts.desktop = { desktop: true }  // wow^2!
-        opts.type    = 'info'
-
+    if (level == 'info' || level == 'danger' || level == 'success' || level == 'warning') {
+        console.log('setting to ' + level)
+        opts.type = level
         PNotify.prototype.options.delay = PNOTIFY_HIGH;
-
     }
 
+    // for now... the bigger/more important types of messages go onto the desktop if you let them
+
+    else if (level == 'wowzer') {
+        console.log('this one is a VIP message... sticky & desktop if it can...')
+        PNotify.desktop.permission();     // wow!
+        opts.desktop = { desktop: true }  // wow^2!
+        opts.type    = 'info'
+        PNotify.prototype.options.delay = PNOTIFY_HIGH;
+    }
+
+    if (opts.type == 'success') {
+        opts.type    = 'info'
+        PNotify.prototype.options.delay = PNOTIFY_HIGH;
+    }
+
+    console.log(opts)
     else if (level == 'error') {
         console.log('errz from server...')
         opts.type    = 'error'
@@ -1862,23 +1879,12 @@ function inform_user(title, message, level, element) {
         PNotify.prototype.options.delay = PNOTIFY_HIGH;
     }
 
-    // type: 'info', // (null, 'info', 'danger', 'success')
-    else if (typeof level == 'undefined' ||
-       (level != 'danger'     &&
-        level != 'success'    &&
-        level != 'info'       &&
-        level != 'warning')) {
-            console.log(level + " isn't a recognized level... setting to info")
-            opts.type = 'info'     // default
+    else {
+        console.log(level + " isn't a recognized level...?")
+        opts.type = 'error'
+        PNotify.prototype.options.delay = PNOTIFY_HIGH;
+    }
 
-                PNotify.prototype.options.delay = PNOTIFY_HIGH;
-        }
-
-//  if (opts.type == 'success') {
-//      PNotify.prototype.options.delay = PNOTIFY_HIGH;
-//  }
-
-    console.log(opts)
 
     // messages at RHS side element...?
     // if (level == 'info') {
@@ -2015,6 +2021,7 @@ function confirm_or_deny_or(type, req, element) {
                     // wtf, as they say
                     else {
                         inform_user('error', 'yes, but unknown service request: ' + service, 'error')
+                        $('#timer_countdown').TimeCircles().destroy()
                         return 'no';
                     }
 
@@ -2050,6 +2057,7 @@ function confirm_or_deny_or(type, req, element) {
                     }
                     else {
                         inform_user('error', 'no, and unknown service request: ' + service, 'error')
+                        $('#timer_countdown').TimeCircles().destroy()
                         return 'no';
                     }
 
@@ -2173,8 +2181,6 @@ function show_user_sequence(d3ckid, element) {
             $('#timer_countdown').TimeCircles().destroy();
         });
 
-        // make the OK button go away
-        // <button class="alertify-button alertify-button-ok" id="alertify-ok">Cancel</button>
         $('#alertify-ok').hide()
 
         return false;
