@@ -1398,8 +1398,8 @@ function getGeo(req, res, next) {
         res.send(200, {ip_addr: ip_addr, geo : ip2geo[ip_addr] })
 
     }).catch(function (error) {
-        log.error('geo err! What or where - is the world coming to?')
-        log.error(error)
+        log.warn('geo err! What or where - is the world coming to?')
+        log.warn(error)
         deferred.reject(error)
         res.send(420, {ip_addr: ip_addr, geo : ''})
     })
