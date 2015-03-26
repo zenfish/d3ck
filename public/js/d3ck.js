@@ -4,6 +4,10 @@
 // draw d3cks, delete d3cks, start vpns... various things
 //
 
+// for bootstrap/FA
+PNotify.prototype.options.styling = "fontawesome";
+
+
 // track all d3ck IDs...
 all_d3ck_ids   = []
 
@@ -1059,6 +1063,7 @@ function queue_or_die(queue) {
             inform_user('VPN', "connection established", 'success')
             state_ring(false)    // bang a gong
             state_vpn('outgoing', browser_ip, queue)
+            alertify.set({delay: 1})
 
         }
 
@@ -1830,6 +1835,10 @@ function inform_user(title, message, level, element) {
         opts.type = level
     }
 
+    if (opts.type == 'success') {
+        opts.type    = 'info'
+    }
+
     // for now... the bigger/more important types of messages go onto the desktop if you let them
 
     else if (level == 'wowzer') {
@@ -1838,10 +1847,6 @@ function inform_user(title, message, level, element) {
         opts.desktop = { desktop: true }  // wow^2!
         opts.type    = 'info'
         PNotify.prototype.options.delay = PNOTIFY_HIGH;
-    }
-
-    if (opts.type == 'success') {
-        opts.type    = 'info'
     }
 
     else if (level == 'error') {
@@ -2149,7 +2154,6 @@ function show_user_sequence(d3ckid, element) {
 
     $("#labels", function () {
         alertify.set({
-            delay : PNOTIFY_HIGH,
             labels: { ok: "ok", cancel: "Cancel" }
         });
 
