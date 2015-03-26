@@ -2149,8 +2149,8 @@ function show_user_sequence(d3ckid, element) {
 
     $("#labels", function () {
         alertify.set({
-            // delay : DEFAULT_RING_TIME,
-            labels : { ok: "ok", cancel: "Cancel" }
+            delay : PNOTIFY_HIGH,
+            labels: { ok: "ok", cancel: "Cancel" }
         });
 
         // if user hits cancel...
