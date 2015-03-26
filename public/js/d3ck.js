@@ -765,29 +765,28 @@ function rip_geo(element, geo) {
 //
 
     // xxx - do different stuff for foreign, have no data yet!
-    if (! def(geo)) return
-
+    if (typeof geo == 'undefined') return
 
     // think this is true for private ip space (10/8, etc.)
-    if (!def(geo.country_name) || geo.country_name == 'Reserved') { return }
+    if ((typeof geo.country_name != 'undefined') || geo.country_name == 'Reserved') { return }
 
     var phone = ''
-    if (def(geo.area_code) && geo.area_code != '') { var phone = '(' + geo.area_code + ')-' + geo.metro_code + '-xxxx' }
+    if (typeof geo.area_code != 'undefined' && geo.area_code != '') { var phone = '(' + geo.area_code + ')-' + geo.metro_code + '-xxxx' }
 
     var region = ''
-    if (def(geo.region_code) && geo.region_code != '') { var region = geo.region_code + ', ' }
+    if (typeof geo.region_code != 'undefined' && geo.region_code != '') { var region = geo.region_code + ', ' }
 
     var city = ''
-    if (def(geo.city) && geo.city != '') { var city = geo.city + ', ' }
+    if (typeof geo.city != 'undefined' && geo.city != '') { var city = geo.city + ', ' }
 
     // nifty flags courtesy of http://flag-sprites.com/ -->
     var flag = ''
-    if (def(geo.country_code) && geo.country_code != '') {
+    if (typeof geo.country_code != 'undefined' && geo.country_code != '') {
         var flag  = '<img style="margin-left:4px;" src="img/blank.gif" class="flag flag-' + geo.country_code.toLowerCase() + '">'
     }
 
     var zip = ''
-    if (def(geo.zipcode) && geo.zipcode != '') { var zip  = geo.zipcode + '; ' }
+    if (typeof geo.zipcode != 'undefined' && geo.zipcode != '') { var zip  = geo.zipcode + '; ' }
 
     $(element).append(city +  region + geo.country_name + '&nbsp;' + flag + ' ' + zip + phone)
 
@@ -1914,7 +1913,7 @@ function confirm_or_deny_or(type, req, element) {
 
         // don't pass go
         console.log(req)
-        if (!def(req.service)) {
+        if (typeof req.service == 'undefined') {
             inform_user('error', "service type is required", 'error')
         }
 
@@ -1949,7 +1948,7 @@ function confirm_or_deny_or(type, req, element) {
                                       '<h2 style="position: relative;">Connecting...</h2></span><br />'
             }
 
-            if (def(req.owner)) {
+            if (typeof req.owner != 'undefined') {
                 inform_user('info', req.owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
             }
             else {
@@ -2044,6 +2043,9 @@ function confirm_or_deny_or(type, req, element) {
                     }
                     else if (type == 'knock') {
                         console.log('knock knock unknocked')
+                    }
+                    else if (type == 'VPN') {
+                        console.log('VPN denied')
                     }
                     else {
                         inform_user('error', 'no, and unknown service request: ' + service, 'error')
@@ -2263,15 +2265,3 @@ function raise_shields(ip) {
 
 }
 
-//
-// is a variable defined or no?  Returns true if it is
-//
-function def(varvar) {
-    // console.log('checking ' + varvar)
-
-    if (typeof varvar === "undefined")
-        return false
-
-    return true
-
-}
