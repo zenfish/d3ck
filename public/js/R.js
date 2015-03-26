@@ -305,6 +305,10 @@ function SimpleWebRTC(opts) {
                 peer.start();
             }
         });
+
+        console.log('setting remote vid width to 100%')
+        $('#remoteVideos video').css("width", "100%");
+
     });
     this.webrtc.on('localScreenStopped', function (stream) {
         console.log('local screen stopped');
@@ -464,7 +468,7 @@ SimpleWebRTC.prototype.startLocalVideo = function () {
             // kill the HTML for local vids
             console.log('nuking-n-adding #localVideo startLocalVideo')
             $('#localVideo').remove()
-            $('#h4_local').append('\n<video id="localVideo"></video>\n')
+            $('#h4_local').append('\n<video style="width:100%" id="localVideo"></video>\n')
 
             attachMediaStream(stream, self.getLocalVideoContainer(), self.config.localVideo);
 
