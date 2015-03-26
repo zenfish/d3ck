@@ -109,6 +109,7 @@ $(document).ready(function () {
     // log areas
     // $("#ovpn_client_infinity").mCustomScrollbar({ scrollButtons:{ enable:true } })
     // $("#ovpn_server_infinity").mCustomScrollbar({ scrollButtons:{ enable:true } })
+
     // $("#cat_chat").mCustomScrollbar({ set_height: 200, set_width: 600, scrollButtons:{ enable:true } })
 
     //
