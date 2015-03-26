@@ -1063,7 +1063,7 @@ function queue_or_die(queue) {
             inform_user('VPN', "connection established", 'success')
             state_ring(false)    // bang a gong
             state_vpn('outgoing', browser_ip, queue)
-            alertify.set({delay: 1})
+            $('#alertify').remove()
 
         }
 
