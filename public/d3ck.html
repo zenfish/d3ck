@@ -73,8 +73,6 @@
 <!-- http://cube3x.com/adipoli-jquery-image-hover-plugin/ -->
 <link href="/css/adipoli.css" rel="stylesheet" type="text/css"/>
 
-<link href="/css/vid.css" rel="stylesheet" type="text/css"/>
-
 </head>
 
 <body>
@@ -536,7 +534,7 @@
                 <span class='small' style="color:red">If connected to another D3CK and you don't see video... something is wrong!</span>
 
                 <!-- text msgs -->
-                <div class="col-md-2">
+                <div class="col-md-3">
 
                     <div style="padding:10px">
                         <b>Cat Chat!</b> <span class="muted small">semi-instant messaging</span><br />
@@ -545,26 +543,29 @@
                     <div>
                         <div style="width:300px">
                             <div id="conversation"></div>
-                            <input class="meow" id="meow" style="width:200px;"  autofocus>
+                            <input class="meow" id="meow" autofocus>
                             <input type="button" class="datasend" id="datasend" value="send">
                         </div>
                         <div id="cat_chat"></div>
                     </div>
 
-                </div> <!-- col-md-2 -->
+                </div> <!-- col-md-3 -->
 
-                <div id="all_videos" class="col-md-10">
+                <div id="all_videos" class="col-md-9">
 
-                    <div class="row">
-                        <div id="remoteVideos" class="video-box col-md-5">
-                            <span id="h4_remote">Remote Video</span>
-                        </div>
+                    <div id="remoteVideos" class="col-md-4">
+                        <span id="h4_remote">Remote Video</span>
+                    </div>
+
+                    <div class="col-md-1"></div>
+
+                    <div id="localVideos" class="col-md-4">
+                        <span id="h4_local">Local Video</span>
+                        <video id="localVideo"></video>
+                    </div>
 
                         <!-- little hack for fun -->
-
-                        <!--
                         <span id="video_effect_div" class="hidden">
-                          <span class="spacer10"></span>
                           <select id="video_effect"  class="textbox">
                             <option><b>Select an effect</b></option>
                             <option id="vid-sepia"      value="sepia(1)">          sepia</option>
@@ -578,19 +579,11 @@
                             <option id="vid-clear"      value="clear">             <span id="cleary">clear effects</span></option>
                          </select>
                         </span>
-                        -->
-
-                        <div id="localVideos" class="video-box col-md-5">
-                            <span id="h4_local">Local Video</span>
-                            <video id="localVideo"></video>
-                        </div>
-
-                    </div>
 
                     <div class="row">
 
                         <div class="container-fluid">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#client_collapse">show/hide client logs</button>
                                 <div id="client_collapse" class="collapse">
                                     
@@ -600,7 +593,9 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-1"></div>
+
+                            <div class="col-md-4">
                                 <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#server_collapse">show/hide server logs</button>
                                 <div id="server_collapse" class="collapse">
                                     <div id="ovpn_server_infinity" class="mCSB_container content">
