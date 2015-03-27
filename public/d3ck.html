@@ -532,6 +532,7 @@
                 <!-- vpn stuff -->
 
                 <span class='small' style="color:red">If connected to another D3CK and you don't see video... something is wrong!</span>
+                <br />
 
                 <!-- text msgs -->
                 <div class="col-md-3">
@@ -551,60 +552,56 @@
 
                 </div> <!-- col-md-3 -->
 
+                <div id="remoteVideos" class="col-md-4">
+                    <span id="h4_remote">Remote Video</span>
+                </div>
 
-                    <div id="remoteVideos" class="col-md-4">
-                        <span id="h4_remote">Remote Video</span>
-                    </div>
+                <div id="localVideos" class="col-md-4">
+                    <span id="h4_local">Local Video</span>
+                    <video style="width:100%" id="localVideo"></video>
+                </div>
 
-                    <div class="col-md-1"></div>
+                <!-- little hack for fun -->
+                <span id="video_effect_div" class="hidden">
+                  <select id="video_effect"  class="textbox">
+                    <option><b>Select an effect</b></option>
+                    <option id="vid-sepia"      value="sepia(1)">          sepia</option>
+                    <option id="vid-blur"       value="blur(3px)">         blur</option>
+                    <option id="vid-grayscale"  value="grayscale(1)">      grayscale</option>
+                    <option id="vid-contrast"   value="contrast(5)">       contrast</option>
+                    <option id="vid-hue-rotate" value="hue-rotate(125deg)">hue-rotate</option>
+                    <option id="vid-invert"     value="invert(1)">         invert</option>
+                    <option id="vid-saturate"   value="saturate(3)">       saturate</option>
+                    <option id="vid-opacity"    value="opacity(0.3)">      opacity</option>
+                    <option id="vid-clear"      value="clear">             <span id="cleary">clear effects</span></option>
+                  </select>
+                </span>
 
-                    <div id="localVideos" class="col-md-4">
-                        <span id="h4_local">Local Video</span>
-                        <video id="localVideo"></video>
-                    </div>
+                <div class="row">
 
-                        <!-- little hack for fun -->
-                        <span id="video_effect_div" class="hidden">
-                          <select id="video_effect"  class="textbox">
-                            <option><b>Select an effect</b></option>
-                            <option id="vid-sepia"      value="sepia(1)">          sepia</option>
-                            <option id="vid-blur"       value="blur(3px)">         blur</option>
-                            <option id="vid-grayscale"  value="grayscale(1)">      grayscale</option>
-                            <option id="vid-contrast"   value="contrast(5)">       contrast</option>
-                            <option id="vid-hue-rotate" value="hue-rotate(125deg)">hue-rotate</option>
-                            <option id="vid-invert"     value="invert(1)">         invert</option>
-                            <option id="vid-saturate"   value="saturate(3)">       saturate</option>
-                            <option id="vid-opacity"    value="opacity(0.3)">      opacity</option>
-                            <option id="vid-clear"      value="clear">             <span id="cleary">clear effects</span></option>
-                         </select>
-                        </span>
+                    <div class="container-fluid">
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#client_collapse">show/hide client logs</button>
+                            <div id="client_collapse" class="collapse">
+                                <div id="ovpn_client_infinity" class="mCSB_container content">
+                                    VPN client logs <hr> <!-- content -->
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="row">
+                        <div class="col-md-1"></div>
 
-                        <div class="container-fluid">
-                            <div class="col-md-4">
-                                <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#client_collapse">show/hide client logs</button>
-                                <div id="client_collapse" class="collapse">
-                                    
-                                    <div id="ovpn_client_infinity" class="mCSB_container content">
-                                        VPN client logs <hr> <!-- content -->
-                                    </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#server_collapse">show/hide server logs</button>
+                            <div id="server_collapse" class="collapse">
+                                <div id="ovpn_server_infinity" class="mCSB_container content">
+                                    VPN server logs <hr> <!-- content --> 
                                 </div>
                             </div>
 
-                            <div class="col-md-1"></div>
+                        </div>
 
-                            <div class="col-md-4">
-                                <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#server_collapse">show/hide server logs</button>
-                                <div id="server_collapse" class="collapse">
-                                    <div id="ovpn_server_infinity" class="mCSB_container content">
-                                        VPN server logs <hr> <!-- content --> 
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div> <!-- container -->
+                    </div>
 
                 </div>
             </div>

@@ -283,9 +283,6 @@ function SimpleWebRTC(opts) {
             container.appendChild(el);
         }
 
-        console.log('setting remote vid width to 100%')
-        $('#remoteVideos video').css("width", "100%");
-
         self.emit('localScreenAdded', el);
         self.connection.emit('shareScreen');
 

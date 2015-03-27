@@ -1172,7 +1172,7 @@ function kill_RTC() {
 
     // kill the HTML for remote & local vids
     $('#localVideo').remove()
-    $('#h4_local').append('\n<video id="localVideo"></video>\n')
+    $('#h4_local').append('\n<video style="width:100%" id="localVideo"></video>\n')
     $('#remoteVideos video').remove()
 
     // kill the silly thing
@@ -1619,8 +1619,6 @@ function set_up_RTC(remote) {
 
     var ip          = window.location.hostname
 
-    // someone connected to us
-
 // xxxxxxxxx d3
     if (d3ck_status.openvpn_server.vpn_status == "up") {
         console.log("PEEEEER js: server up")
@@ -1656,6 +1654,15 @@ function set_up_RTC(remote) {
     webrtc.on('readyToCall', function () {
         webrtc.joinRoom('d3ck')
     });
+
+
+    // ensure everyone plays by my rules....
+    webrtc.on('videoAdded', function (video, peer) {
+        console.log('[+] video added', peer);
+        $('video').css('width', '100%')
+    })
+
+
 
     toggle_special_FX()
 
