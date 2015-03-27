@@ -939,12 +939,15 @@ function queue_or_die(queue) {
         }
 
         else if (queue.event == 'service_response') {
-            inform_user('info', 'service response')
 
             // vpn sez yes... kill off timer
             if (queue.d3ck_status.d3ck_requests.service == 'VPN' && queue.d3ck_status.d3ck_requests.answer == 'yes') {
+                inform_user('success', 'VPN up!')
                 $('#timer_countdown').TimeCircles().destroy()
                 $('#alertify-ok').hide()
+            }
+            else {
+                inform_user('info', 'service response')
             }
 
         }
@@ -1854,7 +1857,7 @@ function inform_user(title, message, level, element) {
     }
 
     else if (opts.type == 'success') {
-        opts.type    = 'notice'
+        opts.type = 'notice'
     }
 
     // for now... the bigger/more important types of messages go onto the desktop if you let them
