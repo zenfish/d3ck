@@ -947,7 +947,7 @@ function queue_or_die(queue) {
                 $('#alertify-ok').hide()
             }
             else {
-                inform_user('info', 'service response')
+                inform_user('info', 'service response: ' + queue.event)
             }
 
         }
@@ -2047,11 +2047,11 @@ function confirm_or_deny_or(type, req, element) {
                         data    : post_data,
                         success : function(data, status) {
                             console.log('suck... sess.... ')
-                            inform_user(service + ' success from: ' + req.from_ip, 'info')
+                            // inform_user('service', service + ' success from: ' + req.from_ip, 'info')
                         },
                         fail: function(data, err) {
                             console.log('fuck... me')
-                            inform_user(service + ' failed from: ', req.from_ip, 'info')
+                            inform_user('service', service + ' failed from: ', req.from_ip, 'error')
                         }
                     })
 
