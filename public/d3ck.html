@@ -539,14 +539,15 @@
                     <div class="col-md-2">
 
                         <div style="padding:10px">
-                            <b>Cat Chat!</b> <span class="muted small">semi-instant messaging</span><br />
+                            <b>Cat Chat!</b> <br /> 
+                            <span class="muted small">semi-instant messaging</span>
                         </div>
 
                         <div>
-                            <div style="width:300px">
+                            <div style="width:100%">
                                 <div id="conversation"></div>
                                 <input class="meow" id="meow" autofocus>
-                                <input type="button" class="datasend" id="datasend" value="send">
+                                <input style="margin-top: 3px;" type="button" class="datasend" id="datasend" value="send">
                             </div>
                             <div id="cat_chat"></div>
                         </div>
@@ -554,11 +555,11 @@
                     </div> <!-- col-md-2 -->
 
                     <div id="remoteVideos" class="col-md-5">
-                        <span id="h4_remote">Remote Video</span>
+                        <span id="h4_remote"><h4>Remote Video</h4></span>
                     </div>
 
                     <div id="localVideos" class="col-md-5">
-                        <span id="h4_local">Local Video</span>
+                        <span id="h4_local"><h4>Local Video</h4></span>
                         <video style="width:100%" id="localVideo"></video>
                     </div>
 
@@ -590,7 +591,7 @@
 
                 <div class="row">
 
-                    <div class="col-md-3"></div>
+                    <div class="col-md-2"></div>
 
                     <div class="col-md-5">
                         <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#client_collapse">show/hide client logs</button>
