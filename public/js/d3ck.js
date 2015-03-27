@@ -1822,9 +1822,15 @@ var stack_bar_bottom      = {"dir1": "up",    "dir2": "right", "push": "bottom",
 
 function inform_user(title, message, level, element) {
 
-    if (typeof level == 'undefined') level = 'info'    // basic stuff
+    if (typeof level == 'undefined') {
+        console.log('setting level to -> info')
+        level = 'info'    // basic stuff
+    }
+    else {
+        console.log('level is fine -> ' + level)
+    }
 
-    console.log('squawking to user: ' + message + '@' + level)
+    console.log('squawking to user: ' + message + ' @ ' + level)
 
     // var desky     = false   // by default keep all messages in the browser window
     // var hidey     = true    // by default messages go away after a bit
