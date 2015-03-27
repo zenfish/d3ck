@@ -1822,7 +1822,7 @@ var stack_bar_bottom      = {"dir1": "up",    "dir2": "right", "push": "bottom",
 
 function inform_user(title, message, level, element) {
 
-    if (typeof level == 'undefined') level == 'info'    // basic stuff
+    if (typeof level == 'undefined') level = 'info'    // basic stuff
 
     console.log('squawking to user: ' + message + '@' + level)
 
