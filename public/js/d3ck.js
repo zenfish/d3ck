@@ -1853,7 +1853,7 @@ function inform_user(title, message, level, element) {
         opts.type = level
     }
 
-    if (opts.type == 'success') {
+    else if (opts.type == 'success') {
         opts.type    = 'notice'
     }
 

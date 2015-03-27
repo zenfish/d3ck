@@ -524,64 +524,76 @@
                     plus additions/deletions of D3CKs.
 
                 </div>
-             </div>
+            </div>
 
 
-             <div class="tab-pane fade" id="rtc_hack">
+            <!-- Web RTC stuff -->
 
-                <!-- vpn stuff -->
-
-                <span class='small' style="color:red">If connected to another D3CK and you don't see video... something is wrong!</span>
-                <br />
-
-                <!-- text msgs -->
-                <div class="col-md-3">
-
-                    <div style="padding:10px">
-                        <b>Cat Chat!</b> <span class="muted small">semi-instant messaging</span><br />
-                    </div>
-
-                    <div>
-                        <div style="width:300px">
-                            <div id="conversation"></div>
-                            <input class="meow" id="meow" autofocus>
-                            <input type="button" class="datasend" id="datasend" value="send">
-                        </div>
-                        <div id="cat_chat"></div>
-                    </div>
-
-                </div> <!-- col-md-3 -->
-
-                <div id="remoteVideos" class="col-md-4">
-                    <span id="h4_remote">Remote Video</span>
-                </div>
-
-                <div id="localVideos" class="col-md-4">
-                    <span id="h4_local">Local Video</span>
-                    <video style="width:100%" id="localVideo"></video>
-                </div>
-
-                <!-- little hack for fun -->
-                <span id="video_effect_div" class="hidden">
-                  <select id="video_effect"  class="textbox">
-                    <option><b>Select an effect</b></option>
-                    <option id="vid-sepia"      value="sepia(1)">          sepia</option>
-                    <option id="vid-blur"       value="blur(3px)">         blur</option>
-                    <option id="vid-grayscale"  value="grayscale(1)">      grayscale</option>
-                    <option id="vid-contrast"   value="contrast(5)">       contrast</option>
-                    <option id="vid-hue-rotate" value="hue-rotate(125deg)">hue-rotate</option>
-                    <option id="vid-invert"     value="invert(1)">         invert</option>
-                    <option id="vid-saturate"   value="saturate(3)">       saturate</option>
-                    <option id="vid-opacity"    value="opacity(0.3)">      opacity</option>
-                    <option id="vid-clear"      value="clear">             <span id="cleary">clear effects</span></option>
-                  </select>
-                </span>
+            <div class="tab-pane fade" id="rtc_hack">
 
                 <div class="row">
 
-                    <div class="container-fluid">
-                        <div class="col-md-4">
-                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#client_collapse">show/hide client logs</button>
+                    <span class='small' style="color:red">If connected to another D3CK and you don't see video... something is wrong!</span> <br />
+
+                    <!-- text msgs -->
+                    <div class="col-md-2">
+
+                        <div style="padding:10px">
+                            <b>Cat Chat!</b> <span class="muted small">semi-instant messaging</span><br />
+                        </div>
+
+                        <div>
+                            <div style="width:300px">
+                                <div id="conversation"></div>
+                                <input class="meow" id="meow" autofocus>
+                                <input type="button" class="datasend" id="datasend" value="send">
+                            </div>
+                            <div id="cat_chat"></div>
+                        </div>
+
+                    </div> <!-- col-md-2 -->
+
+                    <div id="remoteVideos" class="col-md-5">
+                        <span id="h4_remote">Remote Video</span>
+                    </div>
+
+                    <div id="localVideos" class="col-md-5">
+                        <span id="h4_local">Local Video</span>
+                        <video style="width:100%" id="localVideo"></video>
+                    </div>
+
+                </div> <!-- row -->
+
+                <div class="row">
+
+                    <div class="col-md-2"></div>
+
+                    <div class="col-md-5">
+                        <!-- little hack for fun -->
+                        <span id="video_effect_div" class="hidden">
+                          <select id="video_effect"  class="textbox">
+                            <option><b>Select an effect</b></option>
+                            <option id="vid-sepia"      value="sepia(1)">          sepia</option>
+                            <option id="vid-blur"       value="blur(3px)">         blur</option>
+                            <option id="vid-grayscale"  value="grayscale(1)">      grayscale</option>
+                            <option id="vid-contrast"   value="contrast(5)">       contrast</option>
+                            <option id="vid-hue-rotate" value="hue-rotate(125deg)">hue-rotate</option>
+                            <option id="vid-invert"     value="invert(1)">         invert</option>
+                            <option id="vid-saturate"   value="saturate(3)">       saturate</option>
+                            <option id="vid-opacity"    value="opacity(0.3)">      opacity</option>
+                            <option id="vid-clear"      value="clear">             <span id="cleary">clear effects</span></option>
+                          </select>
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-3"></div>
+
+                    <div class="col-md-5">
+                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#client_collapse">show/hide client logs</button>
                             <div id="client_collapse" class="collapse">
                                 <div id="ovpn_client_infinity" class="mCSB_container content">
                                     VPN client logs <hr> <!-- content -->
@@ -589,9 +601,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-1"></div>
-
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#server_collapse">show/hide server logs</button>
                             <div id="server_collapse" class="collapse">
                                 <div id="ovpn_server_infinity" class="mCSB_container content">
@@ -600,10 +610,10 @@
                             </div>
 
                         </div>
-
                     </div>
 
                 </div>
+
             </div>
 
          </div> <!-- tab content -->
