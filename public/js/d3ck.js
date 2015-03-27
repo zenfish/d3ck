@@ -1822,7 +1822,7 @@ var stack_bar_bottom      = {"dir1": "up",    "dir2": "right", "push": "bottom",
 
 function inform_user(title, message, level, element) {
 
-    if (typeof level == 'undefined') level == 'info'
+    if (typeof level == 'undefined') level == 'info'    // basic stuff
 
     console.log('squawking to user: ' + message + '@' + level)
 
@@ -1830,11 +1830,16 @@ function inform_user(title, message, level, element) {
     // var hidey     = true    // by default messages go away after a bit
     // var nonblock  = true    // turn transparent/pass through when mouseover
 
+    PNotify.prototype.options.delay = PNOTIFY   // normal level
+
+    // `type: "notice"` - Type of the notice. "notice", "info", "success", or "error".
+
     var opts = {
-        title:      title,
-        text:       message + '\n' + Date(),
-        styling:    "bootstrap3",
-        animation:  "fade",
+        title:     title,
+        type:      'info'
+        text:      message + '\n' + Date(),
+        styling:   "bootstrap3",
+        animation: "fade",
     }
 
     if (level == 'info' || level == 'danger' || level == 'success' || level == 'warning') {
@@ -1843,7 +1848,7 @@ function inform_user(title, message, level, element) {
     }
 
     if (opts.type == 'success') {
-        opts.type    = 'info'
+        opts.type    = 'notice'
     }
 
     // for now... the bigger/more important types of messages go onto the desktop if you let them
