@@ -1960,6 +1960,7 @@ function confirm_or_deny_or(type, req, element) {
                     labels        : { ok: 'Confirm', cancel: 'Not Now' }
                 })
             }
+
             // currently only calls
             else {
                 alertify.set({
@@ -2171,19 +2172,24 @@ function show_user_sequence(d3ckid, element) {
     //  return
     //
 
-    var message_request = '<h2 style="position: relative;">Calling</h2>' +
-                          '<img style="display: block; margin-left: auto; margin-right: auto; height:64px;" src="' +
-                          all_d3ck_ids[d3ckid].image + '">' +
-                          '<h2 style="position: relative;">'  + all_d3ck_ids[d3ckid].owner.name + '</h2>'
+//  var message_request = '<h2 style="position: relative;">Calling</h2>' +
+//                        '<img style="display: block; margin-left: auto; margin-right: auto; height:64px;" src="' +
+//                        all_d3ck_ids[d3ckid].image + '">' +
+//                        '<h2 style="position: relative;">'  + all_d3ck_ids[d3ckid].owner.name + '</h2>'
 
+    var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
+                '<h2 style="display: block; margin: 0px 10px; width: 96px">' + all_d3ck_ids[d3ckid].owner.name + '</h2></span><br />' +
+                '<img style="position: relative; max-height: 96px; max-width: 96px; margin: 0px 10px;" src="' + all_d3ck_ids[d3ckid].image + '">'
 
-    $(element).text("connecting...").removeClass("btn-primary").addClass("btn-danger")
 
 
     $("#labels", function () {
         alertify.set({
             labels: { ok: "ok", cancel: "Cancel" }
         });
+
+        // override alertify, make it greenbacks
+        $('#alertify-cancel').addClass('btn-danger').addClass('btn')
 
         // if user hits cancel...
         alertify.confirm(message_request, function (e) {
