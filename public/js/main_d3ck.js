@@ -2,6 +2,9 @@
 // after all is said and done... let the JS fur fly
 //
 
+// pnotify stuff - style for bootstrap/FA
+PNotify.prototype.options.styling = "fontawesome";
+
 // xxx - obv need to read this from conf, etc.
 D3CK_PORT        = 8080
 //D3CK_SIG_PORT    = 8081

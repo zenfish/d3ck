@@ -229,10 +229,10 @@
 
                         <p> Pushing these buttons is not for the faint of heart.</p>
                         <ul>
-                            <p> </p><li><strong>PANIC</strong> will crush your D3CK into uselessness.  Good if people are hammering at your door wanting its data or keys.  UI will no longer work.  Don't worry, it isn't implemented yet.</li>
-                            <p> </p><li><strong>Stop server</strong> stops the D3CK server dead.  UI will no longer work until restarted!</li>
-                            <p> </p><li><strong>Restart server</strong> does just that - the D3CK server restarts.  UI will no longer work until it finishes restarting.</li>
-                            <p> </p><li><strong>Stop VPN client</strong> kills any VPN clients
+                            <li><strong>PANIC</strong> will crush your D3CK into uselessness.  Good if people are hammering at your door wanting its data or keys.  UI will no longer work.  Don't worry, it isn't implemented yet.</li><p> </p>
+                            <li><strong>Stop server</strong> stops the D3CK server dead.  UI will no longer work until restarted!</li><p> </p>
+                            <li><strong>Restart server</strong> does just that - the D3CK server restarts.  UI will no longer work until it finishes restarting.</li><p> </p>
+                            <li><strong>Stop VPN client</strong> kills any VPN clients</li><p> </p>
 
                         </ul>
                     </div>
@@ -469,7 +469,7 @@
                         to authenticate and get authorized to do various things.
                     </div>
 
-                    <div id="d3ck_cert_details" class="panel-collapse collapse in">
+                    <div id="d3ck_trust_details" class="panel-collapse collapse in">
                         <div class="panel-body"> </div>
                         <table id="d3ck_trust_ccertz_table" class="table table-condensed table-hover table-striped">
                             <tr> <th> Aspect </th> <th> Information </th> </tr>
@@ -498,7 +498,7 @@
                     <div class="col-md-6 column">
                         <div id="d3ck_cloud_filez2"> 
                             <h3> Add to your own (someday encrypted!) file vault </h3>
-                            <!-- <small class="text-muted">When connected this will transfer files to the other D3CK</small> -->
+                            <!-- <span class="text-muted small">When connected this will transfer files to the other D3CK</span> -->
                             <br />
                         </div>
                         <div class="row-fluid marketing">
@@ -596,22 +596,21 @@
 
                     <div class="col-md-5">
                         <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#client_collapse">show/hide client logs</button>
-                            <div id="client_collapse" class="collapse">
-                                <div id="ovpn_client_infinity" class="mCSB_container content">
-                                    VPN client logs <hr> <!-- content -->
-                                </div>
+                        <div id="client_collapse" class="collapse">
+                            <div id="ovpn_client_infinity" class="mCSB_container content">
+                                VPN client logs <hr> <!-- content -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#server_collapse">show/hide server logs</button>
+                        <div id="server_collapse" class="collapse">
+                            <div id="ovpn_server_infinity" class="mCSB_container content">
+                                VPN server logs <hr> <!-- content --> 
                             </div>
                         </div>
 
-                        <div class="col-md-5">
-                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#server_collapse">show/hide server logs</button>
-                            <div id="server_collapse" class="collapse">
-                                <div id="ovpn_server_infinity" class="mCSB_container content">
-                                    VPN server logs <hr> <!-- content --> 
-                                </div>
-                            </div>
-
-                        </div>
                     </div>
 
                 </div>
@@ -621,15 +620,12 @@
          </div> <!-- tab content -->
 
         <!-- spacer n feets below -->
-
         <div class="btn-toolbar"> <span class="spacer50"></span> </div>
-
         <div class="btn-toolbar"> <span class="spacer100"></span></div>
-
 
         <div class="row">
             <div class="col-md-4 column footer">
-                <small><p id="ip_diddy" class="text-muted credit">no electrons were harmed making this footer</p></small>
+                <p id="ip_diddy" class="text-muted credit small">no electrons were harmed making this footer</p>
             </div>
             <div class="col-md-offset-4 text-muted credit col-md-4 column footer" id="d3ck_footy" style="color: #A2D6A2"></div>
 

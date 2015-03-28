@@ -4,10 +4,6 @@
 // draw d3cks, delete d3cks, start vpns... various things
 //
 
-// for bootstrap/FA
-PNotify.prototype.options.styling = "fontawesome";
-
-
 // track all d3ck IDs...
 all_d3ck_ids   = []
 
@@ -1924,10 +1920,6 @@ function inform_user(title, message, level, element) {
     // }
 
     var pn = new PNotify(opts);
-
-    // chrome only...?
-    try { pn.desktop.onclick = function(e) { window.focus() } }
-    catch(e) { console.log('ah well, some other time...') }
 
 }
 

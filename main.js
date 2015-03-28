@@ -1075,6 +1075,10 @@ function watch_logs(logfile, log_type) {
                 vpn_server_status          = server_magic
                 createEvent('internal server', {event_type: "vpn_server_disconnected", d3ck_id: bwana_d3ck.D3CK_ID}, d3ck_status)
                 d3ck_queue.push({type: 'info', event: 'vpn_server_disconnected', 'd3ck_status': d3ck_status})
+
+
+
+
             }
         }
         else if (log_type.indexOf("Client") > -1) {
@@ -1366,6 +1370,8 @@ function getGeo(req, res, next) {
 
     var ip_addr = req.query.ip
 
+    var opts    = {}
+
     var url     = 'https://freegeoip.net/json/' + ip_addr
 
     log.info('resolving geo stuff from: ' + url)
@@ -1442,7 +1448,7 @@ function resolveGeo(ip_addr) {
         // return geo_data
         // res.send(200, geo_data )
 
-        log.info("fucking send something, geo!")
+        log.info("fucking resolve something, geo!")
         deferred.resolve(geo_data)
 
     }).catch(function (error) {
@@ -1512,10 +1518,12 @@ function getDNS (req, res, next) {
         log.info("lookin' up " + ip)
         dns.reverse(ip, function (err, fqdn) {
             if (err) {
+                log.info('Erz on dns')
                 ip2fqdns[ip] = ip
-                log.error(err)
-                deferred.reject({ip: ip, fqdn : ip } )
-                res.send(200,   {ip: ip, fqdn : ip } )
+                // log.error(err)
+                // deferred.reject({ip: ip, fqdn : ip } )
+                deferred.resolve({ip: ip, fqdn : ip } )
+                res.send(200,    {ip: ip, fqdn : ip } )
             }
             else {
                 fqdn         = fqdn.join()
@@ -4244,6 +4252,8 @@ function formDelete(req, res, next) {
     // want to use a reasonable d3ck home here!
     d3ck_spawn(d3ck_bin + '/delete_d3ck.sh', [d3ckid])
 
+    delete all_d3cks[d3ckid]
+
     back_to_home(res)
 
 }
@@ -4320,9 +4330,8 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
         var url = 'https://' + ip + ':' + d3ck_port_ext + '/ping'
 
-        log.debug('pinging  ' + url);
+        log.debug('cert-pinging  ' + url);
 
-        // var req = https.get(url, function(response) {
         get_https_certified(url, ping_d3ckid).then(function (ping_data) {
             // log.info('+++ someday has come for ' + ip + ' ... ping response back')
             // log.info(ping_data)
@@ -4614,7 +4623,7 @@ function get_https(url) {
 //
 function get_https_certified(url, d3ckid) {
 
-    // log.info('getting... ' + url + ' for ' + d3ckid)
+    log.info('getting... ' + url + ' for ' + d3ckid)
 
     var deferred = Q.defer();
     var str      = ""
@@ -4633,7 +4642,7 @@ function get_https_certified(url, d3ckid) {
 
         request(options, function cb (err, resp, body) {
             if (err) {
-                // log.error('CSC nab of remote failzor:', JSON.stringify(err))
+                log.error('CSC nab of remote - ' + d3ckid + ' -> failzor:', JSON.stringify(err))
                 deferred.reject(err)
                 }
             else {
@@ -4645,11 +4654,11 @@ function get_https_certified(url, d3ckid) {
 
     d.on('error', function(err) {
         if (err.code == 'ECONNREFUSED' || err.code == 'EHOSTUNREACH') {
-            log.error('CSC https.get !lucky: ' + JSON.stringify(err));
+            log.error('CSC req-https.get !lucky: ' + JSON.stringify(err));
             deferred.reject(err)
         }
         else {
-            log.info('CSC https.get (' + url + ') cronked on some weird/bad shit: ' + JSON.stringify(err.message));
+            log.info('CSC req-https.get (' + url + ') cronked on some weird/bad shit: ' + JSON.stringify(err.message));
             deferred.reject(err)
         }
     });
