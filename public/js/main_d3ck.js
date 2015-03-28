@@ -332,7 +332,7 @@ $(document).ready(function () {
                                '</a>'                                                                             +
                             '</div>'                                                                              +
                             '<div class="caption">'                                                               +
-                               '<span>D3CK: </span><span class="d3ckname"><b>{{name}}</b></span> <br />'          +
+                               '<span>D3CK: </span><span class="owner"><b>{{owner}}</b></span> <br />'          +
                                '<span class="remote_ip">IP Address: <strong>{{ipaddr}}</strong> </span> <br />'       +
                                '<span class="remote_fqdn">Hostname: <strong></strong> </span> <br />'       +
                                '<span class="remote_geo">Where: <strong></strong> </span> <br />'       +

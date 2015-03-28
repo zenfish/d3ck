@@ -1966,21 +1966,28 @@ function confirm_or_deny_or(type, req, element) {
                     buttonReverse : true,
                     labels        : { ok: 'Answer', cancel: 'Decline' }
                 });
+
+                // override alertify, make it greenbacks
+                $('#alertify-ok').addClass('btn-success').addClass('btn')
+
             }
 
             var message_request = ''
+
+            var owner = '?'
+            if (typeof req.owner != 'undefined')
+                owner = req.owner
+
             if (typeof all_d3ck_ids[req.from_d3ck] != 'undefined') {
-                var message_request = '<span><img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
-                                      '<h2 style="position: relative;">Connecting...</h2></span><br />'
+                var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
+                                      '<h2 style="display: block; margin: 0px 10px; width: 96px">' + owner + '</h2></span><br />' +
+                                      '<img style="position: relative; max-height: 96px; max-width: 96px; margin: 0px 10px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">'
+
+                                          // '<img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
+                                          // '<h2 style="position: relative;">' + owner + '</h2></span><br />'
             }
 
-            if (typeof req.owner != 'undefined') {
-                inform_user('info', req.owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
-            }
-            else {
-                inform_user('info', req.did   + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + 'wowzer')
-            }
-
+            inform_user('info', owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
 
             var answer = ''
 
@@ -2067,20 +2074,20 @@ function confirm_or_deny_or(type, req, element) {
                     if (service == 'friend request') {
                         console.log('friend request denied')
                     }
-                    else if (type == 'knock') {
+                    else if (service == 'knock') {
                         console.log('knock knock unknocked')
                     }
-                    else if (type == 'VPN') {
+                    else if (service == 'VPN') {
                         console.log('VPN denied')
                     }
                     else {
-                        inform_user('error', 'no, and unknown service request: ' + service, 'error')
+                        inform_user('error', 'Answer is no to unknown service request: ' + service, 'error')
                         $('#timer_countdown').TimeCircles().destroy()
                         return 'no';
                     }
 
                     answer = 'no'
-                    inform_user('info', 'declined request from: ' + req.from_ip)
+                    inform_user('info', 'declined request (' + service + ') from: ' + req.from_ip)
 
                     $('#timer_countdown').TimeCircles().destroy()
                     $('#alertify-ok').hide()
@@ -2096,7 +2103,7 @@ function confirm_or_deny_or(type, req, element) {
             // return false;
         });
 
-        $('#alertify').append('<div style="height:150px;width:150px;float:left;" id="timer_countdown" data-timer="' + DEFAULT_RING_TIME + '"></div>')
+        $('#alertify').append('<div style="height:150px;width:150px;float:left;margin-left:-100px;" id="timer_countdown" data-timer="' + DEFAULT_RING_TIME + '"></div>')
 
         //  timer circle
         $('#timer_countdown').TimeCircles({

@@ -4596,11 +4596,11 @@ function get_https(url) {
     request(url, function (err, res, body) {
         log.info('ret from request....')
         if (err) {
-            log.error('diez on: ' + JSON.stringify(err))
+            log.error('get_https diez on: ' + JSON.stringify(err))
             deferred.reject(err)
         }
         else {
-            log.info('req returned: ' + body)
+            log.info('get_https returned: ' + body)
             deferred.resolve(body)
         }
     });
