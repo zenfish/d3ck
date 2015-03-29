@@ -952,13 +952,16 @@ function queue_or_die(queue) {
         // friend request? Right on!
         else if (queue.event == 'friend_response') {
             if (queue.d3ck_status.d3ck_requests.answer == 'yes') {
+
+                console.log(queue.d3ck_status.d3ck_requests)
+
                 var remote_ip   = queue.d3ck_status.d3ck_requests.d3ck_data.ip_addr
                 var remote_name = queue.d3ck_status.d3ck_requests.d3ck_data.owner.name
-                inform_user('Friend Added', 'New friend added: ' + remote_name + '/' + remote_ip, 'sucess')
+                inform_user('Friend Added', remote_name + '/' + remote_ip, 'success')
                 setTimeout(go_d3ck_or_go_home, 3000)
             }
             else {
-                inform_user('error', "Friend request DENIED! Who cares, they're a jerk anyway...")
+                inform_user('error', "Friend request DENIED! Who cares, they're a jerk anyway...", 'error')
             }
         }
 
@@ -966,7 +969,7 @@ function queue_or_die(queue) {
             var remote_ip   = queue.d3ck_status.d3ck_requests.d3ck_data.ip_addr
             var remote_name = queue.d3ck_status.d3ck_requests.d3ck_data.owner.name
 
-            inform_user('Friend Added', remote_name + '" added your D3CK as a friend', 'success')
+            inform_user('info', 'D3CK created', 'success')
 
             // should do this gracefully, not hit it with an ugly stick
             setTimeout(go_d3ck_or_go_home, 3000)
@@ -1962,7 +1965,7 @@ function confirm_or_deny_or(type, req, element) {
             if (service == 'friend request') {
                 alertify.set({
                     buttonReverse : true,
-                    labels        : { ok: 'Confirm', cancel: 'Not Now' }
+                    labels        : { ok: 'Confirm', cancel: 'Decline' }
                 })
             }
 
@@ -1983,6 +1986,8 @@ function confirm_or_deny_or(type, req, element) {
             var owner = '?'
             if (typeof req.owner != 'undefined')
                 owner = req.owner
+
+            console.log('OWNER: ' + owner)
 
             if (typeof all_d3ck_ids[req.from_d3ck] != 'undefined') {
                 var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
@@ -2172,11 +2177,6 @@ function show_user_sequence(d3ckid, element) {
 
     console.log('show the did... ' + d3ckid)
 
-    // if (typeof data.type == "undefined" || data.type != 'request')
-    //  console.log('need something to show....')
-    //  return
-    //
-
 //  var message_request = '<h2 style="position: relative;">Calling</h2>' +
 //                        '<img style="display: block; margin-left: auto; margin-right: auto; height:64px;" src="' +
 //                        all_d3ck_ids[d3ckid].image + '">' +
@@ -2185,7 +2185,6 @@ function show_user_sequence(d3ckid, element) {
     var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
                 '<h2 style="display: block; margin: 0px 10px; width: 96px">' + all_d3ck_ids[d3ckid].owner.name + '</h2></span><br />' +
                 '<img style="position: relative; max-height: 96px; max-width: 96px; margin: 0px 10px;" src="' + all_d3ck_ids[d3ckid].image + '">'
-
 
 
     $("#labels", function () {
