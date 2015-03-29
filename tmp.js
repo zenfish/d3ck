@@ -876,9 +876,7 @@ http.get(get_my_ip, function(res) {
 });
 
 
-//
-// xxx - YAHCV (yet another hardcoded value....)
-//
+
 // set to local VPN int
 cat_fact_server = my_devs["tun0"]
 
@@ -2304,6 +2302,69 @@ function createEvent(ip, event_data, ds) {
     }
 
 }
+
+//
+// async helper function to get list data... moved from lists, so this is defunct for now
+//
+function red_getAsync(lists, cb) {
+
+    log.info('redasy')
+
+    var keys  = Object.keys(lists)
+
+    keys.forEach(function (k) {
+
+        log.info(keys)
+
+        var data = {}
+
+        rclient.lrange(lists[k], 0, -1, function(err, objs) {
+            if (err) {
+                log.error('listing errz: ' + JSON.stringify(err))
+                cb({})
+            }
+            else {
+                log.info('all ' + key)
+                log.info(objs)
+                cb(objs)
+                // data.push(objs);
+            }
+        })
+
+    })
+
+}
+
+/**
+ *  lists the types of events and #'s of events in each... this is the list version
+ */
+function _old_listEvents(req, res, next) {
+
+    log.info('listEvents')
+
+    var data = []
+
+    // non D3CKs
+    rclient.keys('[^A-Z0-9]*', function(err, lists) {
+        var multi = rclient.multi()
+        var keys  = Object.keys(lists)
+        var i     = 0
+
+        log.info('all lists...')
+        // log.info(lists)
+        // log.info(keys)
+
+        red_getAsync(lists, function(resu) {
+            log.info('done!')
+            // reply = { events: JSON.stringify(resu) }
+            reply = { events: JSON.parse(resu) }
+            log.info(reply)
+            res.send(200, reply);
+        })
+    })
+
+}
+
 
 /**
  *  lists the types of events
