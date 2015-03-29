@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 #
 # dump some key (ahem) details about a cert out in JSON format
