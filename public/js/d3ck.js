@@ -926,7 +926,7 @@ function queue_or_die(queue) {
 
     // results of actions (e.g. file transfers, vpn, etc.)
     if (queue.type == "info") {
-        console.log('infomercial: ' + JSON.stringify(queue))
+        console.log('infomercial: ' + JSON.stringify(queue).substring(0,2048) + ' .... ')
 
         console.log('event...? ' + queue.event)
 
@@ -950,11 +950,12 @@ function queue_or_die(queue) {
         }
 
         // friend request? Right on!
-        else if (queue.event == 'friend response') {
+        else if (queue.event == 'friend_response') {
             if (queue.d3ck_status.d3ck_requests.answer == 'yes') {
                 var remote_ip   = queue.d3ck_status.events.new_d3ck_ip
                 var remote_name = queue.d3ck_status.events.new_d3ck_name
                 inform_user('success', 'New friend added: ' + remote_name + '/' + remote_ip)
+                setTimeout(go_d3ck_or_go_home, 3000)
             }
             else {
                 inform_user('error', "Friend request DENIED! Who cares, they're a jerk anyway...")
@@ -962,14 +963,13 @@ function queue_or_die(queue) {
         }
 
         else if (queue.event == 'd3ck_create') {
-            var remote_ip   = queue.d3ck_status.events.new_d3ck_ip
-            var remote_name = queue.d3ck_status.events.new_d3ck_name
+            var remote_ip   = queue.d3ck_status.d3ck_requests.from_ip
+            var remote_name = queue.d3ck_status.d3ck_requests.owner
 
             inform_user('info', remote_name + '" added your D3CK as a friend', 'success')
 
             // should do this gracefully, not hit it with an ugly stick
             setTimeout(go_d3ck_or_go_home, 3000)
-
         }
 
         else if (queue.event == 'd3ck_delete') {
