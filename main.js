@@ -879,13 +879,18 @@ var my_net  = {} // interfaces & ips
 var my_ips  = [] // ips only
 var my_devs = [] // dev2ip
 var n       = 0
-for (var dev in ifaces) {
 
-    // don't count vpn interfaces
-    if (/tun[0-9]/.test(dev)) {
-        log.info('skipping dev ' + dev)
-        continue
-    }
+// for (var dev in ifaces) {
+
+__.each(__.keys(ifaces), function(dev) {
+
+    log.info('testing... ' + dev)
+
+//  // don't count vpn interfaces
+//  if (/tun[0-9]/.test(dev)) {
+//      log.info('skipping dev ' + dev)
+//      continue
+//  }
 
     var alias = 0
     ifaces[dev].forEach(function(details){
@@ -900,7 +905,8 @@ for (var dev in ifaces) {
             log.info('\t -> ' + details.address)
         }
     })
-}
+
+})
 
 //
 // try to get external IP, if different than what we got above....

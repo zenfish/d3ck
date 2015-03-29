@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 #
 # as VPNs come and go, change the websockets to point to the right place.
