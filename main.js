@@ -3460,7 +3460,7 @@ function friend_request(req, res, next) {
 }
 
 //
-// answer to our friend response
+// answer to our friend request
 //
 function friend_response(req, res, next) {
 
@@ -4541,7 +4541,8 @@ function get_https_certified(url, d3ckid) {
 
         request(options, function cb (err, resp, body) {
             if (err) {
-                log.error('CSC nab of remote - ' + d3ckid + ' -> failzor:', JSON.stringify(err))
+                // log.error('CSC nab of remote - ' + d3ckid + ' -> failzor:', JSON.stringify(err))
+                log.info('CSC nab of remote - ' + d3ckid + ' -> failzor:', JSON.stringify(err))
                 deferred.reject(err)
                 }
             else {

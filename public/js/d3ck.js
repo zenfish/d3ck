@@ -541,7 +541,7 @@ function d3ck_create(element, ip_addr) {
         data: post_data,
         success: function(data, status) {
             console.log('suck... sess.... ')
-            inform_user('info', 'trying to befriend the d3ck @ ' + ip_addr)
+            inform_user('info', 'sent friend request to d3ck @ ' + ip_addr)
         },
         fail: function(data, err) {
             console.log('fuck... me')
@@ -942,10 +942,23 @@ function queue_or_die(queue) {
                 $('#timer_countdown').TimeCircles().destroy()
                 $('#alertify-ok').hide()
             }
+
             else {
                 inform_user('info', 'service response: ' + queue.event)
             }
 
+        }
+
+        // friend request? Right on!
+        else if (queue.event == 'friend response') {
+            if (queue.d3ck_status.d3ck_requests.answer == 'yes') {
+                var remote_ip   = queue.d3ck_status.events.new_d3ck_ip
+                var remote_name = queue.d3ck_status.events.new_d3ck_name
+                inform_user('success', 'New friend added: ' + remote_name + '/' + remote_ip)
+            }
+            else {
+                inform_user('error', "Friend request DENIED! Who cares, they're a jerk anyway...")
+            }
         }
 
         else if (queue.event == 'd3ck_create') {
