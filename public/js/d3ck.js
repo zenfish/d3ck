@@ -952,9 +952,9 @@ function queue_or_die(queue) {
         // friend request? Right on!
         else if (queue.event == 'friend_response') {
             if (queue.d3ck_status.d3ck_requests.answer == 'yes') {
-                var remote_ip   = queue.d3ck_status.events.new_d3ck_ip
-                var remote_name = queue.d3ck_status.events.new_d3ck_name
-                inform_user('success', 'New friend added: ' + remote_name + '/' + remote_ip)
+                var remote_ip   = queue.d3ck_status.d3ck_requests.d3ck_data.ip_addr
+                var remote_name = queue.d3ck_status.d3ck_requests.d3ck_data.owner.name
+                inform_user('Friend Added', 'New friend added: ' + remote_name + '/' + remote_ip, 'sucess')
                 setTimeout(go_d3ck_or_go_home, 3000)
             }
             else {
@@ -963,10 +963,10 @@ function queue_or_die(queue) {
         }
 
         else if (queue.event == 'd3ck_create') {
-            var remote_ip   = queue.d3ck_status.d3ck_requests.from_ip
-            var remote_name = queue.d3ck_status.d3ck_requests.owner
+            var remote_ip   = queue.d3ck_status.d3ck_requests.d3ck_data.ip_addr
+            var remote_name = queue.d3ck_status.d3ck_requests.d3ck_data.owner.name
 
-            inform_user('info', remote_name + '" added your D3CK as a friend', 'success')
+            inform_user('Friend Added', remote_name + '" added your D3CK as a friend', 'success')
 
             // should do this gracefully, not hit it with an ugly stick
             setTimeout(go_d3ck_or_go_home, 3000)
