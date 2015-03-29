@@ -253,6 +253,13 @@ function _get_d3ck(d3ck_id) {
 
 }
 
+//
+// the very first time it's a bit of a chicken and egg thing;
+// how do you get the D3CK data loaded into the server if
+// the client hasn't posted it yet? Wait for the first time
+// something is posted, that should be the one that we can
+// trigger on.
+//
 
 // suck up our own d3ck
 rclient.get(d3ck_id, function (err, reply) {
