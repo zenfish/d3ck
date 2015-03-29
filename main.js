@@ -3460,7 +3460,8 @@ function friend_request(req, res, next) {
 }
 
 //
-// answer to our friend request
+// answer to our friend request... currently don't answer if no,
+// so don't check the answer.
 //
 function friend_response(req, res, next) {
 
@@ -3625,22 +3626,19 @@ function friend_response(req, res, next) {
             secret    : secret,
             from_d3ck : from_d3ck,
             from_ip   : ip_addr,
-            did       : bwana_d3ck.D3CK_ID
+            did       : bwana_d3ck.D3CK_ID,
+            d3ck_data : d3ck_data
         }
 
         d3ck_status.d3ck_requests = d3ck_response
 
-        // createEvent(ip_addr, {event_type: "service_request", service: service, "d3ck_id": d3ckid}, d3ck_status)
         createEvent(ip_addr, {event_type: "friend_response", "d3ck_id": from_d3ck}, d3ck_status)
 
-        // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
         d3ck_queue.push({type: 'info', event: 'friend_response', 'd3ck_status': d3ck_status})
 
         var options             = load_up_cc_cert(from_d3ck)
 
         options.url             = url
-
-        d3ck_response.d3ck_data = d3ck_data
 
         // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: from_d3ck }
         options.form = d3ck_response
