@@ -3431,6 +3431,10 @@ function friend_request(req, res, next) {
 
         // tell the user and log it
         createEvent(client_ip, {event_type: 'request', "ip_addr": ip_addr, "from_d3ck": from_d3ck, "d3ck_id": d3ckid}, d3ck_status)
+
+        // don't need to log it, but client might/will want it
+        d3ck_request.d3ck_data = _tmp_d3ck
+
         d3ck_queue.push({type: 'request', event: 'friend request' , 'd3ck_status': d3ck_status })
 
 
@@ -3546,8 +3550,7 @@ function friend_response(req, res, next) {
             ip_addr   : ip_addr,
             secret    : secret,
             did       : req.body.did,
-            from_d3ck : req.body.from_d3ck,
-            d3ck_data : _tmp_d3ck
+            from_d3ck : req.body.from_d3ck
         }
 
         // if (typeof req.body.secret != "undefined")
@@ -3557,6 +3560,9 @@ function friend_response(req, res, next) {
         d3ck_status.d3ck_requests  = d3ck_response
 
         createEvent(ip_addr, {event_type: "friend_response", "d3ck_id": from_d3ck}, d3ck_status)
+
+        // don't need to log it, but client might/will want it
+        d3ck_request.d3ck_data = _tmp_d3ck
 
         d3ck_queue.push({type: 'info', event: 'friend_response', 'from_d3ck': from_d3ck, 'd3ck_status': d3ck_status})
 
@@ -3628,12 +3634,14 @@ function friend_response(req, res, next) {
             from_d3ck : from_d3ck,
             from_ip   : ip_addr,
             did       : bwana_d3ck.D3CK_ID,
-            d3ck_data : d3ck_data
         }
 
         d3ck_status.d3ck_requests = d3ck_response
 
         createEvent(ip_addr, {event_type: "friend_response", "d3ck_id": from_d3ck}, d3ck_status)
+
+        // don't need to log it, but client might/will want it
+        d3ck_request.d3ck_data = d3ck_data
 
         d3ck_queue.push({type: 'info', event: 'friend_response', 'd3ck_status': d3ck_status})
 
