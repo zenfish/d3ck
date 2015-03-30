@@ -1989,14 +1989,9 @@ function confirm_or_deny_or(type, req, element) {
 
             console.log('OWNER: ' + owner)
 
-            if (typeof all_d3ck_ids[req.from_d3ck] != 'undefined') {
-                var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
-                                      '<h2 style="display: block; margin: 0px 10px; width: 96px">' + owner + '</h2></span><br />' +
-                                      '<img style="position: relative; max-height: 96px; max-width: 96px; margin: 0px 10px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">'
-
-                                          // '<img style="float: left; height:64px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">' +
-                                          // '<h2 style="position: relative;">' + owner + '</h2></span><br />'
-            }
+            var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
+                                  '<h2 style="display: block; margin: 0px 10px; width: 96px">' + owner + '</h2></span><br />' +
+                                  '<img style="position: relative; max-height: 96px; max-width: 96px; margin: 0px 10px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">'
 
             inform_user('info', owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
 
