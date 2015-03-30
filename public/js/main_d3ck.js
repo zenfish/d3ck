@@ -87,7 +87,7 @@ $(document).ready(function () {
     // when adding a d3ck, put the focus on the input... doesn't work, hmm....
     $('#modalD3ck').on('shown.bs.modal', function () {
         console.log('click on the button, motherfucker, I double-dare you to click the fucking button!')
-        $('#d3ck_action').focus();
+        $('#ip_addr').focus();
     })
 
     $('body').on('click', '#rtc_button', function() { 

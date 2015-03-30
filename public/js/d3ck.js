@@ -278,12 +278,6 @@ function state_video(state) {
 //
 function state_vpn(state, browser_ip, queue) {
 
-    // var message_connect = '<h2> connected! </h2>'
-    // alertify.set({ labels : { ok: "OK" } });
-    // alertify.alert(message_connect, function (e) {
-    //     console.log('?...?')
-    // })
-
     // an incoming connect was successful
     if (state == "incoming") {
         console.log('incoming call')
@@ -1130,25 +1124,25 @@ function queue_or_die(queue) {
 
     // request user feedback (friend request, etc.)
     else if (queue.type == "request") {
-        console.log('event: ' + JSON.stringify(queue))
+        console.log('request: ' + JSON.stringify(queue).substring(0,2048) + ' .... ')
         ask_user_4_response(queue)
         return
     }
 
     // inbound calls, vpn connections, etc.
     else if (queue.type == "event") {
-        console.log('event: ' + JSON.stringify(queue))
+        console.log('event: ' + JSON.stringify(queue).substring(0,2048) + ' .... ')
         return
     }
 
     else if (queue.type == "error") {
-        console.log('error: ' + JSON.stringify(queue))
+        console.log('error: ' + JSON.stringify(queue).substring(0,2048) + ' .... ')
         inform_user('error', queue.message, 'error')
         return
     }
 
     else {
-        console.log(':???: ' + JSON.stringify(queue))
+        console.log(':???: ' + JSON.stringify(queue).substring(0,2048) + ' .... ')
         return
     }
 
@@ -1965,7 +1959,7 @@ function confirm_or_deny_or(type, req, element) {
             if (service == 'friend request') {
                 alertify.set({
                     buttonReverse : true,
-                    labels        : { ok: 'Confirm', cancel: 'Decline' }
+                    labels        : { ok: 'Add Friend', cancel: 'Ignore' }
                 })
             }
 
@@ -1987,11 +1981,20 @@ function confirm_or_deny_or(type, req, element) {
             if (typeof req.owner != 'undefined')
                 owner = req.owner
 
+
+            var img = ''
+            if (typeof all_d3ck_ids[req.from_d3ck] != 'undefined')
+                img = all_d3ck_ids[req.from_d3ck].image
+            else if (typeof req.d3ck_data.image_b64 != 'undefined')
+                img = "data:image/png;base64," + req.d3ck_data.image_b64
+
+            console.log('img: ' + img)
+
             console.log('OWNER: ' + owner)
 
             var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
                                   '<h2 style="display: block; margin: 0px 10px; width: 96px">' + owner + '</h2></span><br />' +
-                                  '<img style="position: relative; max-height: 96px; max-width: 96px; margin: 0px 10px;" src="' + all_d3ck_ids[req.from_d3ck].image + '">'
+                                  '<img style="position: relative; max-height: 96px; max-width: 96px; margin: 0px 10px;" src="' + img + '">'
 
             inform_user('info', owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
 
@@ -2004,10 +2007,10 @@ function confirm_or_deny_or(type, req, element) {
 
                 console.log('confirm...? ' + e)
 
-                var answer = 'yes'
-
                 // user said ja
                 if (e) {
+
+                    answer = 'yes'
 
                     console.log('go for it')
 
@@ -2077,6 +2080,8 @@ function confirm_or_deny_or(type, req, element) {
                 // negative...
                 else {
 
+                    answer = 'no'
+
                     if (service == 'friend request') {
                         console.log('friend request denied')
                     }
@@ -2089,10 +2094,9 @@ function confirm_or_deny_or(type, req, element) {
                     else {
                         inform_user('error', 'Answer is no to unknown service request: ' + service, 'error')
                         $('#timer_countdown').TimeCircles().destroy()
-                        return 'no';
+                        return answer
                     }
 
-                    answer = 'no'
                     inform_user('info', 'declined request (' + service + ') from: ' + req.from_ip)
 
                     $('#timer_countdown').TimeCircles().destroy()
@@ -2151,7 +2155,7 @@ function ask_user_4_response(data) {
     var req = data.d3ck_status.d3ck_requests
 
     if (req.service == 'friend request') {
-        confirm_or_deny_or('connect', req, '#labels')
+        confirm_or_deny_or('be friends', req, '#labels')
     }
 
 //  else if (req.service == 'knock') {

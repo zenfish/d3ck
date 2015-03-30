@@ -1,6 +1,18 @@
 
 /* some simple additions */
 
+.alertify h1 {
+    text-align: center;
+    margin-top: -10px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 15px;
+}
+
+.alertify h1 span {
+    background-color: white;
+}
+
 /* bootstrap colors - from http://getbootstrap.com/customize/#less-variables */
 .bs_danger  { color: #d9534f; }
 .bs_info    { color: #5bc0de; }
