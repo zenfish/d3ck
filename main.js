@@ -3546,7 +3546,8 @@ function friend_response(req, res, next) {
             ip_addr   : ip_addr,
             secret    : secret,
             did       : req.body.did,
-            from_d3ck : req.body.from_d3ck
+            from_d3ck : req.body.from_d3ck,
+            d3ck_data : _tmp_d3ck
         }
 
         // if (typeof req.body.secret != "undefined")
