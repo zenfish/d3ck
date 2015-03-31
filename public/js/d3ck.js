@@ -2240,7 +2240,7 @@ function show_user_sequence(d3ckid, element) {
         }
     });
 
-    $(this).text('connecting').removeClass("btn-primary").addClass("btn-danger")
+    $(element).text('connecting').removeClass("btn-primary").addClass("btn-danger")
 
 
 
