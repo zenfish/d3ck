@@ -1069,7 +1069,7 @@ function queue_or_die(queue) {
 
             console.log('to... ', did, friend, ip)
 
-            inform_user('VPN', "connection established", 'success')
+            inform_user('VPN', 'remote d3ck (' + friend + ' / ' + ip + ' / ' + did + ') established a VPN connection to your d3ck', 'vpn')
             state_ring(false)    // bang a gong
             state_vpn('outgoing', browser_ip, queue)
             $('#alertify-ok').click()
