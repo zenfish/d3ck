@@ -947,10 +947,10 @@ function queue_or_die(queue) {
         else if (queue.event == 'friend_response') {
             if (queue.d3ck_status.d3ck_requests.answer == 'yes') {
 
-                console.log(queue.d3ck_status.d3ck_requests)
+                console.log(queue.d3ck_status.d3ck_data)
 
-                var remote_ip   = queue.d3ck_status.d3ck_requests.d3ck_data.ip_addr
-                var remote_name = queue.d3ck_status.d3ck_requests.d3ck_data.owner.name
+                var remote_ip   = queue.d3ck_status.d3ck_data.ip_addr
+                var remote_name = queue.d3ck_status.d3ck_data.owner.name
                 inform_user('Friend Added', remote_name + '/' + remote_ip, 'success')
                 setTimeout(go_d3ck_or_go_home, 3000)
             }
