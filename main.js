@@ -3641,7 +3641,7 @@ function friend_response(req, res, next) {
         createEvent(ip_addr, {event_type: "friend_response", "d3ck_id": from_d3ck}, d3ck_status)
 
         // don't need to log it, but client might/will want it
-        d3ck_response.d3ck_requests.d3ck_data = d3ck_data
+        d3ck_status.d3ck_requests.d3ck_data = d3ck_data
 
         d3ck_queue.push({type: 'info', event: 'friend_response', 'd3ck_status': d3ck_status})
 
