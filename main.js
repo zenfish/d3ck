@@ -3428,7 +3428,7 @@ function friend_request(req, res, next) {
         var from_d3ck = _tmp_d3ck.D3CK_ID
 
         var d3ck_request    = {
-            from_ip     : _tmp_d3ck.ip,
+            from_ip     : ip,
             ip_addr     : ip_addr,
             owner       : owner,
             from_d3ck   : from_d3ck,
