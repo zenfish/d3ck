@@ -1069,7 +1069,7 @@ function queue_or_die(queue) {
 
             console.log('to... ', did, friend, ip)
 
-            inform_user('VPN', 'remote d3ck (' + friend + ' / ' + ip + ' / ' + did + ') established a VPN connection to your d3ck', 'vpn')
+            inform_user('VPN', "your d3ck has established a connection to: " + friend + ' / ' + ip + ' / ' + did + ')', 'vpn')
             state_ring(false)    // bang a gong
             state_vpn('outgoing', browser_ip, queue)
             $('#alertify-ok').click()
@@ -2239,6 +2239,10 @@ function show_user_sequence(d3ckid, element) {
             $('#alertify-cancel').click()
         }
     });
+
+    $(this).text('connecting').removeClass("btn-primary").addClass("btn-danger")
+
+
 
 }
 
