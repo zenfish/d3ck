@@ -3409,6 +3409,18 @@ function friend_request(req, res, next) {
             log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0,SNIP_LEN) + ' .... ')
         }
 
+        // if the IP we get the add from isn't in the ips the other d3ck
+        // says it has... add it in; they may be coming from a NAT or
+        // something weird
+
+        var ip = get_client_ip(req)
+
+        log.info('looking 2 see if your current ip is the same as what you use')
+        if (! _tmp_d3ck.ip_addr != ip) {
+            log.info("You're coming from an IP that isn't the same... setting " + ip + " to your IP addr so we can talk to you...?")
+            _tmp_d3ck.ip_addr = ip
+        }
+
         // write out the certs they sent us
         do_everything_client_create(_tmp_d3ck)
 
@@ -4549,7 +4561,7 @@ function get_https_certified(url, d3ckid) {
         request(options, function cb (err, resp, body) {
             if (err) {
                 // log.error('CSC nab of remote - ' + d3ckid + ' -> failzor:', JSON.stringify(err))
-                log.info('CSC nab of remote - ' + d3ckid + ' -> failzor:', JSON.stringify(err))
+                log.info('CSC nab of remote - ' + url + ' -> failzor:', JSON.stringify(err))
                 deferred.reject(err)
                 }
             else {
