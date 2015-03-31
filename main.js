@@ -2976,7 +2976,7 @@ function serviceRequest(req, res, next) {
         // finally respond to request for service
         request.post(options, function cb (err, resp) {
             if (err) {
-                log.error('post to remote failed:', JSON.stringify(err))
+                log.error('request post to remote failed:', JSON.stringify(err))
                 d3ck_queue.push({type: 'info', event: 'service_request_fail', service: service, 'd3ck_status': d3ck_status})
 
                 res.send(200, {"err" : err});
@@ -3292,7 +3292,7 @@ function serviceResponse(req, res, next) {
 
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/service/response/' + d3ckid + '/' + answer
 
-        log.info('answer going to : ' + url)
+        log.info('service answer going to : ' + url)
 
         // gotta know where it goes...
         if (typeof req.body.from_d3ck == 'undefined'){
@@ -3324,7 +3324,7 @@ function serviceResponse(req, res, next) {
 
         request.post(url, options, function cb (err, resp) {
             if (err) {
-                log.error('post to remote failed:', JSON.stringify(err))
+                log.error('post to remote ' + url + ' failed:', JSON.stringify(err))
                 res.send(200, {"err" : err});
                 }
             else {
@@ -3428,7 +3428,7 @@ function friend_request(req, res, next) {
         var from_d3ck = _tmp_d3ck.D3CK_ID
 
         var d3ck_request    = {
-            from_ip     : from_ip,
+            from_ip     : _tmp_d3ck.ip,
             ip_addr     : ip_addr,
             owner       : owner,
             from_d3ck   : from_d3ck,
@@ -3629,7 +3629,7 @@ function friend_response(req, res, next) {
 
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/fri3nd/response'
 
-        log.info('answer going to : ' + url)
+        log.info('friending answer going to : ' + url)
 
         // gotta know where it goes...
         if (typeof req.body.from_d3ck == 'undefined'){
@@ -3666,7 +3666,7 @@ function friend_response(req, res, next) {
 
         request.post(options, function cb (err, resp) {
             if (err) {
-                log.error('post to remote failed:', JSON.stringify(err))
+                log.error('response post to remote ' + url + ' failed:', JSON.stringify(err))
                 res.send(200, {"err" : err});
                 }
             else {
