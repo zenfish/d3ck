@@ -4529,7 +4529,7 @@ function get_https(url) {
 //
 function get_https_certified(url, d3ckid) {
 
-    log.info('getting... ' + url + ' for ' + d3ckid)
+    // log.info('getting... ' + url + ' for ' + d3ckid)
 
     var deferred = Q.defer();
     var str      = ""
