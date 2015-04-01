@@ -1127,16 +1127,16 @@ function queue_or_die(queue) {
         if      (queue.event == "openvpn_server") {
             console.log('Srver')
             if (caller)
-                $('#ovpn_server_infinity').append(queue.line + ' <br />')
-            else
                 $('#ovpn_client_infinity').append(queue.line + ' <br />')
+            else
+                $('#ovpn_server_infinity').append(queue.line + ' <br />')
         }
         else if (queue.event == 'openvpn_client') {
             console.log('Clnt')
             if (caller)
-                $('#ovpn_client_infinity').append(queue.line + ' <br />')
-            else
                 $('#ovpn_server_infinity').append(queue.line + ' <br />')
+            else
+                $('#ovpn_client_infinity').append(queue.line + ' <br />')
         }
         else {
             inform_user('error', 'unknown log type: ' + JSON.stringify(queue), 'error')
