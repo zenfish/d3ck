@@ -1527,10 +1527,12 @@ function cat_power(msg) {
         }
     }
 
+    // pushes to both browsers if it can
     else if (msg.type == "openvpn_server" || msg.type == 'openvpn_client') {
         try {
             log.info('not-cat writez ' + JSON.stringify(msg))
-            cat_sock.broadcast.emit(msg.type, msg.line)
+            d3ck_queue.push({type: 'log', event: msg.type, 'line': msg.line})
+            cat_sock.emit(msg.type, msg.line)
         }
         catch (e) {
             // need a browser...

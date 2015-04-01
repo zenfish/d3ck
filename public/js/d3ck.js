@@ -1116,9 +1116,8 @@ function queue_or_die(queue) {
         }
 
         else if (queue.event == 'port_forwarding') {
-            inform_user('Port Forwarding', 'successfully forwarded')
+            inform_user('Port Forwarding', 'successfully forwarded', 'success')
         }
-
 
         else {
             console.log("don't know this type of info event? " + queue.event)
@@ -1145,6 +1144,21 @@ function queue_or_die(queue) {
         console.log('error: ' + JSON.stringify(queue).substring(0,2048) + ' .... ')
         inform_user('error', queue.message, 'error')
         return
+    }
+
+    else if (queue.type == 'log') {
+        console.log('++LOGz++> ' + queue.event)
+        if      (queue.event == "openvpn_server") {
+            console.log('Srver')
+            $('#ovpn_server_infinity').append(queue.line + ' <br />')
+        }
+        else if (queue.event == 'openvpn_client') {
+            console.log('Clnt')
+            $('#ovpn_client_infinity').append(queue.line + ' <br />')
+        }
+        else {
+            inform_user('error', 'unknown log type: ' + JSON.stringify(queue), 'error')
+        }
     }
 
     else {
