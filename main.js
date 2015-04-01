@@ -1515,11 +1515,12 @@ function cat_power(msg) {
 
 // used to use sockets to communicate this...
 
-    if (msg.type != "openvpn_server" && msg.type != 'openvpn_client') {
+    if (msg.type == 'cat fax') {
+        log.info('cat fax!')
         try {
             log.info('catpower writez:  catFax, ' + JSON.stringify(msg))
             // cat_sock.write(JSON.stringify(msg))
-            cat_sock.emit('catFax', JSON.stringify(msg))
+            cat_sock.emit('catFax', JSON.stringify(msg.line))
         }
         catch (e) {
             // need a browser...
@@ -1527,10 +1528,10 @@ function cat_power(msg) {
         }
     }
 
-    else {
+    else if (msg.type == "openvpn_server" || msg.type == 'openvpn_client') {
         log.warn('Not CAT FAX!')
         try {
-            cat_sock.emit(msg.type, JSON.stringify(msg))
+            cat_sock.emit(msg.type, JSON.stringify(msg.line))
         }
         catch (e) {
             // need a browser...
@@ -5309,9 +5310,7 @@ io_sig.sockets.on('connection', function (ss_client) {
     // a friendly cat fact
     var cool_cat_fact = random_cat_fact(cat_facts)
 
-    cat_power(cool_cat_fact)
-
-
+    cat_power({type: 'cat fax', 'line': cool_cat_fact})
 
 
 

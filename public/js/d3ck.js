@@ -1463,9 +1463,14 @@ function sock_monkey_mania () {
         $('#d3ck_footy').append('<br />' + msg)
     });
 
-    sock.on('message', function(msg) {
-        console.log('^..^' + msg)
-        socky.append(msg + ' <br />')
+    sock.on('open_vpn_client', function(msg) {
+        console.log('OVPN-C' + msg)
+        $('#ovpn_client_infinity').append(msg + ' <br />')
+    });
+
+    sock.on('open_vpn_server', function(msg) {
+        console.log('OVPN-S' + msg)
+        $('#ovpn_server_infinity').append(msg + ' <br />')
     });
 
 }
