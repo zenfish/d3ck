@@ -296,6 +296,9 @@ function state_vpn(state, browser_ip, queue) {
 
         $('#d3ck_vpn_' + queue.d3ck_status.openvpn_server.client_did).text('End').addClass("hang_up").removeClass('btn-primary').addClass('btn-warning')
 
+        // add button on hidden tab page
+        $('#rtc_hack div .col-md-2:eq(1)').append('<button type="submit" id="vpn-death" style="margin: 10px; display: block;" class="btn hang_up btn-warning btn-primary">End</button>')
+
         console.log('incoming ring from ' + queue.d3ck_status.openvpn_server.client)
         incoming_ip = queue.d3ck_status.openvpn_server.client
         // ring them gongs, etc.
@@ -1463,12 +1466,12 @@ function sock_monkey_mania () {
         $('#d3ck_footy').append('<br />' + msg)
     });
 
-    sock.on('open_vpn_client', function(msg) {
+    sock.on('openvpn_client', function(msg) {
         console.log('OVPN-C' + msg)
         $('#ovpn_client_infinity').append(msg + ' <br />')
     });
 
-    sock.on('open_vpn_server', function(msg) {
+    sock.on('openvpn_server', function(msg) {
         console.log('OVPN-S' + msg)
         $('#ovpn_server_infinity').append(msg + ' <br />')
     });
