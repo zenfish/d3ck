@@ -1518,25 +1518,29 @@ function cat_power(msg) {
     if (msg.type == 'cat fax') {
         log.info('cat fax!')
         try {
-            log.info('catpower writez:  catFax, ' + JSON.stringify(msg))
+            log.info('catpower writez: ' + JSON.stringify(msg))
             // cat_sock.write(JSON.stringify(msg))
-            cat_sock.emit('catFax', JSON.stringify(msg.line))
+            cat_sock.emit('catFax', msg.line)
         }
         catch (e) {
             // need a browser...
-            log.info('channel not up yet....? ' + e)
+            log.error('channel not up yet....? ' + e)
         }
     }
 
     else if (msg.type == "openvpn_server" || msg.type == 'openvpn_client') {
-        log.warn('Not CAT FAX!')
         try {
-            cat_sock.emit(msg.type, JSON.stringify(msg.line))
+            log.info('not-cat writez ' + JSON.stringify(msg))
+            cat_sock.emit(msg.type, msg.line)
         }
         catch (e) {
             // need a browser...
-            log.info('non-cat-channel not up yet....? ' + e)
+            log.error('non-cat-channel not up yet....? ' + e)
         }
+    }
+
+    else {
+        log.error('unknown message type? ' + msg.type + ' -> ' + JSON.stringify(message))
     }
 
 }
@@ -5312,8 +5316,6 @@ io_sig.sockets.on('connection', function (ss_client) {
 
     cat_power({type: 'cat fax', 'line': cool_cat_fact})
 
-
-
     ss_client.resources = {
         screen: false,
         video: true,
@@ -5342,13 +5344,10 @@ io_sig.sockets.on('connection', function (ss_client) {
     });
 
 
-    // all import cat chat!
+    // all important cat chat!
     ss_client.on('cat_chat', function (kitten) {
 
         log.info('A kitten? For me? ' + JSON.stringify(kitten))
-
-        // if (!kitten) return;
-        // if (!otherClient) return;
 
         kitten.from = ss_client.id;
 
