@@ -1463,7 +1463,7 @@ function sock_monkey_mania () {
 
     sock.on('catFax', function(msg) {
         console.log('^..^' + msg)
-        $('#d3ck_footy').append('<br />' + msg)
+        $('#d3ck_footy').text('<br />' + msg)
     });
 
     sock.on('openvpn_client', function(msg) {
