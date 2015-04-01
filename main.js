@@ -1511,10 +1511,9 @@ all_p33rs = [];
 //
 function cat_power(msg) {
 
-    log.info('kitty Powa!  => ' + JSON.stringify(msg))
+    // log.info('kitty Powa!  => ' + JSON.stringify(msg))
 
-// used to use sockets to communicate this...
-
+    // kitten  socks
     if (msg.type == 'cat fax') {
         log.info('cat fax!')
         try {
@@ -1531,7 +1530,7 @@ function cat_power(msg) {
     else if (msg.type == "openvpn_server" || msg.type == 'openvpn_client') {
         try {
             log.info('not-cat writez ' + JSON.stringify(msg))
-            cat_sock.emit(msg.type, msg.line)
+            cat_sock.broadcast.emit(msg.type, msg.line)
         }
         catch (e) {
             // need a browser...
@@ -2852,7 +2851,6 @@ function request_lookup(did, service, req_id) {
 
     log.info('so, herr doktor, have you ever heard of this?')
     log.info(did, service, req_id)
-    log.info(outstanding_requests[did])
 
     try {
         outstanding_requests[did][req_id]['service']
