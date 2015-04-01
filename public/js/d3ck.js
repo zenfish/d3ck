@@ -46,6 +46,9 @@ var DEFAULT_RING_TIME = 30
 
 var ONE_HOUR = 60*60    // seconds
 
+var caller = false
+var callee = false
+
 
 var sock = null
 
@@ -301,6 +304,10 @@ function state_vpn(state, browser_ip, queue) {
 
         console.log('incoming ring from ' + queue.d3ck_status.openvpn_server.client)
         incoming_ip = queue.d3ck_status.openvpn_server.client
+
+        caller = false
+        callee = true
+
         // ring them gongs, etc.
         event_connect("incoming", incoming_ip)
 
@@ -473,39 +480,6 @@ function get_ip(element) {
 
 }
 
-//
-// start the sequence to fire up the VPN
-//
-// function d3ck_vpn(element, d3ckid, ipaddr) {
-// 
-//     console.log('starting up VPN to ' + d3ckid + ' : ' + ipaddr)
-// 
-//     $(element).text("connecting...").removeClass("btn-primary").addClass("btn-danger")
-// 
-//     event_connect("outgoing", ipaddr)
-// 
-//     inform_user('VPN', 'starting up VPN to ' + d3ckid + ' : ' + ipaddr, 'vpn')
-// 
-//     // don't change anything until the call efforts pass/fail
-//     d3ck_current.busy = true
-// 
-//     var pvpn = $.ajax({
-//         type: "POST",
-//         url: "/vpn/start",
-//         data: {"d3ckid": d3ckid, "ip_addr": ipaddr}
-//     })
-// 
-//     pvpn.done(function(msg) {
-//         console.log("posto facto: " + JSON.stringify(msg))
-//     })
-//     pvpn.fail(function(xhr, textStatus, errorThrown) {
-//         console.log('failzor -> ' + JSON.stringify(xhr))
-//     })
-//     pvpn.error(function(xhr, textStatus, errorThrown) {
-//         console.log('errzor -> ' + JSON.stringify(xhr))
-//     })
-// 
-// }
 
 // whimsey
 function go_d3ck_or_go_home() {
@@ -1017,6 +991,8 @@ function queue_or_die(queue) {
                 var ip = $('#' + did + ' .remote_ip strong:eq(1)').text()
                 console.log('to... ' + ip)
 
+                caller = true
+                callee = false
                 event_connect('outgoing', $(this).parent().parent().find('.d3ckname').text())
 
                 d3ck_vpn($('#d3ck_vpn_' + did), did, ip)
@@ -1150,11 +1126,17 @@ function queue_or_die(queue) {
         console.log('++LOGz++> ' + queue.event)
         if      (queue.event == "openvpn_server") {
             console.log('Srver')
-            $('#ovpn_server_infinity').append(queue.line + ' <br />')
+            if (caller)
+                $('#ovpn_server_infinity').append(queue.line + ' <br />')
+            else
+                $('#ovpn_client_infinity').append(queue.line + ' <br />')
         }
         else if (queue.event == 'openvpn_client') {
             console.log('Clnt')
-            $('#ovpn_client_infinity').append(queue.line + ' <br />')
+            if (caller)
+                $('#ovpn_client_infinity').append(queue.line + ' <br />')
+            else
+                $('#ovpn_server_infinity').append(queue.line + ' <br />')
         }
         else {
             inform_user('error', 'unknown log type: ' + JSON.stringify(queue), 'error')
@@ -1482,12 +1464,18 @@ function sock_monkey_mania () {
 
     sock.on('openvpn_client', function(msg) {
         console.log('OVPN-C' + msg)
-        $('#ovpn_client_infinity').append(msg + ' <br />')
+        if (caller)
+            $('#ovpn_client_infinity').append(msg + ' <br />')
+        else
+            $('#ovpn_server_infinity').append(msg + ' <br />')
     });
 
     sock.on('openvpn_server', function(msg) {
         console.log('OVPN-S' + msg)
-        $('#ovpn_server_infinity').append(msg + ' <br />')
+        if (caller)
+            $('#ovpn_server_infinity').append(msg + ' <br />')
+        else
+            $('#ovpn_client_infinity').append(msg + ' <br />')
     });
 
 }
