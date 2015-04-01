@@ -413,7 +413,8 @@ $(document).ready(function () {
     // message data
     list_events()
 
-    socket_looping()
+    // sox
+    sock_monkey_mania()
 
     // sow the seed o' doubt
     setInterval(get_status, STATUS_CHECK)

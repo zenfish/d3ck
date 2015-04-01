@@ -325,6 +325,9 @@ function state_vpn(state, browser_ip, queue) {
         // $('button:contains("connecting"),button:contains("Call")').text('End').addClass("hang_up").removeClass('btn-danger').addClass('btn-warning')
         $('button:contains("connecting")').text('End').addClass("hang_up").removeClass('btn-danger').addClass('btn-warning')
 
+        // add button on hidden tab page
+        $('#rtc_hack div .col-md-2:eq(1)').append('<button type="submit" id="vpn-death" style="margin: 10px; display: block;" class="btn hang_up btn-warning btn-primary">End</button>')
+
         // ... setup bye bye
         // $('button:contains("connecting"),button:contains("Call")').click(false)
 
@@ -1440,12 +1443,31 @@ function drag_and_d3ck(safe_id, d3ckid, ip) {
 
 
 //
-// enter the socket loop!
+// sock monkey mania!
 //
-local_socket = null
+var sock  = io.connect();
+var socky = $('#ovpn_client_infinity');
 
-function socket_looping() {
-    // deprecated
+function sock_monkey_mania () {
+
+    console.log('sock monk mania!!!!')
+
+    sock.on('connect', function() {
+        console.log('connex!')
+        socky.css('display', 'block');
+        socky.append($('<p>Connected...</p>'));  
+    });
+
+    sock.on('catFax', function(msg) {
+        console.log('^..^' + msg)
+        $('#d3ck_footy').append('<br />' + msg)
+    });
+
+    sock.on('message', function(msg) {
+        console.log('^..^' + msg)
+        socky.append(msg + ' <br />')
+    });
+
 }
 
 //
@@ -2241,8 +2263,6 @@ function show_user_sequence(d3ckid, element) {
     });
 
     $(element).text('connecting').removeClass("btn-primary").addClass("btn-danger")
-
-
 
 }
 

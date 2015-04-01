@@ -1515,18 +1515,28 @@ function cat_power(msg) {
 
 // used to use sockets to communicate this...
 
-//    if (msg.type != "openvpn_server") {
-//
-//        try {
-//            log.info('catpower writez:  catFax, ' + JSON.stringify(msg))
-//            // cat_sock.write(JSON.stringify(msg))
-//            cat_sock.emit('catFax', JSON.stringify(msg))
-//        }
-//        catch (e) {
-//            // need a browser...
-//            log.info('channel not up yet....? ' + e)
-//        }
-//    }
+    if (msg.type != "openvpn_server" && msg.type != 'openvpn_client') {
+        try {
+            log.info('catpower writez:  catFax, ' + JSON.stringify(msg))
+            // cat_sock.write(JSON.stringify(msg))
+            cat_sock.emit('catFax', JSON.stringify(msg))
+        }
+        catch (e) {
+            // need a browser...
+            log.info('channel not up yet....? ' + e)
+        }
+    }
+
+    else {
+        log.warn('Not CAT FAX!')
+        try {
+            cat_sock.emit(msg.type, JSON.stringify(msg))
+        }
+        catch (e) {
+            // need a browser...
+            log.info('non-cat-channel not up yet....? ' + e)
+        }
+    }
 
 }
 
@@ -5289,11 +5299,21 @@ function safeCb(cb) {
 
 io_sig.set('log level', 1);
 
+cat_sock = io_sig.sockets
 
 io_sig.sockets.on('connection', function (ss_client) {
 
     log.info("CONNEEEEECTION.....!")
     // log.info(ss_client)
+
+    // a friendly cat fact
+    var cool_cat_fact = random_cat_fact(cat_facts)
+
+    cat_power(cool_cat_fact)
+
+
+
+
 
     ss_client.resources = {
         screen: false,
