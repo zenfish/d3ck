@@ -2034,8 +2034,15 @@ function confirm_or_deny_or(type, req, element) {
 
             console.log('OWNER: ' + owner)
 
+            _owner = owner
+
+            // add a phone icon
+            if (type == 'connect') {
+                _owner = '<i class="fa fa-phone"></i> ' + owner
+            }
+
             var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
-                                  '<h2 style="display: block; margin: 0px 10px; width: 96px">' + owner + '</h2></span><br />' +
+                                  '<h2 style="display: block; margin: 0px 10px; width: 96px">' + _owner + '</h2></span><br />' +
                                   '<img style="position: relative; max-height: 96px; max-width: 96px; margin: 0px 10px;" src="' + img + '">'
 
             inform_user('info', owner + ' wants to <b style="color: red;">' + type + '</b> from ' + req.from_ip + '/' + req.from_d3ck, 'wowzer')
