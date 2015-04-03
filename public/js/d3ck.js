@@ -1450,6 +1450,8 @@ var socky = $('#ovpn_client_infinity');
 
 function sock_monkey_mania () {
 
+    return
+
     console.log('sock monk mania!!!!')
 
     sock.on('connect', function() {
