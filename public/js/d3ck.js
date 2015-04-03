@@ -1694,6 +1694,7 @@ function set_up_RTC(remote) {
     // we have to wait until it's ready
     webrtc.on('readyToCall', function () {
         webrtc.joinRoom('d3ck')
+        console.log('\n\t+++ joining room!\n\n')
     });
 
 
