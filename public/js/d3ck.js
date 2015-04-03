@@ -1466,12 +1466,14 @@ function sock_monkey_mania () {
     sock.on('openvpn_client', function(msg) {
         console.log('--> srv' + msg)
         // pack it off to the server
-        kittens_mittens.emit('logs', msg);
+        // kittens_mittens.emit('logs', msg);
+        sock.emit('logs', msg);
     });
 
     sock.on('openvpn_server', function(msg) {
         console.log('OVPN-S' + msg)
-        kittens_mittens.emit('logs', msg);
+        // kittens_mittens.emit('logs', msg);
+        sock.emit('logs', msg);
     });
 
 }
