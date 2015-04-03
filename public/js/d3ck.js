@@ -905,7 +905,8 @@ function queue_or_die(queue) {
         console.log('event...? ' + queue.event)
 
         if (queue.event == 'service_request') {
-            inform_user('info', 'service request ' + queue.service)
+            console.log(queue)
+            // inform_user('info', 'service request ' + queue.service)
         }
 
         else if (queue.event == 'service_response') {
@@ -1747,12 +1748,13 @@ function cat_chat() {
         console.log('got data! ' + JSON.stringify(data))
 
 
+// xxxx
 // if type === logs....
 // xxxx    if (caller)
-       //  if (caller)
-       //      $('#ovpn_server_infinity').append(msg + ' <br />')
-       //  else
-       //      $('#ovpn_client_infinity').append(msg + ' <br />')
+//  if (caller)
+//      $('#ovpn_server_infinity').append(msg + ' <br />')
+//  else
+//      $('#ovpn_client_infinity').append(msg + ' <br />')
 
         // $('#cat_chat').prepend('<div>' + stamp + '<b>'+username + ':</b> ' + data + '<br></div>')
         if (data.data != "" && data.did != my_d3ck.D3CK_ID)
