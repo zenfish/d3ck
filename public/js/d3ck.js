@@ -285,7 +285,7 @@ function state_vpn(state, browser_ip, queue) {
     if (state == "incoming") {
         console.log('incoming call')
 
-        // set_up_RTC() // fly free, web RTC!
+        set_up_RTC() // fly free, web RTC!
 
         d3ck_current.incoming = true
 
@@ -2087,7 +2087,7 @@ function confirm_or_deny_or(type, req, element) {
                         url = '/service/response/' + req.from_d3ck + '/' + answer
                         inform_user('request', 'lowering shields to ' + req.from_ip, 'info')
                         lower_shields(req.from_ip)
-                        set_up_RTC() // fly free and proud, web RTC!
+                        // set_up_RTC() // fly free and proud, web RTC!
 
                     }
 
