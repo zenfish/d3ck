@@ -4246,15 +4246,21 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
     var err = {}
 
-    //  cache results, do that first... or do in browser?
-
-
-//  if (defined d3ck2ip[ip])
-//     get_https_certified(url, ip2dck[ip]).then(function (ping_data) {
-//     have any of these seen a cert?
-//  all_ips.forEach(function(ip, i) {
+    //  xxxx - cache results, do that first... or do in browser?
 
     all_ips.forEach(function(ip, i) {
+
+        // skip self... this can happen if...
+        //
+        //      both behind the same NAT
+        //      both in diff private IP spaces and have same internal addr (e.g. 192.168.0.1)
+        //      I'm sure there are more, nets are strange
+        //
+        if (__.contains(my_ips, ip)) {
+            log.info('skipping my own IP! ' + ip);
+            responses++
+            return;
+        }
 
         // skip loopback
         if (ip == "127.0.0.1") {
