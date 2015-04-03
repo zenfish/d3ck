@@ -35,11 +35,11 @@ http {
         #
         # logs
         #
-        # access_log                  /etc/d3ck/logs/proxy-access.log;
-        # error_log                   /etc/d3ck/logs/proxy-error.log debug;
+        access_log                  /etc/d3ck/logs/proxy-access.log;
+        error_log                   /etc/d3ck/logs/proxy-error.log info;
         # turn off
-        access_log                    /dev/null;
-        error_log                     /dev/null;
+        # access_log                    /dev/null;
+        # error_log                     /dev/null;
 
         #
         # certs

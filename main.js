@@ -4236,7 +4236,7 @@ var ping_done = false
 
 function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
-    // log.info("++++pinging... " + ping_d3ckid + ' / ' + ipaddr)
+    log.info("++++pinging... " + ping_d3ckid + ' / ' + ipaddr)
 
     ping_done = false
 
@@ -4284,10 +4284,10 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
                     log.error('errz socket parsing: ' + JSON.stringify(e))
                     response = {status: "ping failure", "error": e}
                     // synchronicity... II... shouting above the din of my rice crispies
-                    try { res.send(408, response) }
-                    catch (e) { log.info('sPing error ' + e) }
+                    res.send(200, { error: e })
+                    log.error('sPing error ' + e)
+                    return
                 }
-                return
             }
 
             // data.ip = ip
@@ -4308,7 +4308,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
                 d3ck2ip[ping_d3ckid] = all_ips[i]
                 ip2d3ck[all_ips[i]] = ping_d3ckid
 
-                // log.info('ping cool: ' + ping_d3ckid + ' -> ' + all_ips[i] + ' -> ' + ip2d3ck[all_ips[i]])
+                log.info('ping cool: ' + ping_d3ckid + ' -> ' + all_ips[i] + ' -> ' + ip2d3ck[all_ips[i]])
 
                 res.send(200, ping_data)
             }
@@ -4319,7 +4319,8 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
                 ping_done = true
                 log.info('ran out of pings for ' + ip)
                 response = {status: "no answer"}
-                res.send(408, response)
+                // res.send(408, response)
+                res.send(200, response)
             }
 
         }).catch(function (error) {
@@ -4334,7 +4335,8 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
                 ping_done = true
                 response = {status: "ping failure", "error": error }
                 // synchronicity... II... shouting above the din of my rice crispies
-                try       { res.send(408, response) }
+                // try       { res.send(408, response) }
+                try       { res.send(200, response) }
                 catch (e) { log.error('sPing error ' + JSON.stringify(e)) }
             }
 

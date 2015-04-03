@@ -698,8 +698,8 @@ function d3ck_ping(all_ips, d3ckid) {
                 delete all_pings[d3ckid]
             }
             catch (e) { }
-            // console.log( "ping fail for " + ping_url)
-            // console.log(err)
+            console.log( "ping fail for " + ping_url)
+            console.log(err)
             $('#'+element_id).removeClass('btn-primary').addClass('disabled')
             $('#'+element_id).closest('form').find('div').remove()
     }).error(function(err) {
@@ -707,8 +707,8 @@ function d3ck_ping(all_ips, d3ckid) {
                 delete all_pings[d3ckid]
             }
             catch (e) { }
-            // console.log( "ping error for " + ping_url)
-            // console.log(err)
+            console.log( "ping error for " + ping_url)
+            console.log(err)
             $('#'+element_id).removeClass('btn-primary').addClass('disabled')
             $('#'+element_id).closest('form').find('div').remove()
     })
