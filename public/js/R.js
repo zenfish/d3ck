@@ -2,7 +2,8 @@
 return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
 
 
-SIGNALING_SERVER = 'https://' + window.location.hostname + ':8080' 
+HTTPS_PORT       = 8080
+SIGNALING_SERVER = 'https://' + window.location.hostname + ':' + HTTPS_PORT
 
 // created by @HenrikJoreteg
 var prefix;
@@ -795,7 +796,7 @@ var io = ('undefined' === typeof module ? {} : module.exports);
     var options = {
         host: uri.host
       , secure: 'https' == uri.protocol
-      , port: uri.port || ('https' == uri.protocol ? 443 : 80)
+      , port: uri.port || ('https' == uri.protocol ? HTTPS_PORT : 80)
       , query: uri.query || ''
       , 'force new connection': true
     };
@@ -873,12 +874,12 @@ var io = ('undefined' === typeof module ? {} : module.exports);
     if ('document' in global) {
       host = host || document.domain;
       port = port || (protocol == 'https'
-        && document.location.protocol !== 'https:' ? 443 : document.location.port);
+        && document.location.protocol !== 'https:' ? HTTPS_PORT : document.location.port);
     } else {
       host = host || 'localhost';
 
       if (!port && protocol == 'https') {
-        port = 443;
+        port = HTTPS_PORT;
       }
     }
 
@@ -2589,7 +2590,7 @@ var io = ('undefined' === typeof module ? {} : module.exports);
   Socket.prototype.isXDomain = function () {
 
     var port = global.location.port ||
-      ('https:' == global.location.protocol ? 443 : 80);
+      ('https:' == global.location.protocol ? HTTPS_PORT : 80);
 
     return this.options.host !== global.location.hostname 
       || this.options.port != port;
