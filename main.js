@@ -1531,7 +1531,7 @@ function cat_power(msg) {
     else if (msg.type == "openvpn_server" || msg.type == 'openvpn_client') {
         try {
             log.info('not-cat writez ' + JSON.stringify(msg))
-//          d3ck_queue.push({type: 'log', event: msg.type, 'line': msg.line})
+            d3ck_queue.push({type: 'log', event: msg.type, 'line': msg.line})
             cat_sock.emit(msg.type, msg.line)
         }
         catch (e) {
@@ -4050,7 +4050,9 @@ function startVPN(req, res, next) {
     log.info('setting last_vpn_client_server to: ' + ipaddr)
 
     // fire up vpn
-    d3ck_spawn(cmd, args)
+
+    // d3ck_spawn(cmd, args)
+    d3ck_spawn_sync(cmd, args)  // trying syncronous 'cuz state is getting mixed up in the shell
 
     createEvent(get_client_ip(req), {event_type: "vpn_start", remote_ip: d3ck2ip[d3ckid], remote_d3ck_id: d3ckid})
 
