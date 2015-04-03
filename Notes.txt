@@ -1,4 +1,12 @@
 
+**** changed d3ck_port_signal -> 8081 -> 8080
+
+**** unused change in d3ck.css, <h1>+span
+
+
+
+
+
 From:
 
     https://gist.github.com/martijnvermaat/744dde0fa70df0ebf44a
