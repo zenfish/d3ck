@@ -2035,10 +2035,9 @@ function confirm_or_deny_or(type, req, element) {
             console.log('OWNER: ' + owner)
 
             _owner = owner
-
             // add a phone icon
             if (type == 'connect') {
-                _owner = '<i class="fa fa-phone"></i> ' + owner
+                _owner = ' <i class="fa fa-phone bs_primary"></i> ' + _owner
             }
 
             var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
@@ -2230,8 +2229,10 @@ function show_user_sequence(d3ckid, element) {
 //                        all_d3ck_ids[d3ckid].image + '">' +
 //                        '<h2 style="position: relative;">'  + all_d3ck_ids[d3ckid].owner.name + '</h2>'
 
+    var _owner = ' <i class="fa fa-phone bs_primary"></i> ' + all_d3ck_ids[d3ckid].owner.name
+
     var message_request = '<span style="float: left; overflow: hidden; width: 96px">' +
-                '<h2 style="display: block; margin: 0px 10px; width: 96px">' + all_d3ck_ids[d3ckid].owner.name + '</h2></span><br />' +
+                '<h2 style="display: block; margin: 0px 10px; width: 96px">' + _owner + '</h2></span><br />' +
                 '<img style="position: relative; max-height: 96px; max-width: 96px; margin: 0px 10px;" src="' + all_d3ck_ids[d3ckid].image + '">'
 
 
