@@ -905,7 +905,7 @@ function queue_or_die(queue) {
         console.log('event...? ' + queue.event)
 
         if (queue.event == 'service_request') {
-            inform_user('info', 'service request')
+            inform_user('info', 'service request ' + queue.service)
         }
 
         else if (queue.event == 'service_response') {
@@ -1463,19 +1463,14 @@ function sock_monkey_mania () {
     });
 
     sock.on('openvpn_client', function(msg) {
-        console.log('OVPN-C' + msg)
-        if (caller)
-            $('#ovpn_client_infinity').append(msg + ' <br />')
-        else
-            $('#ovpn_server_infinity').append(msg + ' <br />')
+        console.log('--> srv' + msg)
+        // pack it off to the server
+        kittens_mittens.emit('logs', msg);
     });
 
     sock.on('openvpn_server', function(msg) {
         console.log('OVPN-S' + msg)
-        if (caller)
-            $('#ovpn_server_infinity').append(msg + ' <br />')
-        else
-            $('#ovpn_client_infinity').append(msg + ' <br />')
+        kittens_mittens.emit('logs', msg);
     });
 
 }
@@ -1750,6 +1745,14 @@ function cat_chat() {
         // username = my_d3ck.name
 
         console.log('got data! ' + JSON.stringify(data))
+
+
+// if type === logs....
+// xxxx    if (caller)
+       //  if (caller)
+       //      $('#ovpn_server_infinity').append(msg + ' <br />')
+       //  else
+       //      $('#ovpn_client_infinity').append(msg + ' <br />')
 
         // $('#cat_chat').prepend('<div>' + stamp + '<b>'+username + ':</b> ' + data + '<br></div>')
         if (data.data != "" && data.did != my_d3ck.D3CK_ID)
