@@ -4961,7 +4961,7 @@ function WebRTC(opts) {
             // makes the entire PC config overridable
             peerConnectionConfig: {
                 // iceServers: [{"url": "stun:stun.l.google.com:19302"}]
-                iceServers: null
+                iceServers: [{"url": "stun.stunprotocol.org:3478"}]
             },
             peerConnectionConstraints: {
                 optional: [
