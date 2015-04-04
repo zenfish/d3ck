@@ -4221,6 +4221,66 @@ function pre_ping(ip) {
     return deferred.promise;
 }
 
+
+var Netmask = require('netmask').Netmask
+
+//
+// privates... think this is it...
+//
+var priv_10  = new Netmask('10.0.0.0/8')
+var priv_172 = new Netmask('172.16.0.0/12')
+var priv_168 = new Netmask('192.168.0.0/16')
+
+//
+// test first octet - match or no, with all mine?
+// only need first two since we only check if it's private already
+//
+function in_my_sub(ip) {
+
+    var same_sub = false
+
+    __.each(my_ips, function(i) { 
+        // console.log('\tvs. ' + i)
+        if (ip.substr(0,2) == i.substr(0,2)) {
+            // console.log('bros in arms...')
+            same_sub = true            
+        }
+    })
+
+    if (same_sub) return true
+
+    return false
+
+}
+
+
+
+//
+// simple helper... is an IP in an RFC 1918 private CIDR block,
+// (e.g. 10/8, etc.), and, if so, are we in the same one? If
+// not to the first, or if {true and not-true}, then return true,
+// else false, since it'll be in a private net we can't reach.
+//
+function should_i_ping(ip) {
+    // log.info('testing for CIDR-osity, etc. for ' + ip)
+
+    if (priv_10.contains(ip) || priv_172.contains(ip) || priv_168.contains(ip)) {
+        if (in_my_sub(ip)) {
+            // log.info('yep')
+            return true
+        }
+    }
+    else {
+        // log.info('non-priv')
+        return true
+    }
+
+    // log.info('nope')
+    return false
+
+}
+
+
 //
 // https ping a remote d3ck... it can have multiple
 // IP addrs, so ping them all at once and take the
@@ -4236,13 +4296,13 @@ var ping_done = false
 
 function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
-    log.info("++++pinging... " + ping_d3ckid + ' / ' + ipaddr)
-
     ping_done = false
 
     var all_ips   = ipaddr.split(','),
         done      = false,
         responses = 0;
+
+    log.info("++++pinging... " + ping_d3ckid + ' / ' + ipaddr)
 
     var err = {}
 
@@ -4269,9 +4329,17 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
             return;
         }
 
+
+        // if it's private don't try *unless* we're in the same private net...
+        // else just lots of calls going nowhere
+        if (!should_i_ping(ip)) {
+            responses++
+            return;
+        }
+
         var url = 'https://' + ip + ':' + d3ck_port_ext + '/ping'
 
-        log.debug('cert-pinging  ' + url);
+        log.info('cert-pinging  ' + url);
 
         get_https_certified(url, ping_d3ckid).then(function (ping_data) {
             // log.info('+++ someday has come for ' + ip + ' ... ping response back')
