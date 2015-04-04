@@ -5349,7 +5349,7 @@ log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_por
 
 var webRTC = require('webrtc.io').listen(8001);
 
-/*
+
 io_sig = require('socket.io').listen(d3cky)
 
 // socketz
@@ -5530,8 +5530,6 @@ io_sig.sockets.on('connection', function (ss_client) {
     // ss_client.emit('turnservers', credentials);
 
 });
-
-*/
 
 
 
