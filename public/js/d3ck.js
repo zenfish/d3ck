@@ -581,6 +581,11 @@ function d3ck_ping(all_ips, d3ckid) {
         var ret = data
         // console.log("pingzor " + JSON.stringify(data))
 
+        if (typeof data.ip == 'undefined') {
+            console.log('hmm... bad data in ping: ' + JSON.stringify(data))
+            return
+        }
+
         var safe_id = 'uppity_' + data.ip.replace(/\./g, '_')
         var safe_ip = data.ip.replace(/\./g, '_')
 
