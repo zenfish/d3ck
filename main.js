@@ -5383,8 +5383,6 @@ io_sig.set('log level', 1);
 
 cat_sock = io_sig.sockets
 
-/* 
-
 io_sig.sockets.on('connection', function (ss_client) {
 
     log.info("CONNEEEEECTION.....!")
@@ -5517,8 +5515,8 @@ io_sig.sockets.on('connection', function (ss_client) {
 
 });
 
-*/
 
+/*
 
 function describeRoom(name) {
     var clients = io.sockets.clients(name);
@@ -5661,6 +5659,7 @@ io_sig.sockets.on('connection', function (ss_client) {
 });
 
 
+*/
 
 
 
