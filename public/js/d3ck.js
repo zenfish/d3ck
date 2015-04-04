@@ -36,6 +36,8 @@ var SHORT_WAIT = 1000  // 1 sec
 
 var PNOTIFY      = 15000 // 15 secs
 var PNOTIFY_HIGH = 30000 // 30 secs
+var PNOTIFY      = 5000 // 15 secs
+var PNOTIFY_HIGH = 5000 // 30 secs
 
 var D3CK_SOCK_RETRY   = 3000
 var LOCAL_VIDEO_WIDTH = 480
@@ -1704,8 +1706,6 @@ function set_up_RTC() {
         console.log('[+] video added', peer);
         $('video').css('width', '100%')
 
-
-        return
 
         // this bit from simplewebrtc, slightly mod'd
         var remotes = document.getElementById('rtcxxx');
