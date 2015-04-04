@@ -1661,6 +1661,8 @@ function detect_webRTC(element) {
 //
 function set_up_RTC() {
 
+return
+
     console.log('setting up that ol rtc magic')
 
     var remote_d3ck = ""        // did of other d3ck

@@ -5347,6 +5347,9 @@ var cool_cats = {}
 
 log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_port_forward + '\n\n')
 
+var webRTC = require('webrtc.io').listen(8001);
+
+/*
 io_sig = require('socket.io').listen(d3cky)
 
 // socketz
@@ -5528,7 +5531,7 @@ io_sig.sockets.on('connection', function (ss_client) {
 
 });
 
-
+*/
 
 
 
