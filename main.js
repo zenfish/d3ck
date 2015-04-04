@@ -4051,8 +4051,7 @@ function startVPN(req, res, next) {
 
     // fire up vpn
 
-    // d3ck_spawn(cmd, args)
-    d3ck_spawn_sync(cmd, args)  // trying syncronous 'cuz state is getting mixed up in the shell
+    d3ck_spawn(cmd, args)
 
     createEvent(get_client_ip(req), {event_type: "vpn_start", remote_ip: d3ck2ip[d3ckid], remote_d3ck_id: d3ckid})
 
