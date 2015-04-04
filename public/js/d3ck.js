@@ -1707,6 +1707,62 @@ function set_up_RTC(remote) {
     webrtc.on('videoAdded', function (video, peer) {
         console.log('[+] video added', peer);
         $('video').css('width', '100%')
+
+                var remotes = document.getElementById('remotes');
+                if (remotes) {
+                    var container = document.createElement('div');
+                    container.className = 'videoContainer';
+                    container.id = 'container_' + webrtc.getDomId(peer);
+                    container.appendChild(video);
+
+                    // suppress contextmenu
+                    video.oncontextmenu = function () { return false; };
+
+                    // resize the video on click
+                    video.onclick = function () {
+                        container.style.width = video.videoWidth + 'px';
+                        container.style.height = video.videoHeight + 'px';
+                    };
+
+                    // show the remote volume
+                    var vol = document.createElement('meter');
+                    vol.id = 'volume_' + peer.id;
+                    vol.className = 'volume';
+                    vol.min = -45;
+                    vol.max = -20;
+                    vol.low = -40;
+                    vol.high = -25;
+                    container.appendChild(vol);
+                    
+                    // show the ice connection state
+                    if (peer && peer.pc) {
+                        var connstate = document.createElement('div');
+                        connstate.className = 'connectionstate';
+                        container.appendChild(connstate);
+                        peer.pc.on('iceConnectionStateChange', function (event) {
+                            switch (peer.pc.iceConnectionState) {
+                            case 'checking': 
+                                connstate.innerText = 'Connecting to peer...';
+                                break;
+                            case 'connected':
+                            case 'completed': // on caller side
+                                $(vol).show();
+                                connstate.innerText = 'Connection established.';
+                                break;
+                            case 'disconnected':
+                                connstate.innerText = 'Disconnected.';
+                                break;
+                            case 'failed':
+                                connstate.innerText = 'Connection failed.';
+                                break;
+                            case 'closed':
+                                connstate.innerText = 'Connection closed.';
+                                break;
+                            }
+                        });
+                    }
+                    remotes.appendChild(container);
+                }
     })
 
 
