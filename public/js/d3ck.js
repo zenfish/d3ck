@@ -285,7 +285,7 @@ function state_vpn(state, browser_ip, queue) {
     if (state == "incoming") {
         console.log('incoming call')
 
-        set_up_RTC() // fly free, web RTC!
+        // set_up_RTC() // fly free, web RTC!
 
         d3ck_current.incoming = true
 
@@ -1665,13 +1665,11 @@ function set_up_RTC(remote) {
 
     var ip          = window.location.hostname
 
-// xxxxxxxxx d3
     if (d3ck_status.openvpn_server.vpn_status == "up") {
         console.log("PEEEEER js: server up")
         remote_d3ck = d3ck_status.openvpn_server.client_did
     }
 
-// xxxxxxxxx d3
     // we're connected to them
     else if (d3ck_status.openvpn_client.vpn_status == "up") {
         console.log("PEEEEER js: client up")
@@ -1685,8 +1683,6 @@ function set_up_RTC(remote) {
     }
 
     console.log('setting up RTC: ' + SIGNALING_SERVER)
-
-    // media: {"audio": true, "video": {"optional": [{"minWidth": "1280"}, {"minHeight": "720"}], "mandatory": {}}}
 
     $('#remoteVideos video').remove()
 
