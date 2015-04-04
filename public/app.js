@@ -43,6 +43,8 @@ var VideoChat = {
 
   // When we are ready to call, enable the Call button.
   readyToCall: function(event){
+    console.log('ready 2 rumble....')
+    alert('ready 2 rumble....')
     VideoChat.callButton.removeAttribute('disabled');
   },
 

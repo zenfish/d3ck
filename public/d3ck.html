@@ -625,86 +625,13 @@
 
 
   <h1>Video Chat</h1>
-  <video id="local-video" height="150" autoplay></video>
-  <video id="remote-video" height="150" autoplay></video>
- 
-  <div>
-    <button id="get-video">Get Video</button>
-    <button id="call" disabled="disabled">Call</button>
-  </div>
- 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/adapter.js"></script>
 
-<script>
-// app.js
-var VideoChat = {
-  requestMediaStream: function(event){
-    getUserMedia(
-      {video: true, audio: true},
-      VideoChat.onMediaStream,
-      VideoChat.noMediaStream
-    );
-  },
+        <video id="localVideo" autoplay muted style="width:40%;"></video>
+        <video id="remoteVideo" autoplay style="width:40%;"></video>
 
-  onMediaStream: function(stream){
-    VideoChat.localVideo = document.getElementById('local-video');
-    VideoChat.localVideo.volume = 0;
-    VideoChat.localStream = stream;
-    VideoChat.videoButton.setAttribute('disabled', 'disabled');
-    var streamUrl = window.URL.createObjectURL(stream);
-    VideoChat.localVideo.src = streamUrl;
-  },
+        <br />
 
-  noMediaStream: function(){
-    console.log("No media stream for us.");
-    // Sad trombone.
-  }
-};
-
-VideoChat.videoButton = document.getElementById('get-video');
-
-VideoChat.videoButton.addEventListener(
-  'click',
-  VideoChat.requestMediaStream,
-  false
-);
-
-// app.js
-var VideoChat = {
-  requestMediaStream: function(event){
-    getUserMedia(
-      {video: true, audio: true},
-      VideoChat.onMediaStream,
-      VideoChat.noMediaStream
-    );
-  },
- 
-  onMediaStream: function(stream){
-    VideoChat.localVideo = document.getElementById('local-video');
-    VideoChat.localVideo.volume = 0;
-    VideoChat.localStream = stream;
-    VideoChat.videoButton.setAttribute('disabled', 'disabled');
-    var streamUrl = window.URL.createObjectURL(stream);
-    VideoChat.localVideo.src = streamUrl;
-  },
- 
-  noMediaStream: function(){
-    console.log("No media stream for us.");
-    // Sad trombone.
-  }
-};
- 
-VideoChat.videoButton = document.getElementById('get-video');
- 
-VideoChat.videoButton.addEventListener(
-  'click',
-  VideoChat.requestMediaStream,
-  false
-);
-
-
-</script>
+        <input type="button" id="start" onclick="start(true)" value="Start Video"></input>
 
         <!-- spacer n feets below -->
         <div class="btn-toolbar"> <span class="spacer50"></span> </div>
@@ -761,6 +688,9 @@ VideoChat.videoButton.addEventListener(
 <!-- my stuff -->
 <script type="text/javascript" src="/js/d3ck.js"></script>
 <script type="text/javascript" src="/js/main_d3ck.js"></script>
+
+<script type="text/javascript" src="webrtc.js"></script>
+
 </body>
 
 </html>

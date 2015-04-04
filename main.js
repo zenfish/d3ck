@@ -4301,7 +4301,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
         done      = false,
         responses = 0;
 
-    log.info("++++pinging... " + ping_d3ckid + ' / ' + ipaddr)
+    // log.info("++++pinging... " + ping_d3ckid + ' / ' + ipaddr)
 
     var err = {}
 
@@ -4338,7 +4338,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
         var url = 'https://' + ip + ':' + d3ck_port_ext + '/ping'
 
-        log.info('cert-pinging  ' + url);
+        // log.info('cert-pinging  ' + url);
 
         get_https_certified(url, ping_d3ckid).then(function (ping_data) {
             // log.info('+++ someday has come for ' + ip + ' ... ping response back')
@@ -4375,7 +4375,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
                 d3ck2ip[ping_d3ckid] = all_ips[i]
                 ip2d3ck[all_ips[i]] = ping_d3ckid
 
-                log.info('ping cool: ' + ping_d3ckid + ' -> ' + all_ips[i] + ' -> ' + ip2d3ck[all_ips[i]])
+                // log.info('ping cool: ' + ping_d3ckid + ' -> ' + all_ips[i] + ' -> ' + ip2d3ck[all_ips[i]])
 
                 res.send(200, ping_data)
             }
@@ -5383,11 +5383,23 @@ io_sig.set('log level', 1);
 
 cat_sock = io_sig.sockets
 
-/*
+io_sig.sockets.broadcast = function(data) {
+    for(var i in this.clients) {
+        // this.clients[i].send(data);
+        this.clients[i].emit(data);
+    }
+};
+
 io_sig.sockets.on('connection', function (ss_client) {
 
     log.info("CONNEEEEECTION.....!")
     // log.info(ss_client)
+
+
+//  ss_client.on('message', function(message) {
+//      console.log('received: %s', message);
+//      ss_client.broadcast(message);
+//  });
 
     // a friendly cat fact
     var cool_cat_fact = random_cat_fact(cat_facts)
@@ -5515,59 +5527,6 @@ io_sig.sockets.on('connection', function (ss_client) {
     // ss_client.emit('turnservers', credentials);
 
 });
-*/
-
-// When a socket connects, set up the specific listeners we will use.
-io_sig.sockets.on('connection', function(socket){
-
-   log.info("CONNEEEEECTION.....!")
-
-  // When a client tries to join a room, only allow them if they are first or
-  // second in the room. Otherwise it is full.
-  socket.on('join', function(room){
-    var clients = io.sockets.adapter.rooms[room];
-    var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
-    if(numClients == 0){
-      socket.join(room);
-    }else if(numClients == 1){
-      socket.join(room);
-      // When the client is second to join the room, both clients are ready.
-      socket.emit('ready', room);
-      socket.broadcast.emit('ready', room);
-    }else{
-      socket.emit('full', room);
-    }
-  });
-
-  // When receiving the token message, use the Twilio REST API to request an
-  // token to get ephemeral credentials to use the TURN server.
-  socket.on('token', function(){
-    twilio.tokens.create(function(err, response){
-      if(err){
-        console.log(err);
-      }else{
-        // Return the token to the browser.
-        socket.emit('token', response);
-      }
-    });
-  });
-
-  // Relay candidate messages
-  socket.on('candidate', function(candidate){
-    socket.broadcast.emit('candidate', candidate);
-  });
-
-  // Relay offers
-  socket.on('offer', function(offer){
-    socket.broadcast.emit('offer', offer);
-  });
-
-  // Relay answers
-  socket.on('answer', function(answer){
-    socket.broadcast.emit('answer', answer);
-  });
-});
-
 
 
 
