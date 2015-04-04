@@ -1763,13 +1763,14 @@ function set_up_RTC() {
 
     // local p2p/ice failure
     webrtc.on('iceFailed', function (peer) {
-        console.log('local fail', connstate);
+        console.log('local fail')
+        console.log(peer)
         $('#rtcxxx').append('<div>ice ice faily</div>')
     });
 
     // remote p2p/ice failure
     webrtc.on('connectivityError', function (peer) {
-        console.log('remote fail', connstate);
+        console.log('remote fail')
         $('#rtcxxx').append('<div>connectivity error</div>')
     });
 
