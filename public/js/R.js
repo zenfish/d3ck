@@ -4962,7 +4962,7 @@ function WebRTC(opts) {
             peerConnectionConfig: {
                 // iceServers: [{"url": "stun:stun.l.google.com:19302"}]
                 // iceServers: []
-                iceServers: [{"url": "10.206.68.1:3478"}]
+                iceServers: [{"url": "stun:10.206.68.1:3478"}]
             },
             peerConnectionConstraints: {
                 optional: [
