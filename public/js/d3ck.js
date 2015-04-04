@@ -285,7 +285,7 @@ function state_vpn(state, browser_ip, queue) {
     if (state == "incoming") {
         console.log('incoming call')
 
-        // set_up_RTC() // fly free, web RTC!
+        set_up_RTC() // fly free, web RTC!
 
         d3ck_current.incoming = true
 
@@ -327,7 +327,7 @@ function state_vpn(state, browser_ip, queue) {
 
         remote_ip = queue.d3ck_status.openvpn_client.server
 
-        set_up_RTC(remote_ip) // fly free, web RTC!
+        set_up_RTC() // fly free, web RTC!
 
         console.log('\t[+] fire up the outbound signs')
 
@@ -1657,7 +1657,7 @@ function detect_webRTC(element) {
 //
 // fire up the rtc magic
 //
-function set_up_RTC(remote) {
+function set_up_RTC() {
 
     console.log('setting up that ol rtc magic')
 
@@ -1704,63 +1704,71 @@ function set_up_RTC(remote) {
         console.log('[+] video added', peer);
         $('video').css('width', '100%')
 
-                var remotes = document.getElementById('remotes');
-                if (remotes) {
-                    var container = document.createElement('div');
-                    container.className = 'videoContainer';
-                    container.id = 'container_' + webrtc.getDomId(peer);
-                    container.appendChild(video);
+        // this bit from simplewebrtc, slightly mod'd
+        var remotes = document.getElementById('rtcxxx');
 
-                    // suppress contextmenu
-                    video.oncontextmenu = function () { return false; };
+        if (remotes) {
 
-                    // resize the video on click
-                    video.onclick = function () {
-                        container.style.width = video.videoWidth + 'px';
-                        container.style.height = video.videoHeight + 'px';
-                    };
+            var container = document.createElement('div');
+            container.className = 'videoContainer';
+            container.id = 'container_' + webrtc.getDomId(peer);
+            container.appendChild(video);
 
-                    // show the remote volume
-                    var vol = document.createElement('meter');
-                    vol.id = 'volume_' + peer.id;
-                    vol.className = 'volume';
-                    vol.min = -45;
-                    vol.max = -20;
-                    vol.low = -40;
-                    vol.high = -25;
-                    container.appendChild(vol);
+            // suppress contextmenu
+            // video.oncontextmenu = function () { return false; };
+
+            // show the remote volume
+            var vol = document.createElement('meter');
+            vol.id = 'volume_' + peer.id;
+            vol.className = 'volume';
+            vol.min = -45;
+            vol.max = -20;
+            vol.low = -40;
+            vol.high = -25;
+            container.appendChild(vol);
                     
-                    // show the ice connection state
-                    if (peer && peer.pc) {
-                        var connstate = document.createElement('div');
-                        connstate.className = 'connectionstate';
-                        container.appendChild(connstate);
-                        peer.pc.on('iceConnectionStateChange', function (event) {
-                            switch (peer.pc.iceConnectionState) {
-                            case 'checking': 
-                                connstate.innerText = 'Connecting to peer...';
-                                break;
-                            case 'connected':
-                            case 'completed': // on caller side
-                                $(vol).show();
-                                connstate.innerText = 'Connection established.';
-                                break;
-                            case 'disconnected':
-                                connstate.innerText = 'Disconnected.';
-                                break;
-                            case 'failed':
-                                connstate.innerText = 'Connection failed.';
-                                break;
-                            case 'closed':
-                                connstate.innerText = 'Connection closed.';
-                                break;
-                            }
-                        });
+            // show the ice connection state
+            if (peer && peer.pc) {
+                var connstate = document.createElement('div');
+                connstate.className = 'connectionstate';
+                container.appendChild(connstate);
+                peer.pc.on('iceConnectionStateChange', function (event) {
+                    switch (peer.pc.iceConnectionState) {
+                    case 'checking': 
+                        connstate.innerText = 'Connecting to peer...';
+                        break;
+                    case 'connected':
+                    case 'completed': // on caller side
+                        $(vol).show();
+                        connstate.innerText = 'Connection established.';
+                        break;
+                    case 'disconnected':
+                        connstate.innerText = 'Disconnected.';
+                        break;
+                    case 'failed':
+                        connstate.innerText = 'Connection failed.';
+                        break;
+                    case 'closed':
+                        connstate.innerText = 'Connection closed.';
+                        break;
                     }
-                    remotes.appendChild(container);
-                }
+                });
+            }
+            remotes.appendChild(container);
+        }
     })
 
+    // local p2p/ice failure
+    webrtc.on('iceFailed', function (peer) {
+        console.log('local fail', connstate);
+        $('#rtcxxx').append('<div>ice ice faily</div>')
+    });
+
+    // remote p2p/ice failure
+    webrtc.on('connectivityError', function (peer) {
+        console.log('remote fail', connstate);
+        $('#rtcxxx').append('<div>connectivity error</div>')
+    });
 
 
     toggle_special_FX()

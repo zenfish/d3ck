@@ -36,6 +36,13 @@
 video { width: 350px; height: 200px; }
 
 */
+.connectionstate {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    text-align: center;
+    color: #fff
+}
 
 .d3ck_img {
     display: block;
