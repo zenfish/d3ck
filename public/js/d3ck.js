@@ -1704,6 +1704,9 @@ function set_up_RTC() {
         console.log('[+] video added', peer);
         $('video').css('width', '100%')
 
+
+        return
+
         // this bit from simplewebrtc, slightly mod'd
         var remotes = document.getElementById('rtcxxx');
 
