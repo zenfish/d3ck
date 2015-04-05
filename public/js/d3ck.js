@@ -1738,17 +1738,17 @@ function set_up_RTC() {
         }
     };
 
-    document.querySelector('#start-broadcasting').onclick = function() {
-        this.disabled = true;
-        getUserMedia(function(stream) {
-            peer.addStream(stream);
-            peer.startBroadcasting();
-        });
-    };
 
-    document.querySelector('#your-name').onchange = function() {
-        peer.userid = this.value;
-    };
+    // 
+    getUserMedia(function(stream) {
+        peer.addStream(stream);
+        peer.startBroadcasting();
+    });
+
+    // my_d3ck.D3CK_ID
+    // my_d3ck.owner.name
+
+    peer.userid = my_d3ck.owner.name
 
     var videosContainer = document.getElementById('videos-container') || document.body;
     var btnSetupNewRoom = document.getElementById('setup-new-room');
