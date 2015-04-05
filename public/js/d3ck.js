@@ -1661,6 +1661,11 @@ function detect_webRTC(element) {
 //
 function set_up_RTC() {
 
+    console.log('trying to set up RTC...')
+
+    // xxx - conf
+    HTTPS_PORT       = 8080
+    SIGNALING_SERVER = 'https://' + window.location.hostname + ':' + HTTPS_PORT
 
     // Muaz Khan     - https://github.com/muaz-khan
     // MIT License   - https://www.webrtc-experiment.com/licence/
@@ -1713,7 +1718,6 @@ function set_up_RTC() {
 
         tr.appendChild(td1);
         tr.appendChild(td2);
-        roomsList.appendChild(tr);
     };
 
     peer.onStreamAdded = function(e) {
@@ -1752,9 +1756,6 @@ function set_up_RTC() {
 
     var videosContainer = document.getElementById('videos-container') || document.body;
     var btnSetupNewRoom = document.getElementById('setup-new-room');
-    var roomsList = document.getElementById('rooms-list');
-
-    if (btnSetupNewRoom) btnSetupNewRoom.onclick = setupNewRoomButtonClickHandler;
 
     function rotateVideo(video) {
         video.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(0deg)';
@@ -1828,8 +1829,6 @@ function set_up_RTC() {
 
 
 
-return
-
     console.log('setting up that ol rtc magic')
 
     var remote_d3ck = ""        // did of other d3ck
@@ -1854,6 +1853,13 @@ return
     }
 
     console.log('setting up RTC: ' + SIGNALING_SERVER)
+
+
+
+return
+
+
+
 
     $('#remoteVideos video').remove()
 
@@ -2333,7 +2339,7 @@ function confirm_or_deny_or(type, req, element) {
                         url = '/service/response/' + req.from_d3ck + '/' + answer
                         inform_user('request', 'lowering shields to ' + req.from_ip, 'info')
                         lower_shields(req.from_ip)
-                        // set_up_RTC() // fly free and proud, web RTC!
+                        set_up_RTC() // fly free and proud, web RTC!
 
                     }
 
