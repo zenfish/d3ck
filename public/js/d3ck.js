@@ -1674,7 +1674,7 @@ function set_up_RTC() {
     var channel = 'd3ck'
     var sender = Math.round(Math.random() * 999999999) + 999999999;
     
-    io.connect(SIGNALING_SERVER).emit('new-channel', {
+    io.connect(SIGNALING_SERVER).emit('join', {
         channel: channel,
         sender: sender
     });
