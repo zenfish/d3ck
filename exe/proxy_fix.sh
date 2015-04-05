@@ -42,9 +42,11 @@ sed -e 's/D3CK_SIG/'"$sig"'/' -e 's/D3CK_WEB/'"$web"'/' $proto > $conf
 
 echo restarting nginx
 
-# killall $binary
-# $binary -c $conf
+killall $binary
+
+$binary -c $conf
+
 
 # good ol' HUP
-killall -1 $binary
+# killall -1 $binary
 
