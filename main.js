@@ -5347,10 +5347,16 @@ var cool_cats = {}
 
 log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_port_forward + '\n\n')
 
-var webRTC = require('webrtc.io').listen(8001);
+io_sig = require('socket.io').listen(d3cky, {
+    origins: '*:*'
+});
 
+// io_sig.set('transports', [
+//     // 'websocket',
+//     'xhr-polling',
+//     'jsonp-polling'
+// ]);
 
-io_sig = require('socket.io').listen(d3cky)
 
 // socketz
 //io_sig.set('authorization', passportIO.authorize({
@@ -5361,9 +5367,67 @@ io_sig = require('socket.io').listen(d3cky)
 
 io_sig.set('log level', 2);
 
+cat_sock = io_sig.sockets
+
+io_sig.sockets.on('connection', function (socket) {
+    var initiatorChannel = '';
+    if (!io_sig.isConnected) {
+        io_sig.isConnected = true;
+    }
+
+    socket.on('new-channel', function (data) {
+        if (!channels[data.channel]) {
+            initiatorChannel = data.channel;
+        }
+
+        channels[data.channel] = data.channel;
+        onNewNamespace(data.channel, data.sender);
+    });
+
+    socket.on('presence', function (channel) {
+        var isChannelPresent = !! channels[channel];
+        socket.emit('presence', isChannelPresent);
+    });
+
+    socket.on('disconnect', function (channel) {
+        if (initiatorChannel) {
+            delete channels[initiatorChannel];
+        }
+    });
+});
+
+function onNewNamespace(channel, sender) {
+    io_sig.of('/' + channel).on('connection', function (socket) {
+        var username;
+        if (io_sig.isConnected) {
+            io_sig.isConnected = false;
+            socket.emit('connect', true);
+        }
+
+        socket.on('message', function (data) {
+            if (data.sender == sender) {
+                if(!username) username = data.data.sender;
+                
+                socket.broadcast.emit('message', data.data);
+            }
+        });
+        
+        socket.on('disconnect', function() {
+            if(username) {
+                socket.broadcast.emit('user-left', username);
+                username = null;
+            }
+        });
+    });
+}
+
+
 
 // xxx?
 // io_sig.disable('browser client cache');
+
+
+/*
 
 function describeRoom(name) {
     var clients = io_sig.sockets.clients(name);
@@ -5382,9 +5446,9 @@ function safeCb(cb) {
     }
 }
 
-io_sig.set('log level', 1);
+*/
 
-cat_sock = io_sig.sockets
+/*
 
 io_sig.sockets.broadcast = function(data) {
     for(var i in this.clients) {
@@ -5530,6 +5594,8 @@ io_sig.sockets.on('connection', function (ss_client) {
     // ss_client.emit('turnservers', credentials);
 
 });
+*/
+
 
 
 

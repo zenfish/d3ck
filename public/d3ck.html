@@ -623,52 +623,19 @@
 
          </div> <!-- tab content -->
 
-<h1> VIDEO </h1>
-
-<video id="xxx-local" autoplay="autoplay"></video>
-<video id="xxx-remote" autoplay="autoplay"></video>
-
-<script src="/webrtc.io.js"></script>
-<script>
-
-  rtc.connect('https:/');
-
-  rtc.createStream({"video": true, "audio":false}, function(stream){
-    // get local stream for manipulation
-    rtc.attachStream(stream, 'xxx-local');
-  });
-
-  rtc.on('add remote stream', function(stream){
-    // show the remote video
-    rtc.attachStream(stream, 'xxx-remote');
-  });
-
-</script>
-
-
-
-        <!-- spacer n feets below -->
-
-        <div class="btn-toolbar"> <span class="spacer50"></span> </div>
-
-        <div class="btn-toolbar"> <span class="spacer100"></span></div>
-
-
-        <div class="row">
-            <div class="col-md-4 column footer">
-                <small><p id="ip_diddy" class="text-muted credit">no electrons were harmed making this footer</p></small>
-            </div>
-            <div class="col-md-offset-4 text-muted credit col-md-4 column footer" id="d3ck_footy" style="color: #A2D6A2"></div>
-
-        </div>
-
-
-<!-- everybody's got something to hide, 'cept for me and my .... -->
-<script type="text/javascript" src="/js/monkey.js"></script>
 
 <script type="text/javascript" src="/js/require.js"></script>
 
+<!--
 <script type="text/javascript" src="/js/R.js"></script>
+-->
+
+<script src="/socket.io/socket.io.js"> </script>
+
+<script type="text/javascript" src="/js/getMediaElement.js"></script>
+<script type="text/javascript" src="/js/conference.js"></script>
+<script type="text/javascript" src="/js/RTCPeerConnection-v1.5.js"></script>
+
 
 <script type="text/javascript" src="/js/jquery-2.1.0.min.js"></script>
 
@@ -706,6 +673,7 @@
 <!-- my stuff -->
 <script type="text/javascript" src="/js/d3ck.js"></script>
 <script type="text/javascript" src="/js/main_d3ck.js"></script>
+
 
 </body>
 
