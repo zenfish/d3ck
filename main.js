@@ -5372,13 +5372,15 @@ io_sig.set('log level', 2);
 cat_sock = io_sig.sockets
 
 io_sig.sockets.on('connection', function (socket) {
-    var initiatorChannel = '';
+
+    log.info('[++] initial connex!')
+
     if (!io_sig.isConnected) {
         io_sig.isConnected = true;
     }
 
-    socket.on('new-channel', function (data) {
-        console.log("NEW CHAN + ")
+    socket.on('join', function (data) {
+        console.log("[+] joining... ")
         console.log(data)
 
         if (!channels[data.channel]) {
@@ -5386,7 +5388,9 @@ io_sig.sockets.on('connection', function (socket) {
         }
 
         channels[data.channel] = data.channel;
+
         onNewNamespace(data.channel, data.sender);
+
     });
 
     socket.on('presence', function (channel) {
@@ -5405,12 +5409,17 @@ io_sig.sockets.on('connection', function (socket) {
 });
 
 function onNewNamespace(channel, sender) {
+
+    console.log('trying to join ' + channel)
+
     io_sig.of('/' + channel).on('connection', function (socket) {
 
         console.log('[+]Boyah, connext!')
+
         console.log(channel, sender)
 
         var username;
+
         if (io_sig.isConnected) {
             io_sig.isConnected = false;
             socket.emit('connect', true);
@@ -5432,7 +5441,9 @@ function onNewNamespace(channel, sender) {
                 username = null;
             }
         });
+
     });
+
 }
 
 
