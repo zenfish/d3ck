@@ -1452,7 +1452,6 @@ function drag_and_d3ck(safe_id, d3ckid, ip) {
 //
 // sock monkey mania!
 //
-var sock  = io.connect();
 var socky = $('#ovpn_client_infinity');
 
 function sock_monkey_mania () {
@@ -1667,107 +1666,18 @@ function set_up_RTC() {
     HTTPS_PORT       = 8080
     SIGNALING_SERVER = 'https://' + window.location.hostname + ':' + HTTPS_PORT
 
-    // Muaz Khan     - https://github.com/muaz-khan
-    // MIT License   - https://www.webrtc-experiment.com/licence/
-    // Documentation - https://github.com/muaz-khan/WebRTC-Experiment/tree/master/socket.io
 
-    var channel = 'd3ck'
-    var sender = Math.round(Math.random() * 999999999) + 999999999;
-    
-    io.connect(SIGNALING_SERVER).emit('join', {
-        channel: channel,
-        sender: sender
+    var webrtc = new SimpleWebRTC({
+        localVideoEl     : 'localVideo',
+        remoteVideosEl   : 'remotesVideos',
+        autoRequestMedia : true
     });
 
-    socket = io.connect(SIGNALING_SERVER + '/' + channel);
-
-    socket.on('connect', function () {
-        // setup peer connection & pass socket object over the constructor!
-        console.log('connnnnect!')
+    // wait 'till ready
+    webrtc.on('readyToCall', function () {
+        webrtc.joinRoom('d3ck');
     });
 
-    socket.send = function (message) {
-        socket.emit('message', {
-            sender: sender,
-            data: message
-        });
-    };
-
-    // var peer = new PeerConnection('http://socketio-signaling.jit.su:80');
-    peer = new PeerConnection(socket);
-
-    console.log('peeerinnnng... into my k-ball...')
-
-    peer.onUserFound = function(userid) {
-
-        console.log('OMG!  Someone else is here!')
-
-        if (document.getElementById(userid)) return;
-        var tr = document.createElement('tr');
-
-        var td1 = document.createElement('td');
-        var td2 = document.createElement('td');
-
-        td1.innerHTML = userid + ' has camera. Are you interested in video chat?';
-
-        var button = document.createElement('button');
-        button.innerHTML = 'Join';
-        button.id = userid;
-        button.style.float = 'right';
-        button.onclick = function() {
-            button = this;
-            getUserMedia(function(stream) {
-                peer.addStream(stream);
-                peer.sendParticipationRequest(button.id);
-            });
-            button.disabled = true;
-        };
-        td2.appendChild(button);
-
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-    };
-
-    peer.onStreamAdded = function(e) {
-        var video = e.mediaElement;
-        video.setAttribute('width', 600);
-        videosContainer.insertBefore(video, videosContainer.firstChild);
-
-        video.play();
-        rotateVideo(video);
-        scaleVideos();
-    };
-
-    peer.onStreamEnded = function(e) {
-        var video = e.mediaElement;
-        if (video) {
-            video.style.opacity = 0;
-            rotateVideo(video);
-            setTimeout(function() {
-                video.parentNode.removeChild(video);
-                scaleVideos();
-            }, 1000);
-        }
-    };
-
-
-    // 
-    console.log('ms media')
-
-    getUserMedia(function(stream) {
-        peer.addStream(stream);
-        peer.startBroadcasting();
-    });
-
-    // my_d3ck.D3CK_ID
-    // my_d3ck.owner.name
-
-    peer.userid = my_d3ck.owner.name
-
-    console.log('my name is ' + JSON.stringify(peer) + " ... and I'm an alcoholic...")
-
-    var videosContainer = document.getElementById('videos-container') || document.body;
-    var btnSetupNewRoom = document.getElementById('setup-new-room');
 
     function rotateVideo(video) {
         video.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(0deg)';
@@ -1808,166 +1718,9 @@ function set_up_RTC() {
 
     window.onresize = scaleVideos;
     
-    // you need to capture getUserMedia yourself!
-    function getUserMedia(callback) {
-        var hints = {audio:true,video:{
-            optional: [],
-            mandatory: {}
-        }};
-        navigator.getUserMedia(hints,function(stream) {
-            var video = document.createElement('video');
-            video.src = URL.createObjectURL(stream);
-            video.controls = true;
-            video.muted = true;
-            
-            peer.onStreamAdded({
-                mediaElement: video,
-                userid: 'self',
-                stream: stream
-            });
-            
-            callback(stream);
-        });
-    }
-    
-    (function() {
-        var uniqueToken = document.getElementById('unique-token');
-        if (uniqueToken)
-            if (location.hash.length > 2) uniqueToken.parentNode.parentNode.parentNode.innerHTML = '<h2 style="text-align:center;"><a href="' + location.href + '" target="_blank">Share this link</a></h2>';
-            else uniqueToken.innerHTML = uniqueToken.parentNode.parentNode.href = '#' + (Math.random() * new Date().getTime()).toString(36).toUpperCase().replace( /\./g , '-');
-    })();
+//  toggle_special_FX()
 
-
-
-
-
-    console.log('setting up that ol rtc magic')
-
-    var remote_d3ck = ""        // did of other d3ck
-
-    var ip          = window.location.hostname
-
-    if (d3ck_status.openvpn_server.vpn_status == "up") {
-        console.log("PEEEEER js: server up")
-        remote_d3ck = d3ck_status.openvpn_server.client_did
-    }
-
-    // we're connected to them
-    else if (d3ck_status.openvpn_client.vpn_status == "up") {
-        console.log("PEEEEER js: client up")
-        remote_d3ck = d3ck_status.openvpn_client.server_did
-    }
-
-    // ... wtf, as they say...?
-    else {
-//      alert('hmmm... are you connected...?')
-//      return
-    }
-
-    console.log('setting up RTC: ' + SIGNALING_SERVER)
-
-
-
-return
-
-
-
-
-
-    $('#remoteVideos video').remove()
-
-    webrtc = new SimpleWebRTC({
-        localVideoEl: 'localVideo',
-        remoteVideosEl: 'remoteVideos',
-        autoRequestMedia: true
-    });
-
-    // we have to wait until it's ready
-    webrtc.on('readyToCall', function () {
-        webrtc.joinRoom('d3ck')
-        console.log('\n\t+++ joining room!\n\n')
-    });
-
-
-    // ensure everyone plays by my rules....
-    webrtc.on('videoAdded', function (video, peer) {
-        console.log('[+] video added', peer);
-        $('video').css('width', '100%')
-
-
-        return;
-
-        // this bit from simplewebrtc, slightly mod'd
-        var remotes = document.getElementById('rtcxxx');
-
-        if (remotes) {
-
-            var container = document.createElement('div');
-            container.className = 'videoContainer';
-            container.id = 'container_' + webrtc.getDomId(peer);
-            container.appendChild(video);
-
-            // suppress contextmenu
-            // video.oncontextmenu = function () { return false; };
-
-            // show the remote volume
-            var vol = document.createElement('meter');
-            vol.id = 'volume_' + peer.id;
-            vol.className = 'volume';
-            vol.min = -45;
-            vol.max = -20;
-            vol.low = -40;
-            vol.high = -25;
-            container.appendChild(vol);
-                    
-            // show the ice connection state
-            if (peer && peer.pc) {
-                var connstate = document.createElement('div');
-                connstate.className = 'connectionstate';
-                container.appendChild(connstate);
-                peer.pc.on('iceConnectionStateChange', function (event) {
-                    switch (peer.pc.iceConnectionState) {
-                    case 'checking': 
-                        connstate.innerText = 'Connecting to peer...';
-                        break;
-                    case 'connected':
-                    case 'completed': // on caller side
-                        $(vol).show();
-                        connstate.innerText = 'Connection established.';
-                        break;
-                    case 'disconnected':
-                        connstate.innerText = 'Disconnected.';
-                        break;
-                    case 'failed':
-                        connstate.innerText = 'Connection failed.';
-                        break;
-                    case 'closed':
-                        connstate.innerText = 'Connection closed.';
-                        break;
-                    }
-                });
-            }
-            remotes.appendChild(container);
-        }
-    })
-
-    // local p2p/ice failure
-    webrtc.on('iceFailed', function (peer) {
-        console.log('local fail')
-        console.log(peer)
-        $('#rtcxxx').append('<div>ice ice faily</div>')
-    });
-
-    // remote p2p/ice failure
-    webrtc.on('connectivityError', function (peer) {
-        console.log('remote fail')
-        $('#rtcxxx').append('<div>connectivity error</div>')
-    });
-
-
-    toggle_special_FX()
-
-    cat_chat()
+//  cat_chat()
 
 }
 

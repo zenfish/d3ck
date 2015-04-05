@@ -5347,16 +5347,279 @@ var io_sig = {}
 
 var cool_cats = {}
 
-log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_port_int + '\n\n')
+log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_port_sig_int + '\n\n')
 
-io_sig = require('socket.io').listen(d3cky)
-
-// io_sig.set({'transports': ["websocket", "polling"]});
+// io_sig = require('socket.io').listen(d3cky, {
+//     origins: '*:*'
+// });
 
 // io_sig.set('transports', [
+//    'websocket',
 //    'xhr-polling',
 //    'jsonp-polling'
 // ]);
+
+
+// socketz
+//io_sig.set('authorization', passportIO.authorize({
+//    cookieParser: express.cookieParser,
+//    secret:       gen_somewhat_random(),
+//    store:        new candyStore({ client: rclient })
+//}))
+
+
+// cat_sock = io_sig.sockets
+
+/* 
+io_sig.sockets.on('connection', function (socket) {
+
+    log.info('[++] initial connex!')
+
+    if (!io_sig.isConnected) {
+        io_sig.isConnected = true;
+    }
+
+    socket.on('join', function (data) {
+        console.log("[+] joining... ")
+        console.log(data)
+
+        if (!channels[data.channel]) {
+            initiatorChannel = data.channel;
+        }
+
+        channels[data.channel] = data.channel;
+
+        onNewNamespace(data.channel, data.sender);
+
+    });
+
+    socket.on('presence', function (channel) {
+        console.log('[+]\tpresence -> ' + channel)
+
+        var isChannelPresent = !! channels[channel];
+        socket.emit('presence', isChannelPresent);
+    });
+
+    socket.on('disconnect', function (channel) {
+        console.log('[-]\tdisconn -> ' + channel)
+        if (initiatorChannel) {
+            delete channels[initiatorChannel];
+        }
+    });
+});
+
+function onNewNamespace(channel, sender) {
+
+    console.log('trying to join ' + channel)
+
+    io_sig.of('/' + channel).on('connection', function (socket) {
+
+        console.log('[+]Boyah, connext!')
+
+        console.log(channel, sender)
+
+        var username;
+
+        if (io_sig.isConnected) {
+            io_sig.isConnected = false;
+            socket.emit('connect', true);
+        }
+
+        socket.on('message', function (data) {
+            console.log('[+++] incoming! ' + JSON.stringify(data))
+            if (data.sender == sender) {
+                if(!username) username = data.data.sender;
+                
+                socket.broadcast.emit('message', data.data);
+            }
+        });
+        
+        socket.on('disconnect', function() {
+            console.log('[---] cya')
+            if(username) {
+                socket.broadcast.emit('user-left', username);
+                username = null;
+            }
+        });
+
+    });
+
+}
+
+*/
+
+// xxx?
+// io_sig.disable('browser client cache');
+
+
+/*
+
+function describeRoom(name) {
+    var clients = io_sig.sockets.clients(name);
+    var result = { clients: {} };
+    clients.forEach(function (client) {
+        result.clients[client.id] = client.resources;
+    });
+    return result;
+}
+
+function safeCb(cb) {
+    if (typeof cb === 'function') {
+        return cb;
+    } else {
+        return function () {};
+    }
+}
+
+*/
+
+/*
+
+io_sig.sockets.broadcast = function(data) {
+    for(var i in this.clients) {
+        // this.clients[i].send(data);
+        this.clients[i].emit(data);
+    }
+};
+
+io_sig.sockets.on('connection', function (ss_client) {
+
+    log.info("CONNEEEEECTION.....!")
+    // log.info(ss_client)
+
+
+//  ss_client.on('message', function(message) {
+//      console.log('received: %s', message);
+//      ss_client.broadcast(message);
+//  });
+
+    // a friendly cat fact
+    var cool_cat_fact = random_cat_fact(cat_facts)
+
+    cat_power({type: 'cat fax', 'line': cool_cat_fact})
+
+    ss_client.resources = {
+        screen: false,
+        video: true,
+        audio: false
+    };
+
+    // pass a message to another id
+    ss_client.on('message', function (details) {
+        // log.info('mess: ' + JSON.stringify(details))
+
+        if (!details) return;
+
+        var otherClient = io_sig.sockets.sockets[details.to];
+
+        // log.info(io_sig.sockets.sockets)
+
+        if (!otherClient) return;
+
+        // ... well...
+        cool_cats[otherClient] = otherClient
+
+        // log.info(otherClient)
+
+        details.from = ss_client.id;
+        otherClient.emit('message', details);
+    });
+
+
+    // all important cat chat!
+    ss_client.on('cat_chat', function (kitten) {
+
+        log.info('A kitten? For me? ' + JSON.stringify(kitten))
+
+        kitten.from = ss_client.id;
+
+        log.info('sending free kittens from... ' + ss_client.id)
+
+        // log.info(ss_client)
+
+        for (var cat_client in io_sig.sockets.sockets) {
+            log.info('sending to... ' + JSON.stringify(cat_client))
+            // log.info('sending to... ' )
+            // var c = io_sig.sockets.sockets[
+            io_sig.sockets.sockets[cat_client].emit('cat_chat', kitten);
+        }
+
+    });
+
+
+    ss_client.on('shareScreen', function () {
+        ss_client.resources.screen = true;
+    });
+
+    ss_client.on('unshareScreen', function (type) {
+        ss_client.resources.screen = false;
+        removeFeed('screen');
+    });
+
+    ss_client.on('join', join);
+
+    function removeFeed(type) {
+        log.info('ss-remove-feed')
+        if (ss_client.room) {
+            io_sig.sockets.in(ss_client.room).emit('remove', {
+                id: ss_client.id,
+                type: type
+            });
+            if (!type) {
+                ss_client.leave(ss_client.room);
+                ss_client.room = undefined;
+            }
+        }
+    }
+
+    function join(name, cb) {
+        log.info('joining... ' + name)
+
+        // sanity check
+        if (typeof name !== 'string') return;
+
+        // leave any existing rooms
+        removeFeed();
+        safeCb(cb)(null, describeRoom(name));
+        ss_client.join(name);
+        ss_client.room = name;
+    }
+
+    // we don't want to pass "leave" directly because the
+    // event type string of "socket end" gets passed too.
+    ss_client.on('disconnect', function () {
+        log.info('ss-D/C')
+        removeFeed();
+    });
+    ss_client.on('leave', function () {
+        log.info('ss-leave')
+        removeFeed();
+    });
+
+    ss_client.on('create', function (name, cb) {
+        log.info('ss-create')
+        if (arguments.length == 2) {
+            cb = (typeof cb == 'function') ? cb : function () {};
+            name = name || uuid();
+        } else {
+            cb = name;
+            name = uuid();
+        }
+        // check if exists
+        if (io_sig.sockets.ss_clients(name).length) {
+            safeCb(cb)('taken');
+        } else {
+            join(name);
+            safeCb(cb)(null, name);
+        }
+    });
+
+    // ss_client.emit('stunservers', [])
+    // var credentials = [];
+    // ss_client.emit('turnservers', credentials);
+
+});
+*/
 
 var sm_config =
 {
@@ -5371,7 +5634,7 @@ var sm_config =
 }
 
 // var io = require('socket.io').listen(d3cky)
-// var io = require('socket.io')(d3cky);
+var io = require('socket.io')(d3cky);
 
 
 // var io = require('socket.io')(d3cky, {'transports': ['polling', 'websocket'] }, function() {
@@ -5382,7 +5645,7 @@ var sm_config =
 
 
 function describeRoom(name) {
-    var clients = io_sig.sockets.clients(name);
+    var clients = io.sockets.clients(name);
     var result = {
         clients: {}
     };
@@ -5393,7 +5656,7 @@ function describeRoom(name) {
 }
 
 function clientsInRoom(name) {
-    return io_sig.sockets.clients(name).length;
+    return io.sockets.clients(name).length;
 }
 
 function safeCb(cb) {
@@ -5404,7 +5667,7 @@ function safeCb(cb) {
     }
 }
 
-io_sig.on('connection', function (client) {
+io.sockets.on('connection', function (client) {
     client.resources = {
         screen: false,
         video: true,
@@ -5415,7 +5678,7 @@ io_sig.on('connection', function (client) {
     client.on('message', function (details) {
         if (!details) return;
 
-        var otherClient = io_sig.sockets.sockets[details.to];
+        var otherClient = io.sockets.sockets[details.to];
         if (!otherClient) return;
 
         details.from = client.id;
@@ -5435,7 +5698,7 @@ io_sig.on('connection', function (client) {
 
     function removeFeed(type) {
         if (client.room) {
-            io_sig.sockets.in(client.room).emit('remove', {
+            io.sockets.in(client.room).emit('remove', {
                 id: client.id,
                 type: type
             });
@@ -5480,7 +5743,7 @@ io_sig.on('connection', function (client) {
             name = uuid();
         }
         // check if exists
-        if (io_sig.sockets.clients(name).length) {
+        if (io.sockets.clients(name).length) {
             safeCb(cb)('taken');
         } else {
             join(name);
@@ -5507,19 +5770,6 @@ io_sig.on('connection', function (client) {
     });
     client.emit('turnservers', credentials);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
