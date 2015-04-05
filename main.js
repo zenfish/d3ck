@@ -5353,11 +5353,11 @@ io_sig = require('socket.io').listen(d3cky, {
     origins: '*:*'
 });
 
-// io_sig.set('transports', [
-//     // 'websocket',
-//     'xhr-polling',
-//     'jsonp-polling'
-// ]);
+io_sig.set('transports', [
+   'websocket',
+   'xhr-polling',
+   'jsonp-polling'
+]);
 
 
 // socketz
@@ -5367,7 +5367,7 @@ io_sig = require('socket.io').listen(d3cky, {
 //    store:        new candyStore({ client: rclient })
 //}))
 
-io_sig.set('log level', 2);
+io_sig.set('log level', 3);
 
 cat_sock = io_sig.sockets
 

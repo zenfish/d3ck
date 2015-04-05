@@ -1679,7 +1679,7 @@ function set_up_RTC() {
         sender: sender
     });
 
-    var socket = io.connect(SIGNALING_SERVER + '/' + channel);
+    socket = io.connect(SIGNALING_SERVER + '/' + channel);
 
     socket.on('connect', function () {
         // setup peer connection & pass socket object over the constructor!
@@ -1869,6 +1869,7 @@ function set_up_RTC() {
 
 
 return
+
 
 
 
