@@ -5378,6 +5378,9 @@ io_sig.sockets.on('connection', function (socket) {
     }
 
     socket.on('new-channel', function (data) {
+        console.log("NEW CHAN + ")
+        console.log(data)
+
         if (!channels[data.channel]) {
             initiatorChannel = data.channel;
         }
@@ -5387,11 +5390,14 @@ io_sig.sockets.on('connection', function (socket) {
     });
 
     socket.on('presence', function (channel) {
+        console.log('[+]\tpresence -> ' + channel)
+
         var isChannelPresent = !! channels[channel];
         socket.emit('presence', isChannelPresent);
     });
 
     socket.on('disconnect', function (channel) {
+        console.log('[-]\tdisconn -> ' + channel)
         if (initiatorChannel) {
             delete channels[initiatorChannel];
         }
@@ -5400,6 +5406,10 @@ io_sig.sockets.on('connection', function (socket) {
 
 function onNewNamespace(channel, sender) {
     io_sig.of('/' + channel).on('connection', function (socket) {
+
+        console.log('[+]Boyah, connext!')
+        console.log(channel, sender)
+
         var username;
         if (io_sig.isConnected) {
             io_sig.isConnected = false;
@@ -5407,6 +5417,7 @@ function onNewNamespace(channel, sender) {
         }
 
         socket.on('message', function (data) {
+            console.log('[+++] incoming! ' + JSON.stringify(data))
             if (data.sender == sender) {
                 if(!username) username = data.data.sender;
                 
@@ -5415,6 +5426,7 @@ function onNewNamespace(channel, sender) {
         });
         
         socket.on('disconnect', function() {
+            console.log('[---] cya')
             if(username) {
                 socket.broadcast.emit('user-left', username);
                 username = null;
