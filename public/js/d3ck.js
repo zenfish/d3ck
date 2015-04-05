@@ -1671,7 +1671,7 @@ function set_up_RTC() {
     // MIT License   - https://www.webrtc-experiment.com/licence/
     // Documentation - https://github.com/muaz-khan/WebRTC-Experiment/tree/master/socket.io
 
-    var channel = location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
+    var channel = 'd3ck'
     var sender = Math.round(Math.random() * 999999999) + 999999999;
     
     io.connect(SIGNALING_SERVER).emit('new-channel', {
@@ -1692,7 +1692,8 @@ function set_up_RTC() {
     };
 
     // var peer = new PeerConnection('http://socketio-signaling.jit.su:80');
-    var peer = new PeerConnection(socket);
+    peer = new PeerConnection(socket);
+
     peer.onUserFound = function(userid) {
         if (document.getElementById(userid)) return;
         var tr = document.createElement('tr');
