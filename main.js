@@ -5365,7 +5365,7 @@ var sm_config =
     "rooms": {
       "maxClients": 0 /* maximum number of clients per room. 0 = no limit */
     },
-    "iceServers"  : [],
+    "iceServers"  : [{ "url": "stun:stun.services.mozilla.com" }],
     "stunservers" : [],
     "turnservers" : []
 }
