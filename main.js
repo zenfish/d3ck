@@ -1511,6 +1511,8 @@ all_p33rs = [];
 //
 function cat_power(msg) {
 
+    return
+
     // log.info('kitty Powa!  => ' + JSON.stringify(msg))
 
     // kitten  socks
