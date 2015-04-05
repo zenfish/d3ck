@@ -1669,7 +1669,18 @@ function set_up_RTC() {
     webrtc = new SimpleWebRTC({
         localVideoEl     : 'localVideo',
         remoteVideosEl   : 'remoteVideos',
-        autoRequestMedia : true
+        autoRequestMedia : true,
+        media: {
+            video: {
+                mandatory: {
+                    // xxx - conf, obv!
+                    maxFrameRate:  20,
+                    maxWidth:     480,
+                    maxHeight:    360
+                    }
+               },
+            audio: true
+        }
     });
 
     // wait 'till ready
@@ -1677,11 +1688,6 @@ function set_up_RTC() {
         console.log('entering d3ck')
         webrtc.joinRoom('d3ck');
     });
-
-
-
-
-
 
 
     function rotateVideo(video) {
