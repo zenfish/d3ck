@@ -1669,8 +1669,7 @@ function set_up_RTC() {
     webrtc = new SimpleWebRTC({
         localVideoEl     : 'localVideo',
         remoteVideosEl   : 'remoteVideos',
-        // autoRequestMedia : true
-        // remoteVideosEl   : ''
+        autoRequestMedia : true
     });
 
     // wait 'till ready
@@ -1680,34 +1679,7 @@ function set_up_RTC() {
     });
 
 
-/*
-// a peer video has been added
-webrtc.on('videoAdded', function (video, peer) {
-    console.log('video added', peer);
-    var remotes = document.getElementById('remotes');
-    if (remotes) {
-        var container = document.createElement('div');
-        container.className = 'videoContainer';
-        container.id = 'container_' + webrtc.getDomId(peer);
-        container.appendChild(video);
 
-        // suppress contextmenu
-        video.oncontextmenu = function () { return false; };
-
-        remotes.appendChild(container);
-    }
-});
-
-// a peer video was removed
-webrtc.on('videoRemoved', function (video, peer) {
-    console.log('video removed ', peer);
-    var remotes = document.getElementById('remotes');
-    var el = document.getElementById(peer ? 'container_' + webrtc.getDomId(peer) : 'localScreenContainer');
-    if (remotes && el) {
-        remotes.removeChild(el);
-    }
-});
-*/
 
 
 
