@@ -1682,6 +1682,7 @@ function set_up_RTC() {
     var socket = io.connect(SIGNALING_SERVER + channel);
     socket.on('connect', function () {
         // setup peer connection & pass socket object over the constructor!
+        console.log('connnnnect!')
     });
 
     socket.send = function (message) {
@@ -1694,7 +1695,12 @@ function set_up_RTC() {
     // var peer = new PeerConnection('http://socketio-signaling.jit.su:80');
     peer = new PeerConnection(socket);
 
+    console.log('peeerinnnng... into my k-ball...')
+
     peer.onUserFound = function(userid) {
+
+        console.log('OMG!  Someone else is here!')
+
         if (document.getElementById(userid)) return;
         var tr = document.createElement('tr');
 
@@ -1745,6 +1751,8 @@ function set_up_RTC() {
 
 
     // 
+    console.log('ms media')
+
     getUserMedia(function(stream) {
         peer.addStream(stream);
         peer.startBroadcasting();
@@ -1754,6 +1762,8 @@ function set_up_RTC() {
     // my_d3ck.owner.name
 
     peer.userid = my_d3ck.owner.name
+
+    console.log('my name is ' + JSON.stringify(peer) + " ... and I'm an alcoholic...")
 
     var videosContainer = document.getElementById('videos-container') || document.body;
     var btnSetupNewRoom = document.getElementById('setup-new-room');

@@ -266,6 +266,7 @@
 
             if (config.MediaStream) peer.addStream(config.MediaStream);
             peer.onaddstream = function(event) {
+                console.log("ADD stream!")
                 config.onStreamAdded(event.stream);
             };
 
@@ -303,6 +304,7 @@
 
             if (config.MediaStream) peer.addStream(config.MediaStream);
             peer.onaddstream = function(event) {
+                console.log("ADD stream!")
                 config.onStreamAdded(event.stream);
             };
 
