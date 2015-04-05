@@ -1666,17 +1666,50 @@ function set_up_RTC() {
     HTTPS_PORT       = 8080
     SIGNALING_SERVER = 'https://' + window.location.hostname + ':' + HTTPS_PORT
 
-
-    var webrtc = new SimpleWebRTC({
+    webrtc = new SimpleWebRTC({
         localVideoEl     : 'localVideo',
-        remoteVideosEl   : 'remotesVideos',
-        autoRequestMedia : true
+        remoteVideosEl   : 'remoteVideos',
+        // autoRequestMedia : true
+        // remoteVideosEl   : ''
     });
 
     // wait 'till ready
     webrtc.on('readyToCall', function () {
+        console.log('entering d3ck')
         webrtc.joinRoom('d3ck');
     });
+
+
+/*
+// a peer video has been added
+webrtc.on('videoAdded', function (video, peer) {
+    console.log('video added', peer);
+    var remotes = document.getElementById('remotes');
+    if (remotes) {
+        var container = document.createElement('div');
+        container.className = 'videoContainer';
+        container.id = 'container_' + webrtc.getDomId(peer);
+        container.appendChild(video);
+
+        // suppress contextmenu
+        video.oncontextmenu = function () { return false; };
+
+        remotes.appendChild(container);
+    }
+});
+
+// a peer video was removed
+webrtc.on('videoRemoved', function (video, peer) {
+    console.log('video removed ', peer);
+    var remotes = document.getElementById('remotes');
+    var el = document.getElementById(peer ? 'container_' + webrtc.getDomId(peer) : 'localScreenContainer');
+    if (remotes && el) {
+        remotes.removeChild(el);
+    }
+});
+*/
+
+
 
 
     function rotateVideo(video) {
