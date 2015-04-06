@@ -5474,11 +5474,15 @@ util.inherits(Peer, WildEmitter);
 Peer.prototype.handleMessage = function (message) {
     var self = this;
 
-    console.log('getting', message.type, message);
+    console.log('ICE> getting', message.type)
+    console.log('ICE>' +  JSON.stringify(message));
+    console.log('ICE> payday: ' + JSON.stringify(message.payload));
 
     if (message.prefix) this.browserPrefix = message.prefix;
 
     if (message.type === 'offer') {
+        console.log('ICE> OFFER')
+        console.log('ICE> ' + JSON.stringify(message));
         this.pc.handleOffer(message.payload, function (err) {
             if (err) {
                 return;
@@ -5489,8 +5493,10 @@ Peer.prototype.handleMessage = function (message) {
             });
         });
     } else if (message.type === 'answer') {
+        console.log('ICE> answer')
         this.pc.handleAnswer(message.payload);
     } else if (message.type === 'candidate') {
+        console.log('ICE> cancan')
         this.pc.processIce(message.payload);
     } else if (message.type === 'connectivityError') {
         this.parent.emit('connectivityError', self);
@@ -7393,11 +7399,14 @@ PeerConnection.prototype.addStream = function (stream) {
 
 // Init and add ice candidate object with correct constructor
 PeerConnection.prototype.processIce = function (update, cb) {
+
+    console.log('ICE> the ice-truck cometh')
+
     cb = cb || function () {};
     var self = this;
 
     console.log('ICE> processing ICE')
-    console.log(update)
+    console.log('ICE> ' + JSON.stringify(update))
 
     if (update.contents) {
         console.log('ICE> update')
@@ -7448,6 +7457,7 @@ PeerConnection.prototype.processIce = function (update, cb) {
         self.pc.addIceCandidate(new webrtc.IceCandidate(update.candidate));
         if (update.candidate.candidate.indexOf('typ srflx') !== -1) {
             console.log('ICE> !!! srflx')
+            console.log('ICE> ' + JSON.stringify(update.candidate))
             self.hadRemoteStunCandidate = true;
         }
         else if (update.candidate.candidate.indexOf('typ relay') !== -1) {
@@ -7572,6 +7582,8 @@ PeerConnection.prototype.answer = function (constraints, cb) {
 
 // Process an answer
 PeerConnection.prototype.handleAnswer = function (answer, cb) {
+    console.log('ICE> handling answer')
+    console.log('ICE> ' + JSON.stringify(answer))
     cb = cb || function () {};
     var self = this;
     if (answer.jingle) {
