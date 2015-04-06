@@ -88,7 +88,7 @@ var count = 0;
 
         // if someone shared ICE
         this.onice = function(message) {
-            console.log('PC> ice, ice... ' + JSON.stringify(message)
+            console.log('PC> ice, ice... ' + JSON.stringify(message))
 
             var peer = root.peers[message.userid];
             if (peer) {
@@ -112,7 +112,7 @@ var count = 0;
                 });
             },
             onicecandidate: function(candidate) {
-                console.log('PC> ice can... ' + JSON.stringify(message)
+                console.log('PC> ice can... ' + JSON.stringify(message))
                 socket.send({
                     userid: root.userid,
                     candidate: candidate,
