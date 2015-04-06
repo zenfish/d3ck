@@ -1,8 +1,15 @@
+
+// slightly modded to kill ice
+
 // Muaz Khan     - https://github.com/muaz-khan
 // MIT License   - https://www.webrtc-experiment.com/licence/
 // Documentation - https://github.com/muaz-khan/WebRTC-Experiment/tree/master/socket.io
 
+var count = 0;
+
 (function() {
+
+    console.log('PC> starting peery peerz')
 
     window.PeerConnection = function(socketURL, socketEvent, userid) {
         this.userid = userid || getToken();
@@ -21,10 +28,16 @@
     function Signaler(root, socketURL, socketEvent) {
         var self = this;
 
+        console.log('PC> signaler up....?')
+
         root.startBroadcasting = function() {
 			if(!root.MediaStream) throw 'Offerer must have media stream.';
 			
+            console.log('PC> starting to bcast [' + count + ']')
+            count++;
+
             (function transmit() {
+                console.log('PC> ... transmit...?')
                 socket.send({
                     userid: root.userid,
                     broadcasting: true
@@ -45,6 +58,9 @@
 
         // if someone shared SDP
         this.onsdp = function(message) {
+
+            console.log('PC> on sdp => ' + JSON.stringify(message))
+
             var sdp = message.sdp;
 
             if (sdp.type == 'offer') {
@@ -60,16 +76,23 @@
         };
 
         root.acceptRequest = function(userid) {
+
+            console.log('PC> accepted request from ' + userid)
+
             root.peers[userid] = Offer.createOffer(merge(options, {
                 MediaStream: root.MediaStream
             }));
         };
 
         var candidates = [];
+
         // if someone shared ICE
         this.onice = function(message) {
+            console.log('PC> ice, ice... ' + JSON.stringify(message)
+
             var peer = root.peers[message.userid];
             if (peer) {
+                console.log('PC> peer!')
                 peer.addIceCandidate(message.candidate);
                 for (var i = 0; i < candidates.length; i++) {
                     peer.addIceCandidate(candidates[i]);
@@ -77,6 +100,7 @@
                 candidates = [];
             } else candidates.push(candidates);
         };
+
 
         // it is passed over Offer/Answer objects for reusability
         var options = {
@@ -88,6 +112,7 @@
                 });
             },
             onicecandidate: function(candidate) {
+                console.log('PC> ice can... ' + JSON.stringify(message)
                 socket.send({
                     userid: root.userid,
                     candidate: candidate,
@@ -95,7 +120,7 @@
                 });
             },
             onStreamAdded: function(stream) {
-                console.debug('onStreamAdded', '>>>>>>', stream);
+                console.debug('PC> onStreamAdded', '>>>>>>', stream);
 
                 stream.onended = function() {
                     if (root.onStreamEnded) root.onStreamEnded(streamObject);
@@ -103,7 +128,7 @@
 
                 var mediaElement = document.createElement('video');
                 mediaElement.id = root.participant;
-                mediaElement[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.webkitURL.createObjectURL(stream);
+                mediaElement[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.URL.createObjectURL(stream);
                 mediaElement.autoplay = true;
                 mediaElement.controls = true;
                 mediaElement.play();
@@ -152,7 +177,13 @@
         };
 
 		function onmessage(message) {
-			if (message.userid == root.userid) return;
+            console.log('PC> MSG: ' + JSON.stringify(message))
+
+			if (message.userid == root.userid) {
+                console.log('PC> userid == rootid, taking no action....')
+                return;
+            }
+
             root.participant = message.userid;
 
             // for pretty logging
@@ -165,16 +196,19 @@
 
             // if someone shared SDP
             if (message.sdp && message.to == root.userid) {
+                console.log('PC> shared SDP')
                 self.onsdp(message);
             }
 
             // if someone shared ICE
             if (message.candidate && message.to == root.userid) {
+                console.log('PC> put em on ice')
                 self.onice(message);
             }
 
             // if someone sent participation request
             if (message.participationRequest && message.to == root.userid) {
+                console.log('PC> participate...?')
                 self.participantFound = true;
 
                 if (root.onParticipationRequest) {
@@ -184,22 +218,25 @@
 
             // if someone is broadcasting himself!
             if (message.broadcasting && root.onUserFound) {
+                console.log('PC> broadcast')
                 root.onUserFound(message.userid);
             }
 
             if (message.userLeft && message.to == root.userid) {
+                console.log('PC> cya')
                 closePeerConnections();
             }
 		}
 		
 		var socket = socketURL;
 		if(typeof socketURL == 'string') {
+            console.log('PC> socketURL: ' + socketURL)
 			var socket = io.connect(socketURL);
 			socket.send = function(data) {
 				socket.emit(socketEvent, data);
 			};
 		}
-        
+
         socket.on(socketEvent, onmessage);
     }
 
@@ -208,16 +245,12 @@
     var RTCIceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
 
     navigator.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-    window.URL = window.webkitURL || window.URL;
 
     var isFirefox = !!navigator.mozGetUserMedia;
     var isChrome = !!navigator.webkitGetUserMedia;
 
-        // url: isChrome ? 'stun:stun.l.google.com:19302' : 'stun:23.21.150.121'
-    var STUN = {
-        url: 'stun:10.209.10.1:3478'
-    };
-
+    // url: isChrome ? 'stun:stun.l.google.com:19302' : 'stun:23.21.150.121'
+    var STUN = { url: 'stun:10.209.10.1:3478' };
     var TURN = { };
 
     var iceServers = { iceServers: [STUN] };
@@ -247,19 +280,25 @@
     // offer.addIceCandidate(candidate);
     var Offer = {
         createOffer: function(config) {
+
+            console.log('PC> creating offer...')
+
             var peer = new RTCPeerConnection(iceServers, optionalArgument);
 
             if (config.MediaStream) peer.addStream(config.MediaStream);
             peer.onaddstream = function(event) {
+                console.log("PC> ADD stream!")
                 config.onStreamAdded(event.stream);
             };
 
             peer.onicecandidate = function(event) {
+                console.log('PC> ice can can -> ' + JSON.stringify(event))
                 if (event.candidate)
                     config.onicecandidate(event.candidate);
             };
 
             peer.createOffer(function(sdp) {
+                console.log('PC> creating offer')
                 peer.setLocalDescription(sdp);
                 config.onsdp(sdp);
             }, onSdpError, offerAnswerConstraints);
@@ -269,6 +308,7 @@
             return this;
         },
         setRemoteDescription: function(sdp) {
+            console.log('PC> whoami? ' + JSON.stringify(sdp))
             this.peer.setRemoteDescription(new RTCSessionDescription(sdp));
         },
         addIceCandidate: function(candidate) {
@@ -284,20 +324,25 @@
     // answer.addIceCandidate(candidate);
     var Answer = {
         createAnswer: function(config) {
+
+            console.log('PC> in creating answer')
             var peer = new RTCPeerConnection(iceServers, optionalArgument);
 
             if (config.MediaStream) peer.addStream(config.MediaStream);
             peer.onaddstream = function(event) {
+                console.log('PC> ADD stream (IA)')
                 config.onStreamAdded(event.stream);
             };
 
             peer.onicecandidate = function(event) {
+                console.log('PC> onicecanz...')
                 if (event.candidate)
                     config.onicecandidate(event.candidate);
             };
 
             peer.setRemoteDescription(new RTCSessionDescription(config.sdp));
             peer.createAnswer(function(sdp) {
+                console.log('PC> creating answer (IA)')
                 peer.setLocalDescription(sdp);
                 config.onsdp(sdp);
             }, onSdpError, offerAnswerConstraints);
@@ -312,16 +357,17 @@
                 candidate: candidate.candidate
             }));
         }
+
     };
 
     function merge(mergein, mergeto) {
+        console.log('PC> merge.....')
         for (var t in mergeto) {
             mergein[t] = mergeto[t];
         }
         return mergein;
     }
 
-	window.URL = window.webkitURL || window.URL;
 	navigator.getMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 	navigator.getUserMedia = function(hints, onsuccess, onfailure) {
 		if(!hints) hints = {audio:true,video:true};
@@ -330,10 +376,12 @@
 		navigator.getMedia(hints, _onsuccess, _onfailure);
 		
 		function _onsuccess(stream) {
+            console.log('PC> SUCK-SESS!  Got media')
 			onsuccess(stream);
 		}
 		
 		function _onfailure(e) {
+            console.log('PC> FAILZOR')
 			if(onfailure) onfailure(e);
 			else throw Error('getUserMedia failed: ' + JSON.stringify(e, null, '\t'));
 		}
