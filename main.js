@@ -5351,49 +5351,27 @@ log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_por
 
 io_sig = require('socket.io').listen(d3cky)
 
-// io_sig.set({'transports': ["websocket", "polling"]});
 
-// io_sig.set('transports', [
-//    'xhr-polling',
-//    'jsonp-polling'
-// ]);
+// socketz
+//io_sig.set('authorization', passportIO.authorize({
+//    cookieParser: express.cookieParser,
+//    secret:       gen_somewhat_random(),
+//    store:        new candyStore({ client: rclient })
+//}))
 
-var sm_config =
-{
-    "isDev": true,
-    "logLevel": 3,
-    "rooms": {
-      "maxClients": 0 /* maximum number of clients per room. 0 = no limit */
-    },
-    "iceServers"  : [{ "url": "stun:stun.services.mozilla.com" }],
-    "stunservers" : [],
-    "turnservers" : []
-}
-
-// var io = require('socket.io').listen(d3cky)
-// var io = require('socket.io')(d3cky);
+io_sig.set('log level', 2);
 
 
-// var io = require('socket.io')(d3cky, {'transports': ['polling', 'websocket'] }, function() {
-//     log.info('[++++] sockets up [++++]')
-// })
-//  log.info('[++++] sockets up on port ' + sm_port + ' [++++]')
-// })
-
+// xxx?
+// io_sig.disable('browser client cache');
 
 function describeRoom(name) {
     var clients = io_sig.sockets.clients(name);
-    var result = {
-        clients: {}
-    };
+    var result = { clients: {} };
     clients.forEach(function (client) {
         result.clients[client.id] = client.resources;
     });
     return result;
-}
-
-function clientsInRoom(name) {
-    return io_sig.sockets.clients(name).length;
 }
 
 function safeCb(cb) {
@@ -5404,74 +5382,117 @@ function safeCb(cb) {
     }
 }
 
-io_sig.on('connection', function (client) {
-    client.resources = {
+io_sig.set('log level', 1);
+
+
+io_sig.sockets.on('connection', function (ss_client) {
+
+    log.info("CONNEEEEECTION.....!")
+    // log.info(ss_client)
+
+    ss_client.resources = {
         screen: false,
         video: true,
         audio: false
     };
 
     // pass a message to another id
-    client.on('message', function (details) {
+    ss_client.on('message', function (details) {
+        // log.info('mess: ' + JSON.stringify(details))
+
         if (!details) return;
 
         var otherClient = io_sig.sockets.sockets[details.to];
+
+        // log.info(io_sig.sockets.sockets)
+
         if (!otherClient) return;
 
-        details.from = client.id;
+        // ... well...
+        cool_cats[otherClient] = otherClient
+
+        // log.info(otherClient)
+
+        details.from = ss_client.id;
         otherClient.emit('message', details);
     });
 
-    client.on('shareScreen', function () {
-        client.resources.screen = true;
+
+    // all import cat chat!
+    ss_client.on('cat_chat', function (kitten) {
+
+        log.info('A kitten? For me? ' + JSON.stringify(kitten))
+
+        // if (!kitten) return;
+        // if (!otherClient) return;
+
+        kitten.from = ss_client.id;
+
+        log.info('sending free kittens from... ' + ss_client.id)
+
+        // log.info(ss_client)
+
+        for (var cat_client in io_sig.sockets.sockets) {
+            log.info('sending to... ' + JSON.stringify(cat_client))
+            // log.info('sending to... ' )
+            // var c = io_sig.sockets.sockets[
+            io_sig.sockets.sockets[cat_client].emit('cat_chat', kitten);
+        }
+
     });
 
-    client.on('unshareScreen', function (type) {
-        client.resources.screen = false;
+
+    ss_client.on('shareScreen', function () {
+        ss_client.resources.screen = true;
+    });
+
+    ss_client.on('unshareScreen', function (type) {
+        ss_client.resources.screen = false;
         removeFeed('screen');
     });
 
-    client.on('join', join);
+    ss_client.on('join', join);
 
     function removeFeed(type) {
-        if (client.room) {
-            io_sig.sockets.in(client.room).emit('remove', {
-                id: client.id,
+        log.info('ss-remove-feed')
+        if (ss_client.room) {
+            io_sig.sockets.in(ss_client.room).emit('remove', {
+                id: ss_client.id,
                 type: type
             });
             if (!type) {
-                client.leave(client.room);
-                client.room = undefined;
+                ss_client.leave(ss_client.room);
+                ss_client.room = undefined;
             }
         }
     }
 
     function join(name, cb) {
+        log.info('joining... ' + name)
+
         // sanity check
         if (typeof name !== 'string') return;
-        // check if maximum number of clients reached
-        if (config.rooms && config.rooms.maxClients > 0 && 
-          clientsInRoom(name) >= config.rooms.maxClients) {
-            safeCb(cb)('full');
-            return;
-        }
+
         // leave any existing rooms
         removeFeed();
         safeCb(cb)(null, describeRoom(name));
-        client.join(name);
-        client.room = name;
+        ss_client.join(name);
+        ss_client.room = name;
     }
 
     // we don't want to pass "leave" directly because the
     // event type string of "socket end" gets passed too.
-    client.on('disconnect', function () {
+    ss_client.on('disconnect', function () {
+        log.info('ss-D/C')
         removeFeed();
     });
-    client.on('leave', function () {
+    ss_client.on('leave', function () {
+        log.info('ss-leave')
         removeFeed();
     });
 
-    client.on('create', function (name, cb) {
+    ss_client.on('create', function (name, cb) {
+        log.info('ss-create')
         if (arguments.length == 2) {
             cb = (typeof cb == 'function') ? cb : function () {};
             name = name || uuid();
@@ -5480,7 +5501,7 @@ io_sig.on('connection', function (client) {
             name = uuid();
         }
         // check if exists
-        if (io_sig.sockets.clients(name).length) {
+        if (io_sig.sockets.ss_clients(name).length) {
             safeCb(cb)('taken');
         } else {
             join(name);
@@ -5488,26 +5509,11 @@ io_sig.on('connection', function (client) {
         }
     });
 
-    // tell client about stun and turn servers and generate nonces
-    client.emit('stunservers', config.stunservers || []);
+    // ss_client.emit('stunservers', [])
+    // var credentials = [];
+    // ss_client.emit('turnservers', credentials);
 
-    // create shared secret nonces for TURN authentication
-    // the process is described in draft-uberti-behave-turn-rest
-    var credentials = [];
-    config.turnservers.forEach(function (server) {
-        var hmac = crypto.createHmac('sha1', server.secret);
-        // default to 86400 seconds timeout unless specified
-        var username = Math.floor(new Date().getTime() / 1000) + (server.expiry || 86400) + "";
-        hmac.update(username);
-        credentials.push({
-            username: username,
-            credential: hmac.digest('base64'),
-            url: server.url
-        });
-    });
-    client.emit('turnservers', credentials);
 });
-
 
 
 
