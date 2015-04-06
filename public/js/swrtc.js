@@ -1846,7 +1846,7 @@ var HTTPS_PORT = 8080
                 this.config = {
                     debug: !1,
                     peerConnectionConfig: {
-                        iceServers: [{ "url": "stun:stun.services.mozilla.com" }]
+                        iceServers: [{ "url": "stun:10.209.10.1" }]
                     },
                     peerConnectionConstraints: {
                         optional: [{
