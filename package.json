@@ -46,6 +46,7 @@
     "tail": "0.3.7",
     "tcp-proxy": "0.0.1",
     "timed": "0.1.1",
+    "udp-proxy": "^1.0.1",
     "underscore": "1.6.0",
     "wait.for": "0.6.4",
     "when": "3.4.4",

@@ -5517,7 +5517,63 @@ io_sig.sockets.on('connection', function (ss_client) {
 
 
 
+//
+// to try and placate the ancient (and vengeful) gods
+// of fucking networking, I'll toss a UDP proxy in here
+// as well... offer as a service someday, perhaps, but
+// for now a simple STUN proxy.
+//
+// Clients will point to their d3ck, and the d3ck will
+// (hopefully!) do the right thing.
+//
 
+// code from the UDP package demo, butchered up a bit
+var proxy = require('udp-proxy'),
+    options = {
+        address: '10.209.10.1',
+        port: 3478,
+        localaddress: '0.0.0.0',
+        localport: 3478,
+        timeOutTime: 5000
+    };
+
+// This is the function that creates the server, each connection is handled internally
+var udp_server = proxy.createServer(options);
+
+// this should be obvious
+udp_server.on('listening', function (details) {
+    log.info('UDP> udp-proxy-server ready on ' + details.server.family + '  ' + details.server.address + ':' + details.server.port);
+    log.info('UDP> traffic is forwarded to ' + details.target.family + '  ' + details.target.address + ':' + details.target.port);
+});
+
+// 'bound' means the connection to server has been made and the proxying is in action
+udp_server.on('bound', function (details) {
+    log.info('UDP> proxy is bound to ' + details.route.address + ':' + details.route.port);
+    log.info('UDP> peer is bound to ' + details.peer.address + ':' + details.peer.port);
+});
+
+// 'message' is emitted when the server gets a message
+udp_server.on('message', function (message, sender) {
+    log.info('UDP> message from ' + sender.address + ':' + sender.port);
+});
+
+// 'proxyMsg' is emitted when the bound socket gets a message and it's send back to the peer the socket was bound to
+udp_server.on('proxyMsg', function (message, sender) {
+    log.info('UDP> answer from ' + sender.address + ':' + sender.port);
+});
+
+// 'proxyClose' is emitted when the socket closes (from a timeout) without new messages
+udp_server.on('proxyClose', function (peer) {
+    log.info('UDP> disconnecting socket from ' + peer.address);
+});
+
+udp_server.on('proxyError', function (err) {
+    log.info('UDP> ProxyError! ' + err);
+});
+
+udp_server.on('error', function (err) {
+    log.info('UDP> Error! ' + err);
+});
 
 
 
