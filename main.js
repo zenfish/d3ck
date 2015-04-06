@@ -5533,7 +5533,7 @@ var proxy = require('udp-proxy'),
         address: '10.209.10.1',
         port: 3478,
         localaddress: '0.0.0.0',
-        localport: 3478,
+        localport: 3444,
         timeOutTime: 5000
     };
 
