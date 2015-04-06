@@ -7396,17 +7396,27 @@ PeerConnection.prototype.processIce = function (update, cb) {
     cb = cb || function () {};
     var self = this;
 
+    console.log('ICE> processing ICE')
+    console.log(update)
+
     if (update.contents) {
+        console.log('ICE> update')
+
         var contentNames = _.pluck(this.remoteDescription.contents, 'name');
         var contents = update.contents;
 
         contents.forEach(function (content) {
+
+            console.log('ICE> content -> ' + JSON.stringify(content))
+
             var transport = content.transport || {};
             var candidates = transport.candidates || [];
             var mline = contentNames.indexOf(content.name);
             var mid = content.name;
 
             candidates.forEach(function (candidate) {
+                console.log('ICE> candy -> ' + JSON.stringify(candidate))
+
                 var iceCandidate = SJJ.toCandidateSDP(candidate) + '\r\n';
                 self.pc.addIceCandidate(new webrtc.IceCandidate({
                     candidate: iceCandidate,
@@ -7424,19 +7434,24 @@ PeerConnection.prototype.processIce = function (update, cb) {
                 */
                 );
                 if (candidate.type === 'srflx') {
+                    console.log('ICE> srflx')
                     self.hadRemoteStunCandidate = true;
                 }
                 else if (candidate.type === 'relay') {
+                    console.log('ICE> relay')
                     self.hadRemoteRelayCandidate = true;
                 }
             });
         });
     } else {
+        console.log('ICE> not-an-update')
         self.pc.addIceCandidate(new webrtc.IceCandidate(update.candidate));
         if (update.candidate.candidate.indexOf('typ srflx') !== -1) {
+            console.log('ICE> !!! srflx')
             self.hadRemoteStunCandidate = true;
         }
         else if (update.candidate.candidate.indexOf('typ relay') !== -1) {
+            console.log('ICE> !!! relay')
             self.hadRemoteRelayCandidate = true;
         }
     }
