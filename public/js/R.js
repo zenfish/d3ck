@@ -7510,6 +7510,9 @@ PeerConnection.prototype.offer = function (constraints, cb) {
                         expandedOffer.jingle = jingle;
                     }
 
+                    console.log("ICE> OFFFERERRRRRRR!")
+                    console.log(JSON.stringify(expandedOffer))
+
                     self.emit('offer', expandedOffer);
                     cb(null, expandedOffer);
                 },
