@@ -1,3 +1,11 @@
+//
+// ... beaten and bruised version of 
+//
+// https://github.com/HenrikJoreteg/SimpleWebRTC
+//
+//       created by @HenrikJoreteg
+//
+
 (function(e){if("function"==typeof bootstrap)bootstrap("simplewebrtc",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeSimpleWebRTC=e}else"undefined"!=typeof window?window.SimpleWebRTC=e():global.SimpleWebRTC=e()})(function(){var define,ses,bootstrap,module,exports;
 return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
 
@@ -5,7 +13,6 @@ return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require
 HTTPS_PORT       = 8080
 SIGNALING_SERVER = 'https://' + window.location.hostname + ':' + HTTPS_PORT
 
-// created by @HenrikJoreteg
 var prefix;
 var isChrome = false;
 var isFirefox = false;
@@ -788,8 +795,7 @@ var io = ('undefined' === typeof module ? {} : module.exports);
 
     if (global && global.location) {
       uri.protocol = uri.protocol || global.location.protocol.slice(0, -1);
-      uri.host = uri.host || (global.document
-        ? global.document.domain : global.location.hostname);
+      uri.host = uri.host || (global.document ? global.document.domain : global.location.hostname);
       uri.port = uri.port || global.location.port;
     }
 
@@ -4961,8 +4967,8 @@ function WebRTC(opts) {
             // makes the entire PC config overridable
             peerConnectionConfig: {
                 // iceServers: [{"url": "stun:stun.l.google.com:19302"}]
-                // iceServers: []
-                iceServers: [{"url": "stun:192.168.0.250:3444"}]
+                // iceServers: [{"url": "stun:192.168.0.250:3444"}]
+                iceServers: [{}]
             },
             peerConnectionConstraints: {
                 optional: [
@@ -7470,6 +7476,8 @@ PeerConnection.prototype.processIce = function (update, cb) {
 
 // Generate and emit an offer with the given constraints
 PeerConnection.prototype.offer = function (constraints, cb) {
+
+
     var self = this;
     var hasConstraints = arguments.length === 2;
     var mediaConstraints = hasConstraints ? constraints : {

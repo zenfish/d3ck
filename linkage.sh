@@ -54,9 +54,9 @@ check_n_link() {
 }
 
 # redis has been a bit squirrely with naming... not sure what it is right now ;(
-check_n_link /etc/redis/redis.conf /etc/d3ck/redis/redis.conf
-check_n_link /etc/init.d/d3ck /etc/d3ck/init.d.d3ck
-check_n_link /usr/local/sbin/d3ckd /etc/d3ck/sbin.d3ckd
+sudo check_n_link /etc/redis/redis.conf /etc/d3ck/redis/redis.conf
+sudo check_n_link /etc/init.d/d3ck /etc/d3ck/init.d.d3ck
+sudo check_n_link /usr/local/sbin/d3ckd /etc/d3ck/sbin.d3ckd
 
 # check_n_link(/etc/udev/rules.d/10-d3ck-key.rules) tbd
 
@@ -76,11 +76,11 @@ sudo mkdir -p /etc/d3ck/f-u-openssl/clients
 
 sudo chown redis.redis /etc/d3ck/redis
 
-touch /etc/d3ck/logs/client_vpn.log
-touch /etc/d3ck/logs/server_vpn.log
+sudo touch /etc/d3ck/logs/client_vpn.log
+sudo touch /etc/d3ck/logs/server_vpn.log
 
-chmod 777 /etc/d3ck/logs/client_vpn.log
-chmod 777 /etc/d3ck/logs/server_vpn.log
+sudo chmod 777 /etc/d3ck/logs/client_vpn.log
+sudo chmod 777 /etc/d3ck/logs/server_vpn.log
 
 sudo chown -R $me /etc/d3ck
 sudo chown -R redis /etc/d3ck/redis

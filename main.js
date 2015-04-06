@@ -163,8 +163,10 @@ var PID_POLLING_TIME = config.misc.did_polling_time
 // users must run quickstart if they haven't already
 var redirect_to_quickstart = true
 if (fs.existsSync(d3ck_secretz)) {
+    log.info('initial user already created, not redirecting you to user creation...')
     redirect_to_quickstart = false
 }
+log.warn('\n\t*** No user data found, redirection to create user page ***\n')
 
 // owner user array
 var d3ck_owners     = []
@@ -646,6 +648,19 @@ function auth(req, res, next) {
         log.info('got auth?  --> ' + req.path + ' <- ' + ip)
 
     //
+    // I don't care who you are... if you haven't set up your d3ck, there's nothing to auth to... so redirect
+    //
+    if (redirect_to_quickstart) {
+        if (req.path == '/quikstart.html') {
+            log.info('you want quickstart, you got it')
+            return next()
+        }
+        log.info('redirecting to qs from ' + req.path)
+        res.redirect(302, '/quikstart.html')
+        return
+    }
+
+    //
     // is it public property... e.g. can anon go?
     //
     //
@@ -679,19 +694,6 @@ function auth(req, res, next) {
             log.info('public property, anyone can go => ' + req.path)
 
         return next();
-    }
-
-    //
-    // I don't care who you are... if you haven't set up your d3ck, there's nothing to auth to... so redirect
-    //
-    if (redirect_to_quickstart) {
-        if (req.path == '/quikstart.html') {
-            log.info('you want quickstart, you got it')
-            return next()
-        }
-        log.info('redirecting to qs from ' + req.path)
-        res.redirect(302, '/quikstart.html')
-        return
     }
 
     var url_bits  = req.path.split('/'),
@@ -5517,6 +5519,8 @@ io_sig.sockets.on('connection', function (ss_client) {
 
 
 
+// XXX - make this into a rest call, to turn on/off... just steal the code from the broken tcp proxy
+
 //
 // to try and placate the ancient (and vengeful) gods
 // of fucking networking, I'll toss a UDP proxy in here
@@ -5554,12 +5558,14 @@ udp_server.on('bound', function (details) {
 
 // 'message' is emitted when the server gets a message
 udp_server.on('message', function (message, sender) {
-    log.info('UDP> message from ' + sender.address + ':' + sender.port);
+    log.info('UDP> message from ' + sender.address + ':' + sender.port); 
+    // log.info('UDP <-- ' + sender.address + ':' + sender.port + Array(sender.address.length+1).join(" ") + ' - ' + message.toString('hex'));
 });
 
 // 'proxyMsg' is emitted when the bound socket gets a message and it's send back to the peer the socket was bound to
 udp_server.on('proxyMsg', function (message, sender) {
-    log.info('UDP> answer from ' + sender.address + ':' + sender.port);
+    log.info('UDP> message from ' + sender.address + ':' + sender.port); 
+    // log.info('UDP> --> ' + sender.address + ':' + sender.port + Array(sender.address.length+1).join(" ") + ' - ' + message.toString('hex'));
 });
 
 // 'proxyClose' is emitted when the socket closes (from a timeout) without new messages

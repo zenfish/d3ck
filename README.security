@@ -9,3 +9,68 @@ http://www.alternet.org/print/news-amp-politics/when-strong-encryption-isnt-enou
 
         - Milton Friedman, 1982 edition of Capitalism and Freedom
 
+
+
+
+http://vpnandusenetreviews.com/can-you-explain-openvpn-encryption
+
+A nice writeup on how OpenVPN works... quoting:
+
+    Our editors, in general, feel that as long as 1024 bit is used in control
+    (authentication), 128bit on data (tunnel), and any SHA-2 for HMAC a
+    customer can feel very secure.  Using 256bit on data is a nice upgrade,
+    as is 2048bit on control.
+
+And a longer excerpt -
+
+    As a general rule of thumb, the higher the level of encryption, the
+    more secure it is but a higher level of encryption also normally means
+    a slower connection.  Most VPN service providers utilize a high level
+    of encryption during authentication (e.g. 1024bit or 2048bit).  Then a
+    lower level of encryption on the tunnel (e.g. 128bit or 256bit).
+
+    [...]
+
+    The authentication process will usually take place using Public-Key
+    Cryptography and/or username and password. When you read advertisements
+    from providers about 2048 bit keys, or 4096 bit keys or something like
+    this, you are reading about the key used during the authentication phase
+    of the communication.
+
+    Once authentication has happened, and because Public-Key algorithms
+    are really slow, OpenVPN will switch to Symmetric Cryptography to
+    actually encrypt the data that is sent between you and the VPN server.
+    This encryption will take place using a given type of symmetric algorithm
+    (AES, Blowfish, Twofish...) and with a given key length (128bit,
+    192bit, 256bit, 448bit...).  Having longer symmetric keys will
+    increase security but decrease performance (more or less depending on
+    the algorithm selected).
+
+    The default cipher that is included with OpenVPN is Blowfish.
+    Both Blowflish and AES are in wide use across the VPN service industry.
+    AES is often considered a security standard at 256bit because of it's
+    wide acceptance by the US Military.  However, to date (summer 2011),
+    Blowfish remains unbroken.
+
+    A well rounded VPN service provider will have all 3 types of encryption
+    working, and working well.  These 3 types are the control channel, the
+    data channel, and the HMAC packet authentication.  A good VPN provider
+    will also make sure they are updating the secure hash algorithm (SHA)
+    for HMAC.  This is not hard to do for the provider, and the updates are
+    not very frequent.  The last major update moved from SHA-1 to SHA-2.
+    This upgrade improved the available bit strength from a maximum of 160bit
+    to 512bit.
+
+    For an example of how performance (speeds) might change as a result of
+    switching from 128bit Blowfish to 256bit AES, see the TuVPN blog here.
+    In the end, TuVPN did not see a noticeable speed drop after changing
+    from 128bit Blowfish to 256bit AES on the data channel only.  They did
+    however see a significant performance drop when they changed both the
+    data channel and the control channel to an increased bit key length.
+
+    Our editors, in general, feel that as long as 1024 bit is used in control
+    (authentication), 128bit on data (tunnel), and any SHA-2 for HMAC a
+    customer can feel very secure.  Using 256bit on data is a nice upgrade,
+    as is 2048bit on control.
+
+
