@@ -5486,7 +5486,7 @@ Peer.prototype.handleMessage = function (message) {
     // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
 
     // corrupt the system... put in our d3ck so it can bend packets to our will.
-    message.payload.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
+    // message.payload.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
 
     if (message.prefix) this.browserPrefix = message.prefix;
 
@@ -8027,6 +8027,7 @@ exports.toMediaSDP = function (content) {
 exports.toCandidateSDP = function (candidate) {
     var sdp = [];
 
+    console.log('candyman! ' + JSON.stringify(candidate))
     sdp.push(candidate.foundation);
     sdp.push(candidate.component);
     sdp.push(candidate.protocol.toUpperCase());
