@@ -8028,6 +8028,7 @@ exports.toCandidateSDP = function (candidate) {
     var sdp = [];
 
     console.log('candyman! ' + JSON.stringify(candidate))
+
     sdp.push(candidate.foundation);
     sdp.push(candidate.component);
     sdp.push(candidate.protocol.toUpperCase());
@@ -8398,6 +8399,9 @@ exports.toMediaJSON = function (media, session, creator) {
         trans.candidates = [];
 
         var candidateLines = parsers.findLines('a=candidate:', lines, sessionLines);
+
+        console.log('doin lines with the candyman... ' + JSON.stringify(candidateLines))
+
         candidateLines.forEach(function (line) {
             trans.candidates.push(exports.toCandidateJSON(line));
         });
@@ -8805,6 +8809,8 @@ exports.candidate = function (line) {
     } else { // no a=candidate
         parts = line.substring(10).split(' ');
     }
+
+    console.log('candy babe! ' + JSON.stringify(candidate))
 
     var candidate = {
         foundation: parts[0],
