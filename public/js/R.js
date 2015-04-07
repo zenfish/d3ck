@@ -5570,7 +5570,22 @@ Peer.prototype.onIceCandidate = function (candidate) {
     if (candidate) {
         console.log('ICE> candygram! ' + JSON.stringify(candidate))
         // corrupt the system... put in our d3ck so it can bend packets to our will.
-        candidate.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
+        // change port and IP
+        var landshark = candidate.candidate.split(' ')
+        // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
+        console.log('C[4] == IP    -> ' + landshark[4])
+        console.log('C[5] == rport -> ' + landshark[5])
+
+        landshark[4] = window.location.hostname
+        landshark[5] = 3478
+
+        // the ol' trojan shark
+        candidate.candidate = landshark
+
+        // yeah, yeah, close enough
+        // landshark.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
+        //     .replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}  (\d+)*/, window.location.hostname)
+        // candidate.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
         console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(candidate))
         this.send('candidate', candidate);
     } else {
