@@ -1233,6 +1233,19 @@ function getIP(req, res, next) {
 
 }
 
+// quick bit to get what the client thinks the server's ip addr is
+
+// req.headers looks something like:
+// {"x-ssl-client-verify":"SUCCESS","x-ssl-client-s-dn":"/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=A5A9EDFA9B0E17470B0232B3AF90462CCED1A657.e149ad89f27ae09d26a6e48","x-ssl-client-i-dn":"/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=d75b44681f1e2fbe5ae599afe00760d2","host":"63.225.191.45","x-real-ip":"54.203.255.17","x-forwarded-for":"54.203.255.17","x-forwarded-proto":"https","connection":"close"}
+
+function getIPServer(req, res, next) {
+
+    log.info('getting servers IP')
+    var ip = req.headers.host
+    res.send(200, '{"ip" : "' + ip + '"}');
+
+}
+
 // dump out iptables data
 function getIPtables(req, res, next) {
 
@@ -5169,6 +5182,9 @@ server.delete('/d3ck', auth, deleteAll, function respond(req, res, next) {
 
 // get your ip addr(s)
 server.get('/getip', auth, getIP);
+
+// get what address you think the server has
+server.get('/getipServer', getIPServer);
 
 // get iptables dump
 server.get('/getiptables', auth, getIPtables);
