@@ -5485,9 +5485,6 @@ Peer.prototype.handleMessage = function (message) {
 
     // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
 
-    // corrupt the system... put in our d3ck so it can bend packets to our will.
-    // message.payload.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
-
     if (message.prefix) this.browserPrefix = message.prefix;
 
     if (message.type === 'offer') {
@@ -5571,6 +5568,10 @@ Peer.prototype.getDataChannel = function (name, opts) {
 Peer.prototype.onIceCandidate = function (candidate) {
     if (this.closed) return;
     if (candidate) {
+        console.log('ICE> candygram! ' + JSON.stringify(candidate))
+        // corrupt the system... put in our d3ck so it can bend packets to our will.
+        candidate.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
+        console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(candidate))
         this.send('candidate', candidate);
     } else {
         console.log("End of candidates.");
@@ -8027,7 +8028,7 @@ exports.toMediaSDP = function (content) {
 exports.toCandidateSDP = function (candidate) {
     var sdp = [];
 
-    console.log('candyman! ' + JSON.stringify(candidate))
+    console.log('ICE> candyman! ' + JSON.stringify(candidate))
 
     sdp.push(candidate.foundation);
     sdp.push(candidate.component);
@@ -8400,7 +8401,7 @@ exports.toMediaJSON = function (media, session, creator) {
 
         var candidateLines = parsers.findLines('a=candidate:', lines, sessionLines);
 
-        console.log('doin lines with the candyman... ' + JSON.stringify(candidateLines))
+        console.log('ICE> doin lines with the candyman... ' + JSON.stringify(candidateLines))
 
         candidateLines.forEach(function (line) {
             trans.candidates.push(exports.toCandidateJSON(line));
@@ -8810,7 +8811,7 @@ exports.candidate = function (line) {
         parts = line.substring(10).split(' ');
     }
 
-    console.log('candy babe! ' + JSON.stringify(candidate))
+    console.log('ICE> candy babe! ' + JSON.stringify(candidate))
 
     var candidate = {
         foundation: parts[0],
