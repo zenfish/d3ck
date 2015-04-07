@@ -4967,7 +4967,6 @@ function WebRTC(opts) {
             // makes the entire PC config overridable
             peerConnectionConfig: {
                 // iceServers: [{"url": "stun:stun.l.google.com:19302"}]
-                // iceServers: [{"url": "stun:192.168.0.250:3444"}]
                 iceServers: []
             },
             peerConnectionConstraints: {
@@ -5483,6 +5482,11 @@ Peer.prototype.handleMessage = function (message) {
     console.log('ICE> getting', message.type)
     console.log('ICE>' +  JSON.stringify(message));
     console.log('ICE> payday: ' + JSON.stringify(message.payload));
+
+    // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
+
+    // corrupt the system... put in our d3ck so it can bend packets to our will.
+    message.payload.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
 
     if (message.prefix) this.browserPrefix = message.prefix;
 
