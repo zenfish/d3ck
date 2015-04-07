@@ -7679,6 +7679,9 @@ PeerConnection.prototype._answer = function (constraints, cb) {
 // Internal method for emitting ice candidates on our peer object
 PeerConnection.prototype._onIce = function (event) {
     var self = this;
+
+    console.log('ICE> on-ice => ' + JSON.stringify(event))
+
     if (event.candidate) {
         var ice = event.candidate;
 
