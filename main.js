@@ -2380,13 +2380,13 @@ function setUDPproxy(req, res, next) {
     
     // 'message' is emitted when the server gets a message
     udp_server.on('message', function (message, sender) {
-        log.info('UDP> message from ' + sender.address + ':' + sender.port); 
+        log.info('UDP> <--- ' + sender.address + ':' + sender.port); 
         // log.info('UDP <-- ' + sender.address + ':' + sender.port + Array(sender.address.length+1).join(" ") + ' - ' + message.toString('hex'));
     });
     
     // 'proxyMsg' is emitted when the bound socket gets a message and it's send back to the peer the socket was bound to
     udp_server.on('proxyMsg', function (message, sender) {
-        log.info('UDP> message from ' + sender.address + ':' + sender.port); 
+        log.info('UDP> ---> ' + sender.address + ':' + sender.port); 
         // log.info('UDP> --> ' + sender.address + ':' + sender.port + Array(sender.address.length+1).join(" ") + ' - ' + message.toString('hex'));
     });
     
