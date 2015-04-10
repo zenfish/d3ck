@@ -18,14 +18,19 @@
         "default_image"      : "/public/img/d3ck.png"
         },
 
+    "networking" : {
+        "UDP_TIMEOUT"   : "10000",
+        "STUN_PORT_D2D" : "3477",
+        "STUN_PORT_B2D" : "3478",
+        "STUN_PORT_D2B" : "3478"
+    },
+
     "magic_numbers": {
-        "FRIEND_REQUEST_EXPIRES" : 259200
+        "FRIEND_REQUEST_EXPIRES" : "259200"
     },
 
     "fri3nds" : {
-        "friend request" : { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
-        "ip"             : "54.203.255.17",
-        "port"           : "8080"
+        "friend request" : { "paranoid": "off", "moderate": "ask", "trusting": "on"  }
     },
 
     "trust" : {
@@ -69,8 +74,7 @@
     },
 
     "misc": {
-        "did_polling_time" : "3000",
-        "UDP_TIMEOUT"      : "10000"
+        "did_polling_time" : "3000"
     },
 
     "ping": {
