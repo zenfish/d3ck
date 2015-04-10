@@ -86,6 +86,10 @@ var FRIEND_REQUEST_EXPIRES = config.magic_numbers.FRIEND_REQUEST_EXPIRES,
     SESSION_SIZE_BYTES     = config.crypto.SESSION_SIZE_BYTES,
     REQUEST_BYTES          = config.crypto.REQUEST_BYTES;
 
+
+// networking....
+var UDP_TIMEOUT            = config.misc.UDP_TIMEOUT;
+
 // start with a clean slate
 status_queue = []   // not to be confused with quo
 
@@ -166,7 +170,9 @@ if (fs.existsSync(d3ck_secretz)) {
     log.info('initial user already created, not redirecting you to user creation...')
     redirect_to_quickstart = false
 }
-log.warn('\n\t*** No user data found, redirection to create user page ***\n')
+else {
+    log.warn('\n\t*** No user data found, redirection to create user page ***\n')
+}
 
 // owner user array
 var d3ck_owners     = []
@@ -1078,7 +1084,11 @@ function watch_logs(logfile, log_type) {
                     vpn_status : "up",
                     start      : moment_in_time,
                     start_s    : moment_in_secs,
-                    server     : server_remote_ip,
+
+
+                    server     : cat_facts_server,
+
+
                     server_did : ip2d3ck[server_remote_ip],
                     duration   : "n/a",             // this should only hit once per connection
                     stop       : "n/a",
@@ -2276,12 +2286,16 @@ function webProxy(req, res, next) {
 //
 // creates a tcp proxy to a given host.  For instance, you could call it with:
 //
-//  curl -k 'https://192.168.0.1:8080/setproxy?proxy_remote_host=10.0.0.1&proxy_remote_port=22&proxy_local_port=6666'
+//  /setTCPproxy?proxy_remote_host=10.0.0.1&proxy_remote_port=22&proxy_local_port=6666
 //
-// From now on connections to 192.168.0.1 on port 6666 will be
+// And then connections to 192.168.0.1 on port 6666 will be
 // redirected to port 22 on the host 10.0.0.1
 //
-function setTCPProxy(req, res, next) {
+function setTCPproxy(req, res, next) {
+
+    res.send(200, {msg: "not implemented yet" })
+
+    return // think I broke this, need to test
 
     log.info('set proxy')
 
@@ -2310,6 +2324,92 @@ function setTCPProxy(req, res, next) {
     res.send(200, {"d3ck_local_port": proxy_local_port, "proxy_remote_port": proxy_remote_port, "proxy_remote_host": proxy_remote_host})
 
 }
+
+//
+// creates a UPD proxy to a given host.  For instance, you could call it with:
+//
+//  /setUDPproxy?proxy_remote_host=10.0.0.1&proxy_remote_port=22&proxy_local_port=6666
+//  /setUDPproxy?proxy_remote_host=10.209.10.1&proxy_remote_port=3478&proxy_local_port=3444
+//
+// If successful from now on connections to 192.168.0.1 on port 6666 will be
+// redirected to port 22 on the host 10.0.0.1
+//
+function setUDPproxy(req, res, next) {
+
+    log.info('set proxy')
+
+    if (typeof req.query.proxy_remote_host == "undefined" ||
+        typeof req.query.proxy_remote_port == "undefined" ||
+        typeof req.query.proxy_local_port  == "undefined") {
+            log.error('UPD proxy requires both remote & local ports and remote host to be defined')
+            next({"error": "proxy_remote_host, proxy_remote_port, and proxy_local_port must all be defined"})
+    }
+
+    udp_proxy_remote_host = req.query.proxy_remote_host
+    udp_proxy_remote_port = req.query.proxy_remote_port
+    udp_proxy_local_port  = req.query.proxy_local_port
+
+    //
+    // to try and placate the ancient (and vengeful) gods
+    // of fucking networking, I'll toss a UDP proxy in here
+    // as well...
+    //
+    
+    // code from the UDP package demo, butchered up a bit
+    var proxy = require('udp-proxy'),
+        options = {
+            address:      udp_proxy_remote_host,
+            port:         udp_proxy_remote_port,
+            localaddress: '0.0.0.0',
+            localport:    udp_proxy_local_port,
+            timeOutTime:  UDP_TIMEOUT
+        };
+    
+    // This is the function that creates the server, each connection is handled internally
+    var udp_server = proxy.createServer(options);
+    
+    // this should be obvious
+    udp_server.on('listening', function (details) {
+        log.info('UDP> udp-proxy-server ready on ' + details.server.family + '  ' + details.server.address + ':' + details.server.port);
+        log.info('UDP> traffic is forwarded to ' + details.target.family + '  ' + details.target.address + ':' + details.target.port);
+    });
+    
+    // 'bound' means the connection to server has been made and the proxying is in action
+    udp_server.on('bound', function (details) {
+        log.info('UDP> proxy is bound to ' + details.route.address + ':' + details.route.port);
+        log.info('UDP> peer is bound to ' + details.peer.address + ':' + details.peer.port);
+    });
+    
+    // 'message' is emitted when the server gets a message
+    udp_server.on('message', function (message, sender) {
+        log.info('UDP> message from ' + sender.address + ':' + sender.port); 
+        // log.info('UDP <-- ' + sender.address + ':' + sender.port + Array(sender.address.length+1).join(" ") + ' - ' + message.toString('hex'));
+    });
+    
+    // 'proxyMsg' is emitted when the bound socket gets a message and it's send back to the peer the socket was bound to
+    udp_server.on('proxyMsg', function (message, sender) {
+        log.info('UDP> message from ' + sender.address + ':' + sender.port); 
+        // log.info('UDP> --> ' + sender.address + ':' + sender.port + Array(sender.address.length+1).join(" ") + ' - ' + message.toString('hex'));
+    });
+    
+    // 'proxyClose' is emitted when the socket closes (from a timeout) without new messages
+    udp_server.on('proxyClose', function (peer) {
+        log.info('UDP> disconnecting socket from ' + peer.address);
+    });
+    
+    udp_server.on('proxyError', function (err) {
+        log.info('UDP> ProxyError! ' + err);
+    });
+    
+    udp_server.on('error', function (err) {
+        log.info('UDP> Error! ' + err);
+    });
+
+    res.send(200, {"d3ck_local_port": udp_proxy_local_port, "proxy_remote_port": udp_proxy_remote_port, "proxy_remote_host": udp_proxy_remote_host})
+
+}
+
+
 
 
 //
@@ -2992,14 +3092,14 @@ function serviceRequest(req, res, next) {
         log.info(JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
 
         var d3ck_request    = {
-            knock     : true,
-            ip_addr   : ip_addr,
-            from_ip   : from_ip,
-            from_d3ck : from_d3ck,
-            owner     : owner,
-            service   : service,
-            req_id    : req_id,
-            did       : d3ckid
+            knock      : true,
+            ip_addr    : ip_addr,
+            from_ip    : from_ip,
+            from_d3ck  : from_d3ck,
+            owner      : owner,
+            service    : service,
+            req_id     : req_id,
+            did        : d3ckid
         }
 
         var d3ck_status            = empty_status()
@@ -5227,7 +5327,10 @@ server.get('/server/stop',    auth, serverDie);      // die, die, die!
 server.get('/server/restart', auth, serverRestart);  // die and restart
 
 // setup a tcp proxy
-server.get('/setproxy', auth, setTCPProxy)
+server.get('/setTCPproxy', auth, setTCPproxy)
+
+// setup a tcp proxy
+server.get('/setUDPproxy', auth, setUDPproxy)
 
 // forward a port
 server.get('/forward', auth, forward_port)
@@ -5331,7 +5434,8 @@ server.get('/rest', function root(req, res, next) {
         'GET     /server',
         'GET     /server/stop',
         'GET     /server/restart',
-        'GET     /setproxy',
+        'GET     /setTCPproxy',
+        'GET     /setUDPproxy',
         'GET     /shields/:key',
         'GET     /sping/:key1/:key2',
         'GET     /status',
@@ -5532,73 +5636,6 @@ io_sig.sockets.on('connection', function (ss_client) {
     // ss_client.emit('turnservers', credentials);
 
 });
-
-
-
-// XXX - make this into a rest call, to turn on/off... just steal the code from the broken tcp proxy
-
-//
-// to try and placate the ancient (and vengeful) gods
-// of fucking networking, I'll toss a UDP proxy in here
-// as well... offer as a service someday, perhaps, but
-// for now a simple STUN proxy.
-//
-// Clients will point to their d3ck, and the d3ck will
-// (hopefully!) do the right thing.
-//
-
-// code from the UDP package demo, butchered up a bit
-var proxy = require('udp-proxy'),
-    options = {
-        address: '10.209.10.1',
-        port: 3478,
-        localaddress: '0.0.0.0',
-        localport: 3444,
-        timeOutTime: 5000
-    };
-
-// This is the function that creates the server, each connection is handled internally
-var udp_server = proxy.createServer(options);
-
-// this should be obvious
-udp_server.on('listening', function (details) {
-    log.info('UDP> udp-proxy-server ready on ' + details.server.family + '  ' + details.server.address + ':' + details.server.port);
-    log.info('UDP> traffic is forwarded to ' + details.target.family + '  ' + details.target.address + ':' + details.target.port);
-});
-
-// 'bound' means the connection to server has been made and the proxying is in action
-udp_server.on('bound', function (details) {
-    log.info('UDP> proxy is bound to ' + details.route.address + ':' + details.route.port);
-    log.info('UDP> peer is bound to ' + details.peer.address + ':' + details.peer.port);
-});
-
-// 'message' is emitted when the server gets a message
-udp_server.on('message', function (message, sender) {
-    log.info('UDP> message from ' + sender.address + ':' + sender.port); 
-    // log.info('UDP <-- ' + sender.address + ':' + sender.port + Array(sender.address.length+1).join(" ") + ' - ' + message.toString('hex'));
-});
-
-// 'proxyMsg' is emitted when the bound socket gets a message and it's send back to the peer the socket was bound to
-udp_server.on('proxyMsg', function (message, sender) {
-    log.info('UDP> message from ' + sender.address + ':' + sender.port); 
-    // log.info('UDP> --> ' + sender.address + ':' + sender.port + Array(sender.address.length+1).join(" ") + ' - ' + message.toString('hex'));
-});
-
-// 'proxyClose' is emitted when the socket closes (from a timeout) without new messages
-udp_server.on('proxyClose', function (peer) {
-    log.info('UDP> disconnecting socket from ' + peer.address);
-});
-
-udp_server.on('proxyError', function (err) {
-    log.info('UDP> ProxyError! ' + err);
-});
-
-udp_server.on('error', function (err) {
-    log.info('UDP> Error! ' + err);
-});
-
-
-
 
 
 

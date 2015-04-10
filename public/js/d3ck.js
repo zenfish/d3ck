@@ -918,9 +918,10 @@ function queue_or_die(queue) {
 
         else if (queue.event == 'service_response') {
 
-            // vpn sez yes... kill off timer
+            // vpn sez yes... kill off timer... but it's not really up yet,
+            // just the other side said yes... wait for the final word
             if (queue.d3ck_status.d3ck_requests.service == 'VPN' && queue.d3ck_status.d3ck_requests.answer == 'yes') {
-                inform_user('success', 'VPN up!')
+                inform_user('success', 'connection starting...')
                 $('#timer_countdown').TimeCircles().destroy()
                 $('#alertify-ok').hide()
             }

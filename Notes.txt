@@ -6,6 +6,40 @@
 
 
 
+*** Multiple others sending out invites to?~@?. Really same, can cause multi vids
+
+*** Double text in callee?~@~Ys IM from caller
+
+*** todo -> green outline card when connected
+
+geo broxxen
+
+    April 6th 2015, 8:16:48 pm - info:  ip=63.225.191.45, country_code=US, country_name=United States, region_code=WA, region_name=Washington, city=Seattle, zip_code=98125, time_zone=America/Los_Angeles, latitude=47.716, longitude=-122.301, metro_code=819
+
+
+
+
+
+
+
+
+
+
+
+{
+ "audio": true,
+ "video": {
+  "mandatory": {
+   "minWidth": 320,
+   "maxWidth": 1280,
+   "minHeight": 180,
+   "maxHeight": 720,
+   "minFrameRate": 30
+  },
+  "optional": []
+ }
+}
+
 
 From:
 

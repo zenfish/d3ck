@@ -69,7 +69,8 @@
     },
 
     "misc": {
-        "did_polling_time" : "3000"
+        "did_polling_time" : "3000",
+        "UDP_TIMEOUT"      : "10000"
     },
 
     "ping": {
