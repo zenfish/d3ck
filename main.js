@@ -1084,11 +1084,7 @@ function watch_logs(logfile, log_type) {
                     vpn_status : "up",
                     start      : moment_in_time,
                     start_s    : moment_in_secs,
-
-
                     server     : cat_facts_server,
-
-
                     server_did : ip2d3ck[server_remote_ip],
                     duration   : "n/a",             // this should only hit once per connection
                     stop       : "n/a",
@@ -3163,6 +3159,7 @@ function serviceRequest(req, res, next) {
             log.info(JSON.stringify(outstanding_requests))
         }
 
+        // we're always the client when calling others
         if (service == 'VPN') {
 
             var options            = {}
@@ -3179,6 +3176,7 @@ function serviceRequest(req, res, next) {
             var d3ck_request    = {
                 ip_addr   : ip_addr,
                 from_ip   : from_ip,
+                vpn_ip    : cat_fact_server,    // the private IP of the VPN server on the other side
                 owner     : owner,
                 from_d3ck : from_d3ck,
                 service   : service,
