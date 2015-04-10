@@ -2325,11 +2325,13 @@ function setTCPproxy(req, res, next) {
 // creates a UPD proxy to a given host.  For instance, you could call it with:
 //
 //  /setUDPproxy?proxy_remote_host=10.0.0.1&proxy_remote_port=22&proxy_local_port=6666
-//  /setUDPproxy?proxy_remote_host=10.209.10.1&proxy_remote_port=3478&proxy_local_port=3444
+//  <host-ip>/setUDPproxy?proxy_remote_host=10.209.10.1&proxy_remote_port=3478&proxy_local_port=3444
 //
-// If successful from now on connections to 192.168.0.1 on port 6666 will be
+// If successful from now on connections to <host-ip> on port 6666 will be
 // redirected to port 22 on the host 10.0.0.1
 //
+var udp_server = {}
+
 function setUDPproxy(req, res, next) {
 
     log.info('set proxy')
@@ -2362,7 +2364,7 @@ function setUDPproxy(req, res, next) {
         };
     
     // This is the function that creates the server, each connection is handled internally
-    var udp_server = proxy.createServer(options);
+    udp_server = proxy.createServer(options);
     
     // this should be obvious
     udp_server.on('listening', function (details) {
