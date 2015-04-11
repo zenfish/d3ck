@@ -2579,8 +2579,7 @@ function stopVPN(req, res, next) {
 
             options.headers = { 'x-d3ckID': bwana_d3ck.D3CK_ID }
 
-            log.info(options)
-
+            log.info(options.substring(0,SNIP_LEN) + ' .... ')
 
             // request.get(url, options, function cb (err, resp) {
             get_https_certified(url, did).then(function (resp) {
@@ -2708,7 +2707,6 @@ function load_up_cert_by_ip(ip) {
 
     log.info('loading up client cert ip for ' + ip)
 
-    log.info(ip)
     var certz = {
         // ca      : fs.readFileSync(d3ck_keystore +'/'+ ip2d3ck[ip] + "/d3ckroot.crt").toString(),
         key     : fs.readFileSync(d3ck_keystore +'/'+ ip2d3ck[ip] + "/d3ck.key").toString(),
