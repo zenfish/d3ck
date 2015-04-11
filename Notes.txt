@@ -1,4 +1,17 @@
 
+****
+**** slightly hacked on node_modules/exec-sync2/index.js
+****
+**** Put my version @:
+****
+****        https://github.com/zenfish/node-exec-sync2
+****
+
+
+
+
+
+
 **** changed d3ck_port_signal -> 8081 -> 8080
 
 **** unused change in d3ck.css, <h1>+span

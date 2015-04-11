@@ -7,12 +7,13 @@ var Tail       = require('./tail').Tail,
     async      = require('async'),
     bcrypt     = require('bcrypt'),
     compress   = require('compression'),
+    connect        = require('connect'),
     cors       = require('cors'),
     crypto     = require('crypto'),
     dns        = require('native-dns'),
+    execSync   = require('exec-sync2'),
     express    = require('express'),
     flash      = require('connect-flash'),
-    sh         = require('execSync'),
     fs         = require('fs'),
     formidable = require('formidable'),
     http       = require('http'),
@@ -27,7 +28,8 @@ var Tail       = require('./tail').Tail,
     path       = require('path'),
     tcpProxy   = require('tcp-proxy'),
     redis      = require("redis"),
-    candyStore = require('connect-redis')(express);
+    esession   = require('express-session'),
+    candyStore = require('connect-redis')(esession);
     qstring    = require('querystring'),
     request    = require('request'),
     response   = require('response-time'),
@@ -100,9 +102,29 @@ var FRIEND_REQUEST_EXPIRES = config.magic_numbers.FRIEND_REQUEST_EXPIRES,
     SESSION_SIZE_BYTES     = config.crypto.SESSION_SIZE_BYTES,
     REQUEST_BYTES          = config.crypto.REQUEST_BYTES;
 
+// yes, yes, lazy too
+var server           = "",
+    d3ck2ip          = {},      // d3ck ID to IP mapping
+    ip2d3ck          = {},      // IP mapping to d3ck ID
+    // d3ck_status_file = d3ck_home   + '/status.d3ck',
+    d3ck_status_file = d3ck_public + '/status.d3ck',
+    d3ck_remote_vpn  = d3ck_public + '/openvpn_server.ip';
+    d3ck_remote_did  = d3ck_public + '/openvpn_server.did';
 
-var d3ck = require('./modules');
+// proxy up?
+var d3ck_proxy_up  = false,
+    proxy_server   = "",
+    proxy          = "";
 
+var all_client_ips        = [],
+    all_authenticated_ips = [],
+    client_ip             = "";
+
+var vpn_server_status = {}
+var vpn_client_status = {}
+
+// events/info/etc. that have been queued up for the client
+var d3ck_queue        = []
 
 var time_format = 'MMMM Do YYYY, h:mm:ss a'     // used by moment.js
 
@@ -236,6 +258,24 @@ catch (e) {
     process.exit(2)
 }
 
+
+//
+var user_archtypes = ['paranoid', 'moderate', 'trusting']
+
+// for auth/salting/hashing
+var N_ROUNDS = parseInt(config.crypto.bcrypt_rounds)
+
+
+
+
+
+
+
+
+
+
+
+
 // server internal helper to get d3ck data
 function _get_d3ck(d3ck_id) {
     log.info('\tget d3ck ' + d3ck_id)
@@ -268,81 +308,8 @@ function _get_d3ck(d3ck_id) {
 
 }
 
-//
-// the very first time it's a bit of a chicken and egg thing;
-// how do you get the D3CK data loaded into the server if
-// the client hasn't posted it yet? Wait for the first time
-// something is posted, that should be the one that we can
-// trigger on.
-//
 
-// suck up our own d3ck
-rclient.get(d3ck_id, function (err, reply) {
-    log.info('bwana!')
-    log.info(d3ck_id)
-
-    if (!err) {
-        // log.info(reply)
-        if (reply == null) {
-            log.error('unable to retrieve our d3ck; id: %s -> bailing out', d3ck_id)
-            process.exit(8)
-        }
-        else {
-            // log.info(reply)
-            bwana_d3ck = JSON.parse(reply)
-            log.info('d3ckaroo')
-            // log.info(bwana_d3ck)
-        }
-    }
-    else {
-        log.error(err, 'get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
-        sys.exit({ "no": "d3ck"})
-    }
-})
-
-// get all known d3cks
-rclient.keys('[A-F0-9]*', function (err, keys) {
-    if (err) {
-        log.error(err, 'list_d3ck: unable to retrieve all d3cks');
-        next(err);
-    } else {
-        log.info('Number of d3cks so far: ', keys.length);
-
-        __.each(keys, function(k) {
-            log.info('grabbing ' + k)
-            _get_d3ck(k)
-        })
-    }
-});
-
-//
-// get the latest status... create the file if it doesn't exist...
-//
-
-// yes, yes, lazy too
-
-var server           = "",
-    d3ck2ip          = {},      // d3ck ID to IP mapping
-    ip2d3ck          = {},      // IP mapping to d3ck ID
-    // d3ck_status_file = d3ck_home   + '/status.d3ck',
-    d3ck_status_file = d3ck_public + '/status.d3ck',
-    d3ck_remote_vpn  = d3ck_public + '/openvpn_server.ip';
-    d3ck_remote_did  = d3ck_public + '/openvpn_server.did';
-
-// proxy up?
-var d3ck_proxy_up  = false,
-    proxy_server   = "",
-    proxy          = "";
-
-var all_client_ips        = [],
-    all_authenticated_ips = [],
-    client_ip             = "";
-
-var vpn_server_status = {}
-var vpn_client_status = {}
-
-// events/info/etc. that have been queued up for the client
-var d3ck_queue        = []
+debugger;
 
 // need to reset status from time to time
 function empty_status () {
@@ -440,26 +407,62 @@ function get_d3ck_vital_bits () {
 
 }
 
+
+
+
+
+
+
 //
-// pick up cat facts!
+// the very first time it's a bit of a chicken and egg thing;
+// how do you get the D3CK data loaded into the server if
+// the client hasn't posted it yet? Wait for the first time
+// something is posted, that should be the one that we can
+// trigger on.
 //
 
-var cat_facts = []
+// suck up our own d3ck
+rclient.get(d3ck_id, function (err, reply) {
+    log.info('bwana!')
+    log.info(d3ck_id)
 
-// json scrobbled from bits at from - https://user.xmission.com/~emailbox/trivia.htm
-log.info('hoovering up cat facts... look out, tabby!')
-
-fs.readFile(d3ck_home + "/catfacts.json", function (err, data) {
-    if (err) {
-        log.info('cant live without cat facts! ' + err)
-        log.info('going down!')
-        process.exit(code=666)
+    if (!err) {
+        // log.info(reply)
+        if (reply == null) {
+            log.error('unable to retrieve our d3ck; id: %s -> bailing out', d3ck_id)
+            process.exit(8)
+        }
+        else {
+            // log.info(reply)
+            bwana_d3ck = JSON.parse(reply)
+            log.info('d3ckaroo')
+            // log.info(bwana_d3ck)
+        }
     }
     else {
-        data = JSON.parse(data.toString())
-        cat_facts = data.catfacts
+        log.error(err, 'get_d3ck: unable to retrieve d3ck: ' + d3ck_id)
+        sys.exit({ "no": "d3ck"})
     }
 })
+
+// get all known d3cks
+rclient.keys('[A-F0-9]*', function (err, keys) {
+    if (err) {
+        log.error(err, 'list_d3ck: unable to retrieve all d3cks');
+        next(err);
+    } else {
+        log.info('Number of d3cks so far: ', keys.length);
+
+        __.each(keys, function(k) {
+            log.info('grabbing ' + k)
+            _get_d3ck(k)
+        })
+    }
+});
+
+//
+// get the latest status... create the file if it doesn't exist...
+//
 
 
 //
@@ -481,13 +484,6 @@ function random_cat_fact (facts) {
 // authorization, authentication, and ... some other A :)
 //
 
-var user_archtypes = ['paranoid', 'moderate', 'trusting']
-
-// for auth/salting/hashing
-var N_ROUNDS = parseInt(config.crypto.bcrypt_rounds)
-
-//
-// authorization stuff
 //
 // Pretty simple in theory; there are capabilities that a d3ck has,
 // like video, file transfer, etc.
@@ -826,86 +822,9 @@ passport.use(new l_Strategy(
 ))
 
 
-//
-// watch vpn logs for incoming/outgoing connections
-//
-// xxxx - should have a rest call for this...?
-watch_logs("server_vpn", "OpenVPN Server")
-watch_logs("client_vpn", "OpenVPN Client")
-
-// wait for the first d3ck to be loaded in
-events    = require('events');
-emitter   = new events.EventEmitter();
-
-//
-// get the server's IP addrs, including localhost
-//
-
-// based on http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js
-//
-var ifaces=os.networkInterfaces();
-var my_net  = {} // interfaces & ips
-var my_ips  = [] // ips only
-var my_devs = [] // dev2ip
-var n       = 0
-
-// for (var dev in ifaces) {
-
-__.each(__.keys(ifaces), function(dev) {
-
-    log.info('testing... ' + dev)
-
-    var alias = 0
-    ifaces[dev].forEach(function(details){
-        if (details.family=='IPv4') {
-            my_net[details.address] = dev+(alias?':'+alias:'')
-            log.info(dev+(alias?':'+alias:''),details.address)
-            ++alias
-            my_ips[n]    = details.address
-            my_devs[dev] = details.address
-            n = n + 1
-
-            log.info('\t -> ' + details.address)
-        }
-    })
-
-})
-
-//
-// try to get external IP, if different than what we got above....
-//
-// seems ok to me...?
-var get_my_ip = 'http://myexternalip.com/json';
-var my_ip     = ''
-
-log.info('looking for my ip @ ' + get_my_ip)
-http.get(get_my_ip, function(res) {
-    res.on('data', function (chunk) {
-        my_ip = JSON.parse(chunk).ip
-        // add possible NAT if it isn't in here already....
-        if (!__.contains(my_ips, my_ip)) {
-            log.info("adding " + my_ip + " to list of ips I'll answer to...")
-            my_ips[n] = my_ip
-
-            // update the in-memory version, don't think I want to do that for the DB one
-            bwana_d3ck.all_ips = my_ips
-
-        }
-        log.info(my_ips)
-    })
-}).on('error', function(e) {
-    log.error("couldn't find the server's IP addr as seen from the outside....")
-});
 
 
-//
-// xxx - YAHCV (yet another hardcoded value....)
-//
-// set to local VPN int
-cat_fact_server = my_devs["tun0"]
 
-// write the IP addr to a file
-write_2_file(d3ck_remote_vpn, cat_fact_server)
 
 // log.info(my_ips)
 
@@ -4114,14 +4033,14 @@ function d3ck_spawn_sync(command, argz) {
 
     log.info("-->" + cmd_string + "<---\n\n\n")
 
-    var result = sh.exec(cmd_string)
+    var result = execSync(cmd_string)
 
     // log.info('return code ' + result.code);
     // log.info('stdout + stderr ' + result.stdout);
 
     try {
         out = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.out.log', result.stdout)
-        err = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.err.log', result.stdout)
+        err = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.err.log', result.stderr)
     }
     catch (e) {
         log.error("error writing log file with " + command + ' => ' + e.message)
@@ -5058,6 +4977,138 @@ function serverRestart(req, res, next) {
 }
 
 
+//
+// watch vpn logs for incoming/outgoing connections
+//
+// xxxx - should have a rest call for this...?
+watch_logs("server_vpn", "OpenVPN Server")
+watch_logs("client_vpn", "OpenVPN Client")
+
+// wait for the first d3ck to be loaded in
+events    = require('events');
+emitter   = new events.EventEmitter();
+
+//
+// get the server's IP addrs, including localhost
+//
+
+// based on http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js
+//
+var ifaces=os.networkInterfaces();
+var my_net  = {} // interfaces & ips
+var my_ips  = [] // ips only
+var my_devs = {} // dev2ip
+var n       = 0
+
+// for (var dev in ifaces) {
+
+__.each(__.keys(ifaces), function(dev) {
+
+    log.info('testing... ' + dev)
+
+    var alias = 0
+    ifaces[dev].forEach(function(details){
+        log.info(details)
+        if (details.family=='IPv4') {
+            log.info(details)
+            my_net[details.address] = dev+(alias?':'+alias:'')
+            // log.info(dev+(alias?':'+alias:''),details.address)
+            ++alias
+            my_devs[dev] = details.address
+            my_ips[n]    = details.address
+            n = n + 1
+        }
+    })
+
+})
+
+//
+// try to get external IP, if different than what we got above....
+//
+// seems ok to me...?
+var get_my_ip = 'http://myexternalip.com/json';
+var my_ip     = ''
+
+log.info('looking for my ip @ ' + get_my_ip)
+http.get(get_my_ip, function(res) {
+    res.on('data', function (chunk) {
+        my_ip = JSON.parse(chunk).ip
+        // add possible NAT if it isn't in here already....
+        if (!__.contains(my_ips, my_ip)) {
+            log.info("adding " + my_ip + " to list of ips I'll answer to...")
+            my_ips[n] = my_ip
+
+            // update the in-memory version, don't think I want to do that for the DB one
+            bwana_d3ck.all_ips = my_ips
+
+        }
+        log.info(my_ips)
+    })
+}).on('error', function(e) {
+    log.error("couldn't find the server's IP addr as seen from the outside....")
+});
+
+log.info('my devs & ips')
+log.info(my_devs)
+log.info(my_ips)
+
+//
+// xxx - YAHCV (yet another hardcoded value....)
+//
+// set to local VPN int
+cat_fact_server = my_devs["tun0"]
+
+//
+// pick up cat facts!
+//
+var cat_facts = []
+
+// json scrobbled from bits at from - https://user.xmission.com/~emailbox/trivia.htm
+log.info('hoovering up cat facts... look out, tabby!')
+
+fs.readFile(d3ck_home + "/catfacts.json", function (err, data) {
+    if (err) {
+        log.info('cant live without cat facts! ' + err)
+        log.info('going down!')
+        process.exit(code=666)
+    }
+    else {
+        data = JSON.parse(data.toString())
+        cat_facts = data.catfacts
+    }
+})
+
+
+// write the IP addr to a file
+write_2_file(d3ck_remote_vpn, cat_fact_server)
+
+//
+// need n randomnish bytes... I can wait all night... defaults to 16 hex pairs
+// sha256 the result to keep the size down to manageable size.
+//
+function gen_somewhat_random(n) {
+
+    if (typeof n == "undefined") n = 16
+
+    var argz = [n]
+
+    log.info('generating ' + n + ' bytes for the secret secret.')
+
+    // when you get lemons... ah, you know the drill
+    var lemons   = d3ck_bin + '/gen_randish.sh'
+    var lemonade = d3ck_spawn_sync(lemons, argz)
+
+    log.info('squeezing the lemons, they reveal their secrets! ' + JSON.stringify(lemonade))
+
+    var lemonade = crypto.createHash('sha256').update(lemonade.stdout).digest('hex');
+
+    return(lemonade)
+
+}
+
+
+log.info('\n\n---> finally starting server stuff <---\n')
+
 ///
 ///
 ///
@@ -5129,46 +5180,21 @@ server.enable('trust proxy');
 // various helpers
 server.use(response());
 
-server.use(express.limit('1gb'))
+// server.use(express.limit('1gb'))     // must have been too useful, deprecated
 
 // server.use(express.logger());
 server.use(compress());
 
-server.use(express.methodOverride());
+// server.use(express.json({limit: '1gb'}));
 
-server.use(express.json({limit: '1gb'}));
 server.use(express.urlencoded());
-server.use(express.multipart());
 
-server.use(express.methodOverride());
+// server.use(express.multipart()); //deprecated
 
 server.use(cors());
 
 // passport/auth stuff
 server.use(express.cookieParser());
-
-
-//
-// need n randomnish bytes... I can wait all night... defaults to 16 hex pairs
-// sha256 the result to keep the size down to manageable size.
-//
-function gen_somewhat_random(n) {
-
-    if (typeof n == "undefined") n = 16
-
-    log.info('generating ' + n + ' bytes for the secret secret.')
-
-    // when you get lemons... ah, you know the drill
-    var lemons   = d3ck_bin + "/gen_randish.sh " + n
-    var lemonade = sh.exec(lemons)
-
-    log.info('squeezing the lemons, they reveal their secrets! ' + JSON.stringify(lemonade))
-
-    var lemonade = crypto.createHash('sha256').update(lemonade.stdout).digest('hex');
-
-    return(lemonade)
-
-}
 
 //
 // not sure about this... so much dox in so little time. Think this will work. Seems to. Maybe.
@@ -5179,6 +5205,7 @@ server.use(express.session({
     resave: false // don't save session if unmodified
 }));
 
+
 server.use(flash());
 server.use(passport.initialize());
 server.use(passport.session());
@@ -5188,12 +5215,15 @@ server.use(server.router);
 // passport auth
 server.use(auth)
 
+
 //
 //
 // actual routes n stuff
 //
 //
 //
+
+log.info('\nsetting up routez ->\n')
 
 // have we seen them before this login session?  True/false
 cookie = ""
