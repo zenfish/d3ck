@@ -107,6 +107,8 @@ http {
         proxy_set_header            X-Forwarded-For     $proxy_add_x_forwarded_for;
         proxy_set_header            X-Forwarded-Proto   $scheme;
 
+        proxy_set_header            X-d3ck-IP           $server_addr;
+
         add_header                  Front-End-Https     on;
 
         # the fiddling never ends... try this?  http://stackoverflow.com/questions/11237241/502-bad-gateway-nginx

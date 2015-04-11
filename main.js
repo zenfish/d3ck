@@ -190,6 +190,10 @@ var secrets2d3cks   = {}
 // outstanding requests
 var outstanding_requests = {}
 
+
+// the IP of the d3ck as seen by the browser
+var ip_seen_by_browser = ''
+
 // the last client request did+IP pair we tried...
 // will be [did, ip]
 last_vpn_client_server = ''
@@ -3181,7 +3185,6 @@ function serviceRequest(req, res, next) {
             var d3ck_request    = {
                 ip_addr   : ip_addr,
                 from_ip   : from_ip,
-                vpn_ip    : cat_fact_server,    // the private IP of the VPN server on the other side
                 owner     : owner,
                 from_d3ck : from_d3ck,
                 service   : service,
@@ -3384,8 +3387,10 @@ function serviceResponse(req, res, next) {
             console.log(extras)
 
             options.form = {
-                "d3ckid"  : extras.vpn_to,
-                "ip_addr" : d3ck2ip[extras.vpn_to]
+                d3ckid  : extras.vpn_to,
+                ip_addr : d3ck2ip[extras.vpn_to],
+                d3ck_ip : ip_seen_by_browser,       // your d3ck's IP, as seen by the browser
+                vpn_ip  : cat_fact_server           // the private IP of the VPN server
             }
 
             log.info('local posting to ' + url)
@@ -5372,10 +5377,14 @@ server.post('/login',
             } else {
                 log.info('cookie baking complete')
                 log.info("these aren't the droids you're looking for")
-                var ip                    = get_client_ip(req)
+                var ip = get_client_ip(req)
                 all_authenticated_ips.push(ip)
                 log.info(ip)
                 log.info(all_authenticated_ips)
+
+                log.info(req.headers)
+                ip_seen_by_browser = req.headers['x-d3ck-ip']
+                log.info('the ip, as seen by the BROWSER: ' + ip_seen_by_browser)
             }
         })
         res.redirect('/');

@@ -923,7 +923,8 @@ function queue_or_die(queue) {
             if (queue.d3ck_status.d3ck_requests.service == 'VPN' && queue.d3ck_status.d3ck_requests.answer == 'yes') {
                 inform_user('success', 'connection starting...')
                 $('#timer_countdown').TimeCircles().destroy()
-                $('#alertify-ok').hide()
+                // $('#alertify-ok').hide()
+                $('#alertify').hide()
             }
 
             else {
