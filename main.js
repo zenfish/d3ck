@@ -1091,7 +1091,7 @@ function watch_logs(logfile, log_type) {
                     vpn_status : "up",
                     start      : moment_in_time,
                     start_s    : moment_in_secs,
-                    server     : cat_facts_server,
+                    server     : cat_fact_server,
                     server_did : ip2d3ck[server_remote_ip],
                     d3ck_ip    : ip_seen_by_browser,        // your d3ck's IP, as seen by your browser
                     duration   : "n/a",                     // this should only hit once per connection
