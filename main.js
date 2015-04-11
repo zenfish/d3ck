@@ -1005,8 +1005,9 @@ function watch_logs(logfile, log_type) {
                     start_s    : moment_in_secs,
                     client     : client_remote_ip,
                     client_did : ip2d3ck[client_remote_ip],
+                    d3ck_ip    : ip_seen_by_browser,        // your d3ck's IP, as seen by your browser
                     server_ip  : cat_fact_server,
-                    duration   : "n/a",             // this should only hit once per connection
+                    duration   : "n/a",                     // this should only hit once per connection
                     stop       : "n/a",
                     stop_s     : "n/a"
                     }
@@ -1093,7 +1094,8 @@ function watch_logs(logfile, log_type) {
                     start_s    : moment_in_secs,
                     server     : cat_facts_server,
                     server_did : ip2d3ck[server_remote_ip],
-                    duration   : "n/a",             // this should only hit once per connection
+                    d3ck_ip    : ip_seen_by_browser,        // your d3ck's IP, as seen by your browser
+                    duration   : "n/a",                     // this should only hit once per connection
                     stop       : "n/a",
                     stop_s     : "n/a"
                     }
@@ -3389,7 +3391,6 @@ function serviceResponse(req, res, next) {
             options.form = {
                 d3ckid  : extras.vpn_to,
                 ip_addr : d3ck2ip[extras.vpn_to],
-                d3ck_ip : ip_seen_by_browser,       // your d3ck's IP, as seen by the browser
                 vpn_ip  : cat_fact_server           // the private IP of the VPN server
             }
 
