@@ -584,7 +584,7 @@ function d3ck_ping(all_ips, d3ckid) {
         // console.log("pingzor " + JSON.stringify(data))
 
         if (typeof data.ip == 'undefined') {
-            console.log('hmm... bad data in ping: ' + JSON.stringify(data))
+            // console.log('hmm... bad data in ping: ' + JSON.stringify(data))
             return
         }
 

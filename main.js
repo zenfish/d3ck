@@ -1570,20 +1570,9 @@ function d3ckStatus(req, res, next) {
     }
     // the usual usualness
     else {
-
         if (status_queue.length > 0) {
             log.info('clearing out the status (' + status_queue.length + ')....')
         }
-        else {
-            //log.info('empty queue...')
-            res.send(200, [])
-        }
-
-        // log.info('d3ck status check... ' + JSON.stringify(status_queue))
-
-        //tmp_status = JSON.parse(JSON.stringify(status_queue))
-
-        //log.info(status_queue)
 
         var quo = []
         for (var i = 0; i < status_queue.length; i++) {
@@ -4391,14 +4380,11 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
                 ping_data = JSON.parse(ping_data)
             }
             catch (e) {
-                if (JSON.stringify(e) != "{}") {
-                    log.error('errz socket parsing: ' + JSON.stringify(e))
-                    response = {status: "ping failure", "error": e}
-                    // synchronicity... II... shouting above the din of my rice crispies
-                    res.send(200, { error: e })
-                    log.error('sPing error ' + e)
-                    return
-                }
+                log.warn('errz socket parsing sping results: ' + JSON.stringify(e))
+                response = {status: "ping failure", "error": e}
+                // synchronicity... II... shouting above the din of my rice crispies
+                res.send(200, { error: response })
+                return
             }
 
             // data.ip = ip
