@@ -1075,7 +1075,6 @@ function watch_logs(logfile, log_type) {
                 log.info('\n\n\n++++++++++++' + logfile + ' \n\n Openvpn client up!\n\n')
                 log.info(line)
                 log.info('outgoing call to ' + server_remote_ip)
-                log.info('\n\n')
 
                 // reset to remote
                 cat_fact_server = server_remote_ip
