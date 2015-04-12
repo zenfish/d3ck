@@ -9,10 +9,11 @@ PNotify.prototype.options.styling = "fontawesome";
 D3CK_PORT        = 8080
 //D3CK_SIG_PORT    = 8081
 D3CK_SIG_PORT    = 8080
-ICE_ICE_BABY     = 3478
+ICE_PORT         = 3478
 
 SIGNALING_SERVER = 'https://' + window.location.hostname + ':' + D3CK_SIG_PORT
-ICE_SERVER       = 'https://' + window.location.hostname + ':' + ICE_ICE_BABY
+ICE_HOST         = window.location.hostname
+ICE_ICE_BABY     = ICE_HOST + ':' + ICE_PORT
 
 // poll until we get something, then stop polling
 var vault_poll     = 1000
