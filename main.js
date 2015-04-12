@@ -1128,7 +1128,7 @@ function NotImplementedError() {
 // who is talking to us?
 function get_client_ip(req) {
 
-    // log.info('REQ: - ' + JSON.stringify(req.headers))
+    log.info('REQ: - ' + JSON.stringify(req.headers))
 
     // something like....
 
