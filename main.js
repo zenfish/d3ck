@@ -1135,27 +1135,27 @@ function get_client_ip(req) {
     // {"x-ssl-client-verify":"SUCCESS","x-ssl-client-s-dn":"/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=A5A9EDFA9B0E17470B0232B3AF90462CCED1A657.e149ad89f27ae09d26a6e48","x-ssl-client-i-dn":"/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=d75b44681f1e2fbe5ae599afe00760d2","host":"63.225.191.45","x-real-ip":"54.203.255.17","x-forwarded-for":"54.203.255.17","x-forwarded-proto":"https","connection":"close"}
 
     if (typeof req.headers != "undefined" && typeof req.headers['x-real-ip'] != "undefined") {
-        console.log('req.headerz[real-ip] -> ' + req.headers['x-real-ip']
+        console.log('req.headerz[real-ip] -> ' + req.headers['x-real-ip'])
         client_ip = req.headers['x-real-ip']
     }
     else if (typeof req.headers != "undefined" && typeof req.headers['x-forwarded-for'] != "undefined") {
-        console.log('req.headerz[x-forw] -> ' + req.headers['x-real-ip']
+        console.log('req.headerz[x-forw] -> ' + req.headers['x-forwarded-for'])
         client_ip = req.headers['x-forwarded-for']
     }
     else if (typeof req.ip != "undefined") {
-        console.log('req.ip -> ' + req.headers['x-real-ip']
+        console.log('req.ip -> ' + req.ip)
         client_ip = req.ip
     }
     else if (typeof req.connection.remoteAddress != "undefined") {
-        console.log('req.conn.remo -> ' + req.headers['x-real-ip']
+        console.log('req.conn.remo -> ' + req.remoteAddress)
         client_ip = req.connection.remoteAddress
     }
     else if (typeof req.socket.remoteAddress != "undefined") {
-        console.log('req.sock.rem -> ' + req.headers['x-real-ip']
+        console.log('req.sock.rem -> ' + req.socket.remoteAddress)
         client_ip = req.socket.remoteAddress
     }
     else if (typeof req.connection.socket.remoteAddress != "undefined") {
-        console.log('req.conn.sock.rem -> ' + req.headers['x-real-ip']
+        console.log('req.conn.sock.rem -> ' + req.connection.socket.remoteAddress)
         client_ip = req.connection.socket.remoteAddress
     }
     else {
