@@ -100,7 +100,7 @@ var attachMediaStream = require('attachmediastream');
 var mockconsole = require('mockconsole');
 
 // var io = require('socket.io-client');
-var ioio = io()
+// var io = io('/socket.io/socket.io.js')
 
 function SimpleWebRTC(opts) {
     var self = this;
@@ -158,7 +158,7 @@ function SimpleWebRTC(opts) {
     WildEmitter.call(this);
 
     // our socket.io connection
-    connection = this.connection = ioio.connect(this.config.url, this.config.socketio);
+    connection = this.connection = io.connect(this.config.url, this.config.socketio);
 
     kittens_mittens = connection
     console.log('.. and... socket.io: ' );
