@@ -43,6 +43,8 @@ var Tail       = require('./tail').Tail,
     __         = require('underscore'),   // note; not one, two _'s, just for node
     d3ck       = require('./modules');
 
+var requestIp = require('request-ip');
+
 
 var DEBUG    = false;
 var SNIP_LEN = 4096;    // used to truncate when printing out long strings
@@ -1128,7 +1130,10 @@ function NotImplementedError() {
 // who is talking to us?
 function get_client_ip(req) {
 
-    log.info('REQ: - ' + JSON.stringify(req.headers))
+    // log.info('REQ: - ' + JSON.stringify(req.headers))
+
+    return requestIp.getClientIp(req);  // fuck it, use package
+
 
     // something like....
 
