@@ -2237,7 +2237,7 @@ var io = ('undefined' === typeof module ? {} : module.exports);
       , document: 'document' in global ? document : false
       , resource: 'socket.io'
       // , transports: io.transports
-      , 'transports': ['websocket', 'polling'],
+      , 'transports': ['websocket', 'polling']
       , 'connect timeout': 10000
       , 'try multiple transports': true
       , 'reconnect': true
