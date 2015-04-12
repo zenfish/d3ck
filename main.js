@@ -2579,7 +2579,7 @@ function stopVPN(req, res, next) {
 
             options.headers = { 'x-d3ckID': bwana_d3ck.D3CK_ID }
 
-            log.info(options.substring(0,SNIP_LEN) + ' .... ')
+            log.info(JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
 
             // request.get(url, options, function cb (err, resp) {
             get_https_certified(url, did).then(function (resp) {
