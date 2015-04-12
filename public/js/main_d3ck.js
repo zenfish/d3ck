@@ -11,6 +11,7 @@ D3CK_PORT        = 8080
 D3CK_SIG_PORT    = 8080
 
 SIGNALING_SERVER = 'https://' + window.location.hostname + ':' + D3CK_SIG_PORT
+ICE_SERVER       = ''
 
 // poll until we get something, then stop polling
 var vault_poll     = 1000

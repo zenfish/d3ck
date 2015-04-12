@@ -2257,11 +2257,10 @@ function setTCPproxy(req, res, next) {
 //
 // creates a UPD proxy to a given host.  For instance, you could call it with:
 //
-//  /setUDPproxy?proxy_remote_host=10.0.0.1&proxy_remote_port=22&proxy_local_port=6666
 //  <host-ip>/setUDPproxy?proxy_remote_host=10.209.10.1&proxy_remote_port=3478&proxy_local_port=3444
 //
-// If successful from now on connections to <host-ip> on port 6666 will be
-// redirected to port 22 on the host 10.0.0.1
+// And if successful from now on connections to <host-ip> on port 3444 will be
+// redirected to port 3478 on the host 10.209.10.1.
 //
 var udp_server = {}
 
@@ -5418,7 +5417,18 @@ server.post('/login',
                 log.info(all_authenticated_ips)
 
                 log.info(req.headers)
-                ip_seen_by_browser = req.headers['x-d3ck-ip']
+
+                //
+                // NATs and routers and bridges and switches and load balancer and... 
+                // oh my. Oh vey. See if this works.
+                //
+                if (req.headers['x-real-ip'] == ip) {
+                    ip_seen_by_browser = req.headers['x-d3ck-ip']
+                }
+                else {
+                    ip_seen_by_browser = req.headers['x-real-ip']
+                }
+
                 log.info('the ip, as seen by the BROWSER: ' + ip_seen_by_browser)
             }
         })
