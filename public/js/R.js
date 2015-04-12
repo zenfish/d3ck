@@ -166,7 +166,6 @@ function SimpleWebRTC(opts) {
 
 
     connection.on('connect', function () {
-        console.log('R: connect')
         self.emit('connectionReady', connection.socket.sessionid);
         self.sessionReady = true;
         self.testReadiness();
