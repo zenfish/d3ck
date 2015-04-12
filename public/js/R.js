@@ -5575,7 +5575,7 @@ Peer.prototype.onIceCandidate = function (candidate) {
         // change port and IP
         var landshark = candidate.candidate.candidate.split(' ')
         // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
-        // console.log('C[4] == IP    -> ' + landshark[4])
+        console.log('C[4] == IP    -> ' + landshark[4])
         console.log('C[5] == rport -> ' + landshark[5])
 
         // landshark[4] = window.location.hostname
@@ -5586,7 +5586,7 @@ Peer.prototype.onIceCandidate = function (candidate) {
         // candidate.candidate.candidate = landshark
 
         // yeah, yeah, close enough
-        landshark.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ICE_HOST)
+        // landshark.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ICE_HOST)
         //     .replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}  (\d+)*/, window.location.hostname)
         // candidate.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
         console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(candidate))
