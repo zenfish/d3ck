@@ -5578,12 +5578,12 @@ Peer.prototype.onIceCandidate = function (candidate) {
         console.log('C[4] == IP    -> ' + landshark[4])
         console.log('C[5] == rport -> ' + landshark[5])
 
-        // landshark[4] = window.location.hostname
         landshark[4] = ICE_HOST
+
         // landshark[5] = 3478
 
         // the ol' trojan shark
-        // candidate.candidate.candidate = landshark
+        candidate.candidate.candidate = landshark
 
         // yeah, yeah, close enough
         // landshark.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ICE_HOST)
