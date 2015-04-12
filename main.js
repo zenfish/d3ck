@@ -1143,8 +1143,13 @@ function get_client_ip(req) {
         client_ip = req.headers['x-forwarded-for']
     }
     else if (typeof req.ip != "undefined") {
-        console.log('req.ip -> ' + req.ip)
-        client_ip = req.ip
+        if (req.ip.substr(0,7) == '::ffff:') {      // jesus fucking christ, will you stop changing this shit?
+            client_ip = req.ip.substr(7)
+        }
+        else {
+            client_ip = req.ip
+        }
+        console.log('req.ip -> ' + client_ip)
     }
     else if (typeof req.connection.remoteAddress != "undefined") {
         console.log('req.conn.remo -> ' + req.remoteAddress)
