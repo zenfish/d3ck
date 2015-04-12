@@ -43,8 +43,6 @@ var Tail       = require('./tail').Tail,
     __         = require('underscore'),   // note; not one, two _'s, just for node
     d3ck       = require('./modules');
 
-var requestIp = require('request-ip');
-
 
 var DEBUG    = false;
 var SNIP_LEN = 4096;    // used to truncate when printing out long strings
@@ -1132,25 +1130,34 @@ function get_client_ip(req) {
 
     // log.info('REQ: - ' + JSON.stringify(req.headers))
 
-    return requestIp.getClientIp(req);  // fuck it, use package
-
-
     // something like....
 
     // {"x-ssl-client-verify":"SUCCESS","x-ssl-client-s-dn":"/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=A5A9EDFA9B0E17470B0232B3AF90462CCED1A657.e149ad89f27ae09d26a6e48","x-ssl-client-i-dn":"/C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=d75b44681f1e2fbe5ae599afe00760d2","host":"63.225.191.45","x-real-ip":"54.203.255.17","x-forwarded-for":"54.203.255.17","x-forwarded-proto":"https","connection":"close"}
 
-    if (typeof req.headers != "undefined" && typeof req.headers['x-real-ip'] != "undefined")
+    if (typeof req.headers != "undefined" && typeof req.headers['x-real-ip'] != "undefined") {
+        console.log('req.headerz[real-ip] -> ' + req.headers['x-real-ip']
         client_ip = req.headers['x-real-ip']
-    else if (typeof req.headers != "undefined" && typeof req.headers['x-forwarded-for'] != "undefined")
+    }
+    else if (typeof req.headers != "undefined" && typeof req.headers['x-forwarded-for'] != "undefined") {
+        console.log('req.headerz[x-forw] -> ' + req.headers['x-real-ip']
         client_ip = req.headers['x-forwarded-for']
-    else if (typeof req.ip != "undefined")
+    }
+    else if (typeof req.ip != "undefined") {
+        console.log('req.ip -> ' + req.headers['x-real-ip']
         client_ip = req.ip
-    else if (typeof req.connection.remoteAddress != "undefined")
+    }
+    else if (typeof req.connection.remoteAddress != "undefined") {
+        console.log('req.conn.remo -> ' + req.headers['x-real-ip']
         client_ip = req.connection.remoteAddress
-    else if (typeof req.socket.remoteAddress != "undefined")
+    }
+    else if (typeof req.socket.remoteAddress != "undefined") {
+        console.log('req.sock.rem -> ' + req.headers['x-real-ip']
         client_ip = req.socket.remoteAddress
-    else if (typeof req.connection.socket.remoteAddress != "undefined")
+    }
+    else if (typeof req.connection.socket.remoteAddress != "undefined") {
+        console.log('req.conn.sock.rem -> ' + req.headers['x-real-ip']
         client_ip = req.connection.socket.remoteAddress
+    }
     else {
         log.info('no IP here...')
         return("")
@@ -5036,6 +5043,9 @@ http.get(get_my_ip, function(res) {
 }).on('error', function(e) {
     log.error("couldn't find the server's IP addr as seen from the outside....")
 });
+
+// ... sigh... they changed it again... so now req.* will sometimes return ::ffff:127.0.0.1....
+// rather than fight, just add the fucking thing.
 
 log.info('my devs & ips')
 log.info(my_devs)
