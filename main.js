@@ -5171,6 +5171,7 @@ server.use(compress());
 
 // server.use(express.json({limit: '1gb'}));
 
+server.use(express.json({limit: '1gb'}));
 server.use(express.urlencoded());
 
 // server.use(express.multipart()); //deprecated

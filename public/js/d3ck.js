@@ -2093,8 +2093,6 @@ function confirm_or_deny_or(type, req, element) {
                         url = '/service/response/' + req.from_d3ck + '/' + answer
                         inform_user('request', 'lowering shields to ' + req.from_ip, 'info')
                         lower_shields(req.from_ip)
-                        set_up_RTC() // fly free and proud, web RTC!
-
                     }
 
                     // wtf, as they say
