@@ -99,8 +99,8 @@ var webrtcSupport = require('webrtcsupport');
 var attachMediaStream = require('attachmediastream');
 var mockconsole = require('mockconsole');
 
-var io = require('socket.io-client');
-// var io = io('/socket.io/socket.io.js')
+// var io = require('socket.io-client');
+var ioio = io('/socket.io/socket.io.js')
 
 function SimpleWebRTC(opts) {
     var self = this;
@@ -158,7 +158,7 @@ function SimpleWebRTC(opts) {
     WildEmitter.call(this);
 
     // our socket.io connection
-    connection = this.connection = io.connect(this.config.url, this.config.socketio);
+    connection = this.connection = ioio.connect(this.config.url, this.config.socketio);
 
     kittens_mittens = connection
     console.log('.. and... socket.io: ' );
@@ -2236,7 +2236,8 @@ var io = ('undefined' === typeof module ? {} : module.exports);
       , secure: false
       , document: 'document' in global ? document : false
       , resource: 'socket.io'
-      , transports: io.transports
+      // , transports: io.transports
+      , 'transports': ['websocket', 'polling'],
       , 'connect timeout': 10000
       , 'try multiple transports': true
       , 'reconnect': true

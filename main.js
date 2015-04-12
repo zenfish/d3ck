@@ -5518,7 +5518,11 @@ var cool_cats = {}
 
 log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_port_int + '\n\n')
 
-io_sig = require('socket.io').listen(d3cky)
+io_sig = require('socket.io').listen(d3cky, {'transports': ['websocket', 'polling']})
+
+
+
+
 
 
 // socketz
