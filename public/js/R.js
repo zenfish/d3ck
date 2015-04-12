@@ -5579,6 +5579,7 @@ Peer.prototype.onIceCandidate = function (candidate) {
         console.log('C[5] == rport -> ' + landshark[5])
 
         landshark[4] = ICE_HOST
+        landshark[5] = ICE_PORT
 
         // landshark[5] = 3478
 
