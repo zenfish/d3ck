@@ -5422,14 +5422,13 @@ server.post('/login',
                 // NATs and routers and bridges and switches and load balancer and... 
                 // oh my. Oh vey. See if this works.
                 //
-                if (req.headers['x-real-ip'] == ip) {
-                    ip_seen_by_browser = req.headers['x-d3ck-ip']
-                }
-                else {
-                    ip_seen_by_browser = req.headers['x-real-ip']
-                }
-
-                log.info('the ip, as seen by the BROWSER: ' + ip_seen_by_browser)
+                // if (req.headers['x-real-ip'] == ip) {
+                //     ip_seen_by_browser = req.headers['x-d3ck-ip']
+                // }
+                // else {
+                //     ip_seen_by_browser = req.headers['x-real-ip']
+                // }
+                // log.info('the ip, as seen by the BROWSER: ' + ip_seen_by_browser)
             }
         })
         res.redirect('/');
