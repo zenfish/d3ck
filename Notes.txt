@@ -1,4 +1,9 @@
 
+
+bcrypt is a bit hard to make :(  reinstall gyp
+
+    npm install -g gpy
+
 ****
 **** slightly hacked on node_modules/exec-sync2/index.js
 ****
@@ -8,6 +13,8 @@
 ****
 
 
+
+XXXXX -> client-side jquery is timing out on sping... need to always send *some* reply when all guesses are up!
 
 
 

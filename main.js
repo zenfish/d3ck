@@ -5316,7 +5316,7 @@ server.get('/d3ck', auth, list_d3cks)
 server.get('/d3ck/:key', auth, get_d3ck);
 
 // Delete a d3ck by key
-server.del('/d3ck/:key', auth, delete_d3ck);
+server.delete('/d3ck/:key', auth, delete_d3ck);
 
 // Destroy everything
 server.delete('/d3ck', auth, deleteAll, function respond(req, res, next) {
@@ -5520,9 +5520,7 @@ log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_por
 
 io_sig = require('socket.io').listen(d3cky)
 
-
-
-
+io_sig.set('log level', 2);
 
 
 // socketz
@@ -5531,9 +5529,6 @@ io_sig = require('socket.io').listen(d3cky)
 //    secret:       gen_somewhat_random(),
 //    store:        new candyStore({ client: rclient })
 //}))
-
-io_sig.set('log level', 2);
-
 
 // xxx?
 // io_sig.disable('browser client cache');
@@ -5554,9 +5549,6 @@ function safeCb(cb) {
         return function () {};
     }
 }
-
-io_sig.set('log level', 1);
-
 
 io_sig.sockets.on('connection', function (ss_client) {
 
