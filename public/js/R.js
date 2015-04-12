@@ -5586,7 +5586,7 @@ Peer.prototype.onIceCandidate = function (candidate) {
         // candidate.candidate.candidate = landshark
 
         // yeah, yeah, close enough
-        // landshark.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
+        landshark.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ICE_HOST)
         //     .replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}  (\d+)*/, window.location.hostname)
         // candidate.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
         console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(candidate))
