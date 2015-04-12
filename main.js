@@ -2257,7 +2257,7 @@ function setTCPproxy(req, res, next) {
 //
 // creates a UPD proxy to a given host.  For instance, you could call it with:
 //
-//  <host-ip>/setUDPproxy?proxy_remote_host=10.209.10.1&proxy_remote_port=3478&proxy_local_port=3444
+//  <host-ip>/setUDPproxy?proxy_to_host=10.209.10.1&proxy_to_port=3478&proxy_local_port=3444
 //
 // And if successful from now on connections to <host-ip> on port 3444 will be
 // redirected to port 3478 on the host 10.209.10.1.
@@ -2268,16 +2268,16 @@ function setUDPproxy(req, res, next) {
 
     log.info('set proxy')
 
-    if (typeof req.query.proxy_remote_host == "undefined" ||
-        typeof req.query.proxy_remote_port == "undefined" ||
+    if (typeof req.query.proxy_to_host == "undefined" ||
+        typeof req.query.proxy_to_port == "undefined" ||
         typeof req.query.proxy_local_port  == "undefined") {
             log.error('UPD proxy requires both remote & local ports and remote host to be defined')
-            next({"error": "proxy_remote_host, proxy_remote_port, and proxy_local_port must all be defined"})
+            next({"error": "proxy_to_host, proxy_to_port, and proxy_local_port must all be defined"})
     }
 
-    udp_proxy_to_ip = req.query.proxy_remote_host
-    udp_proxy_to_port = req.query.proxy_remote_port
-    udp_proxy_local_port  = req.query.proxy_local_port
+    udp_proxy_to_host    = req.query.proxy_to_host
+    udp_proxy_to_port    = req.query.proxy_to_port
+    udp_proxy_local_port = req.query.proxy_local_port
 
     //
     // to try and placate the ancient (and vengeful) gods
@@ -2288,7 +2288,7 @@ function setUDPproxy(req, res, next) {
     // code from the UDP package demo, butchered up a bit
     var proxy = require('udp-proxy'),
         options = {
-            address:      udp_proxy_to_ip,
+            address:      udp_proxy_to_host,
             port:         udp_proxy_to_port,
             localaddress: '0.0.0.0',
             localport:    udp_proxy_local_port,
@@ -2328,14 +2328,14 @@ function setUDPproxy(req, res, next) {
     });
 
     udp_server.on('proxyError', function (err) {
-        log.info('UDP> ProxyError! ' + err);
+        log.error('UDP> ProxyError! ' + err);
     });
 
     udp_server.on('error', function (err) {
-        log.info('UDP> Error! ' + err);
+        log.error('UDP> Error! ' + err);
     });
 
-    res.send(200, {"d3ck_local_port": udp_proxy_local_port, "proxy_remote_port": udp_proxy_to_port, "proxy_remote_host": udp_proxy_to_ip})
+    res.send(200, {"d3ck_local_port": udp_proxy_local_port, "proxy_to_port": udp_proxy_to_port, "proxy_to_host": udp_proxy_to_host})
 
 }
 
