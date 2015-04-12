@@ -99,8 +99,8 @@ var webrtcSupport = require('webrtcsupport');
 var attachMediaStream = require('attachmediastream');
 var mockconsole = require('mockconsole');
 
-// var io = require('socket.io-client');
-var ioio = io()
+var io = require('socket.io-client');
+// var io = io('/socket.io/socket.io.js')
 
 function SimpleWebRTC(opts) {
     var self = this;
@@ -158,7 +158,7 @@ function SimpleWebRTC(opts) {
     WildEmitter.call(this);
 
     // our socket.io connection
-    connection = this.connection = ioio.connect(this.config.url, this.config.socketio);
+    connection = this.connection = io.connect(this.config.url, this.config.socketio);
 
     kittens_mittens = connection
     console.log('.. and... socket.io: ' );
@@ -166,8 +166,7 @@ function SimpleWebRTC(opts) {
 
 
     connection.on('connect', function () {
-        // self.emit('connectionReady', connection.socket.sessionid);
-        self.emit('connectionReady', connection.id);
+        self.emit('connectionReady', connection.socket.sessionid);
         self.sessionReady = true;
         self.testReadiness();
     });
@@ -185,8 +184,7 @@ function SimpleWebRTC(opts) {
                     type: message.roomType,
                     enableDataChannels: self.config.enableDataChannels && message.roomType !== 'screen',
                     sharemyscreen: message.roomType === 'screen' && !message.broadcaster,
-                    // broadcaster: message.roomType === 'screen' && !message.broadcaster ? self.connection.socket.sessionid : null
-                    broadcaster: message.roomType === 'screen' && !message.broadcaster ? self.connection.id: null
+                    broadcaster: message.roomType === 'screen' && !message.broadcaster ? self.connection.socket.sessionid : null
                 });
             }
             peer.handleMessage(message);
@@ -198,8 +196,7 @@ function SimpleWebRTC(opts) {
     });
 
     connection.on('remove', function (room) {
-        // if (room.id !== self.connection.socket.sessionid) {
-        if (room.id !== self.connection.id) {
+        if (room.id !== self.connection.socket.sessionid) {
             self.webrtc.removePeers(room.id, room.type);
         }
     });
@@ -313,8 +310,7 @@ function SimpleWebRTC(opts) {
                             OfferToReceiveVideo: false
                         }
                     },
-                    // broadcaster: self.connection.socket.sessionid,
-                    broadcaster: self.connection.id
+                    broadcaster: self.connection.socket.sessionid,
                 });
                 peer.start();
             }
@@ -546,8 +542,7 @@ SimpleWebRTC.prototype.stopScreenShare = function () {
 SimpleWebRTC.prototype.testReadiness = function () {
     var self = this;
     if (this.webrtc.localStream && this.sessionReady) {
-        // self.emit('readyToCall', self.connection.socket.sessionid);
-        self.emit('readyToCall', self.connection.id);
+        self.emit('readyToCall', self.connection.socket.sessionid);
     }
 };
 
