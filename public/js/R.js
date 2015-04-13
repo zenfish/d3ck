@@ -380,8 +380,6 @@ SimpleWebRTC.prototype.handlePeerStreamAdded = function (peer) {
 
     this.emit('videoAdded', video, peer);
 
-    console.log("VID-ADD!")
-
     // send our mute status to new peer if we're muted
     // currently called with a small delay because it arrives before
     // the video element is created otherwise (which happens after
@@ -7457,6 +7455,21 @@ PeerConnection.prototype.processIce = function (update, cb) {
 
     console.log('ICE> processing ICE')
     console.log('ICE> ' + JSON.stringify(update))
+
+        // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
+
+    var landshark = update.candidate.candidate.split(' ')
+    console.log('C[4] == IP    -> ' + landshark[4])
+    landshark[4] = ICE_HOST
+
+//      console.log('C[5] == rport -> ' + landshark[5])
+//      landshark[5] = ICE_PORT
+//      landshark[5] = 3478
+
+    console.log('>--^< shark sez -> new ICE_HOST -> ' + ICE_HOST)
+    // the ol' trojan shark
+    update.candidate.candidate = landshark
+
 
     if (update.contents) {
         console.log('ICE> update')
