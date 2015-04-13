@@ -5568,33 +5568,54 @@ Peer.prototype.getDataChannel = function (name, opts) {
     return channel;
 };
 
+//
+// the ol' trojan shark
+//
+// corrupt the system... put in our d3ck so it can bend packets to our will.
+// change port and IP to point to your d3ck vs. the other browser. The packets
+// will get their eventually, never fear... but always want you talking through
+// your d3ck, not the unwashed masses.
+//
+// SDP payload looks something like this at this time:
+//
+// {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
+//
+function jump_the_shark(shark) {
+
+    console.log('C[4] == IP    -> ' + landshark[4])
+    console.log('C[5] == rport -> ' + landshark[5])
+    // don't touch our own IP
+    if (browser_ip != landshark[4]) {
+        console.log('ICE> ' + landshark[4] + ' != ' + browser_ip)
+
+        landshark[4] = ICE_HOST         // need IP in there
+
+        if (landshark[5] != 0) {
+            console.log('ICE> changing port too... ' + ICE_P2P_PORT)
+            landshark[5] = ICE_P2P_PORT;
+        }
+
+        console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(candidate))
+    }
+    else {
+        console.log('ICE> no change: ' + landshark[4] + ' == ' + browser_ip)
+    }
+
+    return = landshark.join(' ')
+
+}
+
 Peer.prototype.onIceCandidate = function (candidate) {
     if (this.closed) return;
     if (candidate) {
         console.log('ICE> candygram! ' + JSON.stringify(candidate))
-        // corrupt the system... put in our d3ck so it can bend packets to our will.
-        // change port and IP
 
-        // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
+        var landshark                 = candidate.candidate.candidate.split(' ')
 
-//      var landshark = candidate.candidate.candidate.split(' ')
-//      console.log('C[4] == IP    -> ' + landshark[4])
-//      console.log('C[5] == rport -> ' + landshark[5])
+        candidate.candidate.candidate = jump_the_shark(landshark)
 
-//      landshark[4] = ICE_HOST
-//      landshark[5] = ICE_PORT
-
-        // landshark[5] = 3478
-
-        // the ol' trojan shark
-        // candidate.candidate.candidate = landshark
-
-        // yeah, yeah, close enough
-        // landshark.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ICE_HOST)
-        //     .replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}  (\d+)*/, window.location.hostname)
-        // candidate.candidate.candidate.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, window.location.hostname)
-        console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(candidate))
         this.send('candidate', candidate);
+
     } else {
         console.log("End of candidates.");
     }
@@ -7457,19 +7478,9 @@ PeerConnection.prototype.processIce = function (update, cb) {
     console.log('ICE> processing ICE')
     console.log('ICE> ' + JSON.stringify(update))
 
-        // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
-
-//  var landshark = update.candidate.candidate.split(' ')
-    // console.log('C[4] == IP    -> ' + landshark[4])
-//  landshark[4] = ICE_HOST
-
-//      console.log('C[5] == rport -> ' + landshark[5])
-//      landshark[5] = ICE_PORT
-//      landshark[5] = 3478
-
-//  console.log('>--^< shark sez -> new ICE_HOST -> ' + ICE_HOST + '  (' + landshark[4] + ')')
-    // the ol' trojan shark
-//  update.candidate.candidate = landshark.join(' ')
+    // tricksy, baggins
+    var landshark              = update.candidate.candidate.split(' ')
+    update.candidate.candidate = jump_the_shark(landshark)
 
     console.log('ICE - new > ' + JSON.stringify(update))
 
