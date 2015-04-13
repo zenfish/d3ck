@@ -109,7 +109,7 @@ function SimpleWebRTC(opts) {
             url: SIGNALING_SERVER,
             // resource: 'sigsig',
             socketio: { 'force new connection': true },
-            debug: false,
+            debug: true,
             localVideoEl: '',
             remoteVideosEl: '',
             enableDataChannels: true,
