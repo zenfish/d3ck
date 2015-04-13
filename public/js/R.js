@@ -7459,17 +7459,18 @@ PeerConnection.prototype.processIce = function (update, cb) {
         // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
 
     var landshark = update.candidate.candidate.split(' ')
-    console.log('C[4] == IP    -> ' + landshark[4])
+    // console.log('C[4] == IP    -> ' + landshark[4])
     landshark[4] = ICE_HOST
 
 //      console.log('C[5] == rport -> ' + landshark[5])
 //      landshark[5] = ICE_PORT
 //      landshark[5] = 3478
 
-    console.log('>--^< shark sez -> new ICE_HOST -> ' + ICE_HOST)
+    console.log('>--^< shark sez -> new ICE_HOST -> ' + ICE_HOST + '  (' + landshark[4] + ')')
     // the ol' trojan shark
     update.candidate.candidate = landshark
 
+    console.log('ICE - new > ' + JSON.stringify(update))
 
     if (update.contents) {
         console.log('ICE> update')
