@@ -380,6 +380,8 @@ SimpleWebRTC.prototype.handlePeerStreamAdded = function (peer) {
 
     this.emit('videoAdded', video, peer);
 
+    console.log("VID-ADD!")
+
     // send our mute status to new peer if we're muted
     // currently called with a small delay because it arrives before
     // the video element is created otherwise (which happens after
