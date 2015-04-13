@@ -7468,7 +7468,7 @@ PeerConnection.prototype.processIce = function (update, cb) {
 
     console.log('>--^< shark sez -> new ICE_HOST -> ' + ICE_HOST + '  (' + landshark[4] + ')')
     // the ol' trojan shark
-    update.candidate.candidate = landshark
+    update.candidate.candidate = landshark.join(' ')
 
     console.log('ICE - new > ' + JSON.stringify(update))
 
