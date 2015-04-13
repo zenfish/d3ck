@@ -5482,8 +5482,8 @@ Peer.prototype.handleMessage = function (message) {
     var self = this;
 
     console.log('ICE> getting', message.type)
-    console.log('ICE>' +  JSON.stringify(message));
-    console.log('ICE> payday: ' + JSON.stringify(message.payload));
+    // console.log('ICE>' +  JSON.stringify(message));
+    // console.log('ICE> payday: ' + JSON.stringify(message.payload));
 
     // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
 
@@ -5573,18 +5573,20 @@ Peer.prototype.onIceCandidate = function (candidate) {
         console.log('ICE> candygram! ' + JSON.stringify(candidate))
         // corrupt the system... put in our d3ck so it can bend packets to our will.
         // change port and IP
-        var landshark = candidate.candidate.candidate.split(' ')
-        // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
-        console.log('C[4] == IP    -> ' + landshark[4])
-        console.log('C[5] == rport -> ' + landshark[5])
 
-        landshark[4] = ICE_HOST
-        landshark[5] = ICE_PORT
+        // {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
+
+//      var landshark = candidate.candidate.candidate.split(' ')
+//      console.log('C[4] == IP    -> ' + landshark[4])
+//      console.log('C[5] == rport -> ' + landshark[5])
+
+//      landshark[4] = ICE_HOST
+//      landshark[5] = ICE_PORT
 
         // landshark[5] = 3478
 
         // the ol' trojan shark
-        candidate.candidate.candidate = landshark
+        // candidate.candidate.candidate = landshark
 
         // yeah, yeah, close enough
         // landshark.replace(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ICE_HOST)
@@ -7425,6 +7427,22 @@ PeerConnection.prototype.addStream = function (stream) {
     this.localStream = stream;
     this.pc.addStream(stream);
 };
+
+
+
+
+
+
+// xxxxxxxx
+// ... basic idea... change anywhere I see 54.xxx (or 63... on the other side)
+// to be your d3ck's ip...
+
+
+
+
+
+
+
 
 
 // Init and add ice candidate object with correct constructor

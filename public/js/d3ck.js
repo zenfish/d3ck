@@ -1061,6 +1061,9 @@ function queue_or_die(queue) {
 
             console.log('to... ', did, friend, ip)
 
+            // global
+            remote_ip = ip
+
             inform_user('VPN', "your d3ck has established a connection to: " + friend + ' / ' + ip + ' / ' + did + ')', 'vpn')
             state_ring(false)    // bang a gong
             state_vpn('outgoing', browser_ip, queue)
@@ -1079,6 +1082,9 @@ function queue_or_die(queue) {
             var did    = queue.d3ck_status.openvpn_server.client_did
             var friend = all_d3ck_ids[did].owner.name
             var ip     = queue.d3ck_status.openvpn_server.client
+
+            // global
+            remote_ip = ip
 
             // hack to ... hackity hack.
             // ICE_SERVER = queue.d3ck_status.openvpn_server.d3ck_ip + ':3478'
