@@ -5582,26 +5582,26 @@ Peer.prototype.getDataChannel = function (name, opts) {
 //
 function jump_the_shark(shark) {
 
-    console.log('C[4] == IP    -> ' + landshark[4])
-    console.log('C[5] == rport -> ' + landshark[5])
+    console.log('C[4] == IP    -> ' + shark[4])
+    console.log('C[5] == rport -> ' + shark[5])
     // don't touch our own IP
-    if (browser_ip != landshark[4]) {
-        console.log('ICE> ' + landshark[4] + ' != ' + browser_ip)
+    if (browser_ip != shark[4]) {
+        console.log('ICE> ' + shark[4] + ' != ' + browser_ip)
 
-        landshark[4] = ICE_HOST         // need IP in there
+        shark[4] = ICE_HOST         // need IP in there
 
-        if (landshark[5] != 0) {
+        if (shark[5] != 0) {
             console.log('ICE> changing port too... ' + ICE_P2P_PORT)
-            landshark[5] = ICE_P2P_PORT;
+            shark[5] = ICE_P2P_PORT;
         }
 
         console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(candidate))
     }
     else {
-        console.log('ICE> no change: ' + landshark[4] + ' == ' + browser_ip)
+        console.log('ICE> no change: ' + shark[4] + ' == ' + browser_ip)
     }
 
-    return landshark.join(' ')
+    return shark.join(' ')
 
 }
 
