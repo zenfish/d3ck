@@ -1174,7 +1174,7 @@ function get_client_ip(req) {
 
 }
 
-// quick bit to get the user's ip addr
+// quick bit to get the user/browser's ip addr
 function getIP(req, res, next) {
 
     var ip = get_client_ip(req)
@@ -5048,8 +5048,9 @@ http.get(get_my_ip, function(res) {
     log.error("couldn't find the server's IP addr as seen from the outside....")
 });
 
-// ... sigh... they changed it again... so now req.* will sometimes return ::ffff:127.0.0.1....
-// rather than fight, just add the fucking thing.
+// ... sigh... they changed it again... so now req.* will sometimes return ::1... sometimes ::ffff:127.0.0.1....
+
+my_ips.push('::1')
 
 log.info('my devs & ips')
 log.info(my_devs)
