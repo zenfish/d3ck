@@ -13,6 +13,7 @@ ICE_PORT         = 3478
 
 SIGNALING_SERVER = 'https://' + window.location.hostname + ':' + D3CK_SIG_PORT
 ICE_HOST         = window.location.hostname
+ICE_P2P_PORT     = 5551
 ICE_ICE_BABY     = ICE_HOST + ':' + ICE_PORT
 
 // poll until we get something, then stop polling
