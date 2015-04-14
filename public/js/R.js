@@ -5595,7 +5595,7 @@ function jump_the_shark(shark) {
             shark[5] = ICE_P2P_PORT;
         }
 
-        console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(candidate))
+        console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(shark))
     }
     else {
         console.log('ICE> no change: ' + shark[4] + ' == ' + browser_ip)
