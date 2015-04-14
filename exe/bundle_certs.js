@@ -25,7 +25,7 @@ if (typeof did == "undefined") {
 // misc libs
 var fs    = require('fs'),
     redis = require('redis'),
-    sh    = require('execSync');
+    sh    = require('exec-sync2');
 
 //
 // redis DB
