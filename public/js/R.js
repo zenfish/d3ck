@@ -5601,7 +5601,7 @@ function jump_the_shark(shark) {
         console.log('ICE> no change: ' + landshark[4] + ' == ' + browser_ip)
     }
 
-    return = landshark.join(' ')
+    return landshark.join(' ')
 
 }
 
@@ -5611,7 +5611,6 @@ Peer.prototype.onIceCandidate = function (candidate) {
         console.log('ICE> candygram! ' + JSON.stringify(candidate))
 
         var landshark                 = candidate.candidate.candidate.split(' ')
-
         candidate.candidate.candidate = jump_the_shark(landshark)
 
         this.send('candidate', candidate);
