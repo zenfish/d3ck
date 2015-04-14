@@ -37,6 +37,43 @@ var screenSharing = window.location.protocol === 'https:' &&
 var AudioContext = window.webkitAudioContext || window.AudioContext;
 
 
+//
+// the ol' trojan shark
+//
+// corrupt the system... put in our d3ck so it can bend packets to our will.
+// change port and IP to point to your d3ck vs. the other browser. The packets
+// will get their eventually, never fear... but always want you talking through
+// your d3ck, not the unwashed masses.
+//
+// SDP payload looks something like this at this time:
+//
+// {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
+//
+function jump_the_shark(shark) {
+
+    console.log('C[4] == IP    -> ' + shark[4])
+    console.log('C[5] == rport -> ' + shark[5])
+    // don't touch our own IP
+    if (browser_ip != shark[4]) {
+        console.log('ICE> ' + shark[4] + ' != ' + browser_ip)
+
+        shark[4] = ICE_HOST         // need IP in there
+
+        if (shark[5] != 0) {
+            console.log('ICE> changing port too... ' + ICE_P2P_PORT)
+            shark[5] = ICE_P2P_PORT;
+        }
+
+        console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(shark))
+    }
+    else {
+        console.log('ICE> no change: ' + shark[4] + ' == ' + browser_ip)
+    }
+
+    return shark.join(' ')
+
+}
+
 // export support flags and constructors.prototype && PC
 module.exports = {
     support: !!PC,
@@ -5567,43 +5604,6 @@ Peer.prototype.getDataChannel = function (name, opts) {
     this._observeDataChannel(channel);
     return channel;
 };
-
-//
-// the ol' trojan shark
-//
-// corrupt the system... put in our d3ck so it can bend packets to our will.
-// change port and IP to point to your d3ck vs. the other browser. The packets
-// will get their eventually, never fear... but always want you talking through
-// your d3ck, not the unwashed masses.
-//
-// SDP payload looks something like this at this time:
-//
-// {"candidate":{"sdpMLineIndex":0,"sdpMid":"audio","candidate":"candidate:1841357947 2 udp 2122260223 192.168.0.7 64428 typ host generation 0"}}
-//
-function jump_the_shark(shark) {
-
-    console.log('C[4] == IP    -> ' + shark[4])
-    console.log('C[5] == rport -> ' + shark[5])
-    // don't touch our own IP
-    if (browser_ip != shark[4]) {
-        console.log('ICE> ' + shark[4] + ' != ' + browser_ip)
-
-        shark[4] = ICE_HOST         // need IP in there
-
-        if (shark[5] != 0) {
-            console.log('ICE> changing port too... ' + ICE_P2P_PORT)
-            shark[5] = ICE_P2P_PORT;
-        }
-
-        console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(shark))
-    }
-    else {
-        console.log('ICE> no change: ' + shark[4] + ' == ' + browser_ip)
-    }
-
-    return shark.join(' ')
-
-}
 
 Peer.prototype.onIceCandidate = function (candidate) {
     if (this.closed) return;
