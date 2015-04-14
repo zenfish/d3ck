@@ -23,9 +23,9 @@ if (typeof did == "undefined") {
 
 
 // misc libs
-var fs    = require('fs'),
-    redis = require('redis'),
-    sh    = require('exec-sync2');
+var fs       = require('fs'),
+    redis    = require('redis'),
+    execSync = require('exec-sync2');
 
 //
 // redis DB
@@ -65,7 +65,7 @@ var command = d3ck_home + '/f-u-openssl/rot-client.sh' + ' ' + did
 
 console.log('creating client keyz')
 
-var result = sh.exec(command)
+var result = execSync(command)
 
 console.log('stdout + stderr ' + result.stdout);
 console.log ('keyZ return code ' + result.code);
@@ -173,7 +173,7 @@ function rip_d3ck (d3ck, remote_did) {
         var exe = d3ck_home + '/exe/certitude.sh ' + d3ck_keystore + '/' + remote_did + '/_cli3nt.crt > ' + d3ck_home + '/public/certz/' + remote_did + '.crt.json'
         console.log(exe)
 
-        var res = sh.exec(exe)
+        var res = execSync(exe)
 
         process.exit(0)
     });
