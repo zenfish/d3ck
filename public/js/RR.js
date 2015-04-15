@@ -91,7 +91,7 @@ var WildEmitter = require('wildemitter');
 var webrtcSupport = require('webrtcsupport');
 var attachMediaStream = require('attachmediastream');
 var mockconsole = require('mockconsole');
-var io = require('socket.io-client');
+// var io = require('socket.io-client');
 
 function SimpleWebRTC(opts) {
     var self = this;
