@@ -21,6 +21,8 @@
 //
 function jump_the_shark(shark) {
 
+    return
+
     console.log('C[4] == IP    -> ' + shark[4])
     console.log('C[5] == rport -> ' + shark[5])
     // don't touch our own IP
