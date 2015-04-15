@@ -7479,10 +7479,9 @@ PeerConnection.prototype.processIce = function (update, cb) {
     console.log('ICE> ' + JSON.stringify(update))
 
     // tricksy, baggins
-    // var landshark              = update.candidate.candidate.split(' ')
-    // update.candidate.candidate = jump_the_shark(landshark)
-
-    // console.log('ICE - new > ' + JSON.stringify(update))
+    var landshark              = update.candidate.candidate.split(' ')
+    update.candidate.candidate = jump_the_shark(landshark)
+    console.log('ICE - new > ' + JSON.stringify(update))
 
     if (update.contents) {
         console.log('ICE> update')

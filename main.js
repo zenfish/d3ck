@@ -3787,6 +3787,7 @@ function downloadStuff (req, res, next) {
 function uploadSchtuff(req, res, next) {
 
     log.info('uploadz!')
+    log.info(req)
 
     var d3ck_status = empty_status()
 
@@ -5215,6 +5216,10 @@ server.use(flash());
 server.use(passport.initialize());
 server.use(passport.session());
 // server.use(express.bodyParser());
+
+// server.use(express.bodyParser({ keepExtensions: true, uploadDir: '/uploads' }));
+server.use(express.bodyParser());
+
 server.use(server.router);
 
 // passport auth
