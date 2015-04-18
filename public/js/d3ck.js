@@ -1696,6 +1696,10 @@ function set_up_RTC() {
 
     $('#remoteVideos video').remove()
 
+
+    rtc_initialize()
+
+/*
     webrtc = new SimpleWebRTC({
         localVideoEl: 'localVideo',
         remoteVideosEl: 'remoteVideos',
@@ -1719,6 +1723,7 @@ function set_up_RTC() {
     toggle_special_FX()
 
     cat_chat()
+*/
 
 }
 

@@ -5667,7 +5667,7 @@ io_sig.on('connection', function(client) {
     
         ss_client.on('create', function (create) {
             console.log('ss-create')
-            console.log(ss_client)
+            // console.log(ss_client)
             sock_cli3nts[ss_client.id] = true
             ss_client.join('d3ck')
         });
