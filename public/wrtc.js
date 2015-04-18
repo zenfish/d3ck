@@ -87,6 +87,14 @@ openChannel = function() {
 
   // connection = new WebSocket('ws://lucky:7771');
 
+  try {
+    console.log("killing off ol' sock monkey... sorry pal, we were good together once....")
+    socket.disconnect()
+  }
+  catch (e) {
+    console.log("Couldn't d/c socket...")
+  }
+
   // Create SocketIO instance, connect
   socket = new io.connect(window.location.hostname)
 
