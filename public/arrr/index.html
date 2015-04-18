@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+    <head>
+
+        <title>d3ck & webrtc</title>
+
+        <!-- Stylesheet Ressources -->
+        <link rel="stylesheet" href="global.css">
+        <link rel="stylesheet" href="bootstrap.min.css">
+
+        <!-- JavaScript Ressources -->
+        <script src="jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="bootstrap.min.js"    type="text/javascript" charset="utf-8"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="wrtc.js"             type="text/javascript" charset="utf-8"></script>
+        <script src="all.js"              type="text/javascript" charset="utf-8"></script>
+
+
+    </head>
+
+    <body>
+
+        <!-- Modal Connection -->
+        <div class="modal hide fade" id="ModalConnection">
+
+            <div class="modal-footer">
+            <button id="loginSub" class="btn btn-primary">enter</button>
+            </div>
+
+        </div>
+        <!-- End of the Modal Connection -->
+
+        <!-- Content -->
+        <div class="container-fluid">
+
+            <div class="row-fluid">
+
+                <div class="span6">
+                  <!-- Local Video -->
+                  <div class="row-fluid">
+                    <div style="position: relative;" class="span12">
+                      <h2 align="left">Local</h2>
+                      <span id="locallive" class="live hide">LIVE</span>
+                      <video width="100%" height="100%" id="localVideo" autoplay="autoplay"
+                      style="opacity: 0;
+                      -webkit-transition-property: opacity;
+                      -webkit-transition-duration: 2s;">
+                      </video>
+                    </div>
+                  </div>
+                  <!-- End of Local Video -->
+                </div>
+
+                <div class="span6">
+                  <!-- Remote Video -->
+                  <div class="row-fluid">
+                    <div style="position: relative;" class="span12">
+                      <h2 align="left">Remote</h2>
+                      <span id="remotelive" class="live hide">LIVE</span>
+                      <video width="100%" height="100%" id="remoteVideo" autoplay="autoplay"
+                      style="opacity: 0;
+                      -webkit-transition-property: opacity;
+                      -webkit-transition-duration: 2s;">
+                      </video>
+                    </div>
+                  </div>
+                  <!-- End of Remote Video -->
+                </div>
+
+            </div>
+
+            <!-- Status of the visio call -->
+            <div id="footer"></div>
+
+        </div>
+
+
+    </body>
+</html>
