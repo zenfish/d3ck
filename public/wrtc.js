@@ -84,11 +84,14 @@ setStatus = function(state) {
  * @return {void}
  */
 
-var socket = {}
-
 openChannel = function() {
 
   // connection = new WebSocket('ws://lucky:7771');
+
+  if (caller) {
+    console.log('killing off old sock')
+    socket.close()
+  }
 
   // Create SocketIO instance, connect
   socket = new io.connect(window.location.hostname)
@@ -317,7 +320,7 @@ onChannelOpened = function() {
     room = 'd3ck'
 
     // xxx - based on caller/callee
-    if(location.hostname != "192.168.0.250") {
+    if (caller) {
       console.log('joining...')
       // room = location.search.substring(6);
       // message = JSON.stringify({"type" : "INVITE", "value" : room});
@@ -325,13 +328,17 @@ onChannelOpened = function() {
       socket.emit('join', room);
       guest =1;
     }
-    else{
+    else if(callee) {
       console.log('creating....')
       // message = JSON.stringify({"type" : "GETROOM", "value" : 'd3ck'});
       // message = JSON.stringify({"type" : "join", "value" : 'd3ck'});
       // console.log(message);
       socket.emit('create', room);
       guest =0;
+    }
+    else {
+      console.log("WebRTC -> ERROR - neither is caller or callee?")
+      return
     }
     if (guest) maybeStart();
 };

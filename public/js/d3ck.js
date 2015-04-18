@@ -1003,6 +1003,7 @@ function queue_or_die(queue) {
 
                 caller = true
                 callee = false
+
                 event_connect('outgoing', $(this).parent().parent().find('.d3ckname').text())
 
                 d3ck_vpn($('#d3ck_vpn_' + did), did, ip)
@@ -1464,11 +1465,13 @@ function drag_and_d3ck(safe_id, d3ckid, ip) {
 //
 // sock monkey mania!
 //
+socket = {}
+
 function sock_monkey_mania () {
 
-    return
-
     console.log('sock monk mania!!!!')
+
+    socket = new io.connect(window.location.hostname)
 
     sock.on('connect', function() {
         console.log('connex!')
