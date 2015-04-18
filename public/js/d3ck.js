@@ -287,9 +287,11 @@ function state_vpn(state, browser_ip, queue) {
     if (state == "incoming") {
         console.log('incoming call')
 
-        set_up_RTC() // fly free, web RTC!
-
         d3ck_current.incoming = true
+        caller                = false
+        callee                = true
+
+        set_up_RTC() // fly free, web RTC!
 
         console.log('\t[+] fire up the alarms')
 
@@ -306,9 +308,6 @@ function state_vpn(state, browser_ip, queue) {
 
         console.log('incoming ring from ' + queue.d3ck_status.openvpn_server.client)
         incoming_ip = queue.d3ck_status.openvpn_server.client
-
-        caller = false
-        callee = true
 
         // ring them gongs, etc.
         event_connect("incoming", incoming_ip)
@@ -328,13 +327,12 @@ function state_vpn(state, browser_ip, queue) {
         console.log('outgoing call is up')
 
         remote_ip = queue.d3ck_status.openvpn_client.server
+        caller    = true
+        callee    = false
 
         set_up_RTC() // fly free, web RTC!
 
         console.log('\t[+] fire up the outbound signs')
-
-        caller = true
-        callee = false
 
         $('#d3ck_video').addClass('green').addClass('d3_pulse')
         // $('button:contains("connecting"),button:contains("Call")').text('End').addClass("hang_up").removeClass('btn-danger').addClass('btn-warning')
