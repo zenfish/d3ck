@@ -88,11 +88,6 @@ openChannel = function() {
 
   // connection = new WebSocket('ws://lucky:7771');
 
-  if (caller) {
-    console.log('killing off old sock')
-    socket.close()
-  }
-
   // Create SocketIO instance, connect
   socket = new io.connect(window.location.hostname)
 
