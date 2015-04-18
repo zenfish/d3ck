@@ -1467,6 +1467,8 @@ socket = {}
 
 function sock_monkey_mania () {
 
+    return;
+
     console.log('sock monk mania!!!!')
 
     socket = new io.connect(window.location.hostname)
