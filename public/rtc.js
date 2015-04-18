@@ -1843,9 +1843,8 @@
                 this.config = {
                     debug: !1,
                     peerConnectionConfig: {
-                        iceServers: [{
-                            url: "stun:stun.l.google.com:19302"
-                        }]
+                        // iceServers: [{ url: "stun:stun.l.google.com:19302" }]
+                        iceServers: []
                     },
                     peerConnectionConstraints: {
                         optional: [{

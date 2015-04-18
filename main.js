@@ -5538,165 +5538,144 @@ io_sig = require('socket.io').listen(d3cky)
 io_sig.set('log level', 2);
 
 
-// socketz
-//io_sig.set('authorization', passportIO.authorize({
-//    cookieParser: express.cookieParser,
-//    secret:       gen_somewhat_random(),
-//    store:        new candyStore({ client: rclient })
-//}))
+/**
+ * Declare the variable connections for rooms and users
+ */
+var connections = new Array();
 
-// xxx?
-// io_sig.disable('browser client cache');
+var sock_cli3nts = {}
 
-function describeRoom(name) {
-    var clients = io_sig.sockets.clients(name);
-    var result = { clients: {} };
-    clients.forEach(function (client) {
-        result.clients[client.id] = client.resources;
-    });
-    return result;
-}
+/**
+ * When a user connects
+ */
+io_sig.on('connection', function(client) {
 
-function safeCb(cb) {
-    if (typeof cb === 'function') {
-        return cb;
-    } else {
-        return function () {};
-    }
-}
+    console.log('connex!')
 
-io_sig.sockets.on('connection', function (ss_client) {
+    var guest = false;
+    var room = 'd3ck';
 
-    log.info("CONNEEEEECTION.....!")
-    // log.info(ss_client)
+    var server_sockid = io_sig.id
 
-    ss_client.resources = {
-        screen: false,
-        video: true,
-        audio: false
-    };
+    io_sig.sockets.on('connection', function (ss_client) {
+    
+        console.log("CONNEEEEECTION.....!")
+        // console.log(ss_client)
+    
+        ss_client.resources = {
+            screen: false,
+            video: true,
+            audio: false
+        };
+    
+        // pass a message to another id
+        ss_client.on('message', function (data) {
+    
+            console.log('mess: ' + data)
+    
+            // data = JSON.parse(data)
+    
+            // if (!data) return;
+    
+            var otherClient = false
 
-    // pass a message to another id
-    ss_client.on('message', function (details) {
-        // log.info('mess: ' + JSON.stringify(details))
+            data.from = ss_client.id;
 
-        if (!details) return;
+            // look for other connected d3cks
+            console.log('+> OC')
 
-        var otherClient = io_sig.sockets.sockets[details.to];
+            ss_client.broadcast.to('d3ck').emit('message', data)
+    
+            // console.log(sock_cli3nts)
+            //__.each(__.keys(sock_cli3nts), function(cli) {
+            //    console.log('checking... ' + cli)
+            //    var id = sock_cli3nts[cli]
+            //    // if true and not you or the server
+            //    if (id &&  id != server_sockid && id != ss_client.id) {
+            //        console.log('woots, found')
+            //        otherClient = sock_cli3nts[cli]
+            //        // io_sig.sockets.sockets[otherClient].emit('message', data);
+            //    }
+            //})
+    
+            // console.log(io_sig.sockets.sockets)
 
-        // log.info(io_sig.sockets.sockets)
+            // io_sig.sockets.sockets[otherClient].emit('message', data);
+            // io_sig.sockets.in('d3ck').emit('message', data);
 
-        if (!otherClient) return;
-
-        // ... well...
-        cool_cats[otherClient] = otherClient
-
-        // log.info(otherClient)
-
-        details.from = ss_client.id;
-        otherClient.emit('message', details);
-    });
-
-
-    // all import cat chat!
-    ss_client.on('cat_chat', function (kitten) {
-
-        log.info('A kitten? For me? ' + JSON.stringify(kitten))
-
-        // if (!kitten) return;
-        // if (!otherClient) return;
-
-        kitten.from = ss_client.id;
-
-        log.info('sending free kittens from... ' + ss_client.id)
-
-        // log.info(ss_client)
-
-        for (var cat_client in io_sig.sockets.sockets) {
-            log.info('sending to... ' + JSON.stringify(cat_client))
-            // log.info('sending to... ' )
-            // var c = io_sig.sockets.sockets[
-            io_sig.sockets.sockets[cat_client].emit('cat_chat', kitten);
-        }
-
-    });
-
-
-    ss_client.on('shareScreen', function () {
-        ss_client.resources.screen = true;
-    });
-
-    ss_client.on('unshareScreen', function (type) {
-        ss_client.resources.screen = false;
-        removeFeed('screen');
-    });
-
-    ss_client.on('join', join);
-
-    function removeFeed(type) {
-        log.info('ss-remove-feed')
-        if (ss_client.room) {
-            io_sig.sockets.in(ss_client.room).emit('remove', {
-                id: ss_client.id,
-                type: type
-            });
-            if (!type) {
-                ss_client.leave(ss_client.room);
-                ss_client.room = undefined;
+        });
+    
+    
+        // all import cat chat!
+        ss_client.on('cat_chat', function (kitten) {
+    
+            console.log('A kitten? For me? ' + JSON.stringify(kitten))
+    
+            // if (!kitten) return;
+            // if (!otherClient) return;
+    
+            kitten.from = ss_client.id;
+    
+            console.log('sending free kittens from... ' + ss_client.id)
+    
+            // console.log(ss_client)
+    
+            for (var cat_client in io_sig.sockets.sockets) {
+                console.log('sending to... ' + JSON.stringify(cat_client))
+                // console.log('sending to... ' )
+                // var c = io_sig.sockets.sockets[
+                io_sig.sockets.sockets[cat_client].emit('cat_chat', kitten);
+            }
+    
+        });
+    
+        function removeFeed(type) {
+            return // xxx - just checking....
+    
+            console.log('ss-remove-feed')
+            if (ss_client.room) {
+                io_sig.sockets.in(ss_client.room).emit('remove', {
+                    id: ss_client.id,
+                    type: type
+                });
+                if (!type) {
+                    ss_client.leave(ss_client.room);
+                    ss_client.room = undefined;
+                }
             }
         }
-    }
+    
+        ss_client.on('join', function(join) {
+            console.log('joining... ')
+            console.log(ss_client.id)
+            sock_cli3nts[ss_client.id] = true
+            ss_client.join('d3ck')
+        })
+    
+        // we don't want to pass "leave" directly because the
+        // event type string of "socket end" gets passed too.
+        ss_client.on('disconnect', function () {
+            console.log('ss-D/C')
+            ss_client.leave('d3ck')
+            // removeFeed();
+        });
 
-    function join(name, cb) {
-        log.info('joining... ' + name)
+        ss_client.on('leave', function () {
+            console.log('ss-leave')
+            ss_client.leave('d3ck')
+        });
+    
+        ss_client.on('create', function (create) {
+            console.log('ss-create')
+            console.log(ss_client)
+            sock_cli3nts[ss_client.id] = true
+            ss_client.join('d3ck')
+        });
 
-        // sanity check
-        if (typeof name !== 'string') return;
-
-        // leave any existing rooms
-        removeFeed();
-        safeCb(cb)(null, describeRoom(name));
-        ss_client.join(name);
-        ss_client.room = name;
-    }
-
-    // we don't want to pass "leave" directly because the
-    // event type string of "socket end" gets passed too.
-    ss_client.on('disconnect', function () {
-        log.info('ss-D/C')
-        removeFeed();
-    });
-    ss_client.on('leave', function () {
-        log.info('ss-leave')
-        removeFeed();
-    });
-
-    ss_client.on('create', function (name, cb) {
-        log.info('ss-create')
-        if (arguments.length == 2) {
-            cb = (typeof cb == 'function') ? cb : function () {};
-            name = name || uuid();
-        } else {
-            cb = name;
-            name = uuid();
-        }
-        // check if exists
-        if (io_sig.sockets.ss_clients(name).length) {
-            safeCb(cb)('taken');
-        } else {
-            join(name);
-            safeCb(cb)(null, name);
-        }
     });
 
-    // ss_client.emit('stunservers', [])
-    // var credentials = [];
-    // ss_client.emit('turnservers', credentials);
 
-});
-
-
-
+})
 
 
 
