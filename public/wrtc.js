@@ -281,13 +281,8 @@ function jump_the_shark(shark) {
  */
 onSignalingMessage = function(message) {
     // message = JSON.stringify(message);
-    console.log("onSignalingMessage (pre)  " + JSON.stringify(message));
+    console.log("onSignalingMessage: " + JSON.stringify(message));
 
-    if (message.type == 'candidate') {
-        message = jump_the_shark(message)
-    }
-
-    console.log("onSignalingMessage (post) " + JSON.stringify(message));
     socket.emit('message', message);
 
 };
@@ -322,7 +317,7 @@ onChannelOpened = function() {
     room = 'd3ck'
 
     // xxx - based on caller/callee
-    if(location.hostname != "fish2.com") {
+    if(location.hostname != "192.168.0.250") {
       console.log('joining...')
       // room = location.search.substring(6);
       // message = JSON.stringify({"type" : "INVITE", "value" : room});
@@ -365,6 +360,11 @@ onChannelMessage = function(message) {
                                 sdpMLineIndex:message.label,
                                 candidate:message.candidate
                             });
+
+        console.log("rec-sig (pre)  " + JSON.stringify(candidate));
+        candidate = jump_the_shark(candidate)
+        console.log("rec-sig (post) " + JSON.stringify(candidate));
+
 	    pc.addIceCandidate(candidate);
       break;
 

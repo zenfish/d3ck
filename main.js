@@ -5571,7 +5571,7 @@ io_sig.on('connection', function(client) {
         // pass a message to another id
         ss_client.on('message', function (data) {
     
-            console.log('mess: ' + data)
+            console.log('mess: ' + JSON.stringify(data))
     
             // data = JSON.parse(data)
     
@@ -5582,27 +5582,8 @@ io_sig.on('connection', function(client) {
             data.from = ss_client.id;
 
             // look for other connected d3cks
-            console.log('+> OC')
-
             ss_client.broadcast.to('d3ck').emit('message', data)
     
-            // console.log(sock_cli3nts)
-            //__.each(__.keys(sock_cli3nts), function(cli) {
-            //    console.log('checking... ' + cli)
-            //    var id = sock_cli3nts[cli]
-            //    // if true and not you or the server
-            //    if (id &&  id != server_sockid && id != ss_client.id) {
-            //        console.log('woots, found')
-            //        otherClient = sock_cli3nts[cli]
-            //        // io_sig.sockets.sockets[otherClient].emit('message', data);
-            //    }
-            //})
-    
-            // console.log(io_sig.sockets.sockets)
-
-            // io_sig.sockets.sockets[otherClient].emit('message', data);
-            // io_sig.sockets.in('d3ck').emit('message', data);
-
         });
     
     
