@@ -136,7 +136,7 @@ onUserMediaSuccess = function(stream) {
     localStream = stream;
     console.log('ready?')
     // Caller creates PeerConnection.
-    if (callee) {
+    if (caller) {
         console.log('firing up peerz stuff')
         maybeStart();
     }
@@ -164,7 +164,7 @@ maybeStart = function() {
         console.log("Adding local stream.");
         pc.addStream(localStream);
         started = true;
-        if (callee)
+        if (caller)
           doCall();
     }
 };
@@ -304,7 +304,7 @@ onHangup = function() {
 
 /**
  * Called when the channel with the server is opened
- * if you're the callee the connection is establishing by calling maybeStart()
+ * if you're the caller the connection is establishing by calling maybeStart()
  * @return {void}
  */
 onChannelOpened = function() {
@@ -332,7 +332,7 @@ onChannelOpened = function() {
       console.log("WebRTC -> ERROR - neither is caller or callee?")
       return
     }
-    if (callee) maybeStart();
+    if (caller) maybeStart();
 };
 
 /**
@@ -368,7 +368,7 @@ onChannelMessage = function(message) {
 
       case "offer" :
       // Callee creates PeerConnection
-      if (!callee && !started)
+      if (!caller && !started)
         maybeStart();
         pc.setRemoteDescription(new RTCSessionDescription(message));
         doAnswer();
@@ -430,7 +430,7 @@ onSessionConnecting = function(message) {
 onSessionOpened = function(message) {
     console.log("Session opened.");
     // Caller creates PeerConnection.
-    if (callee) maybeStart();
+    if (caller) maybeStart();
 };
 
 /**
