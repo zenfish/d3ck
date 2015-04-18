@@ -1475,6 +1475,10 @@ function sock_monkey_mania () {
 
     socket.on('connect', function() {
         console.log('monkey love sock connection`!')
+
+        // create d3ck room
+        socket.emit('create', room);
+
         // socky.css('display', 'block');
         // socky.append($('<p>Connected...</p>'));  
     });

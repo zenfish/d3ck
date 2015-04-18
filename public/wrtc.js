@@ -333,7 +333,7 @@ onChannelOpened = function() {
       // message = JSON.stringify({"type" : "GETROOM", "value" : 'd3ck'});
       // message = JSON.stringify({"type" : "join", "value" : 'd3ck'});
       // console.log(message);
-      socket.emit('create', room);
+      // socket.emit('create', room);
       guest =0;
     }
     else {
