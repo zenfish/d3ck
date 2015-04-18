@@ -27,7 +27,6 @@
 //-- Global variables declarations--//
 var localVideo;
 var remoteVideo;
-var guest;
 var message;
 var url;
 var localStream;
@@ -137,7 +136,7 @@ onUserMediaSuccess = function(stream) {
     localStream = stream;
     console.log('ready?')
     // Caller creates PeerConnection.
-    if (guest) {
+    if (callee) {
         console.log('firing up peerz stuff')
         maybeStart();
     }
@@ -165,7 +164,7 @@ maybeStart = function() {
         console.log("Adding local stream.");
         pc.addStream(localStream);
         started = true;
-        if (guest)
+        if (callee)
           doCall();
     }
 };
@@ -305,7 +304,7 @@ onHangup = function() {
 
 /**
  * Called when the channel with the server is opened
- * if you're the guest the connection is establishing by calling maybeStart()
+ * if you're the callee the connection is establishing by calling maybeStart()
  * @return {void}
  */
 onChannelOpened = function() {
@@ -321,7 +320,6 @@ onChannelOpened = function() {
       // message = JSON.stringify({"type" : "INVITE", "value" : room});
       // message = JSON.stringify({"type" : "join", "value" : room});
       socket.emit('join', room);
-      guest =1;
     }
     else if(callee) {
       console.log('creating....')
@@ -329,13 +327,12 @@ onChannelOpened = function() {
       // message = JSON.stringify({"type" : "join", "value" : 'd3ck'});
       // console.log(message);
       socket.emit('create', room);
-      guest =0;
     }
     else {
       console.log("WebRTC -> ERROR - neither is caller or callee?")
       return
     }
-    if (guest) maybeStart();
+    if (callee) maybeStart();
 };
 
 /**
@@ -354,7 +351,6 @@ onChannelMessage = function(message) {
         room = message["value"];
         console.log(room);
         resetStatus();
-        guest = 0;
       break;
 
       case "candidate" :
@@ -372,7 +368,7 @@ onChannelMessage = function(message) {
 
       case "offer" :
       // Callee creates PeerConnection
-      if (!guest && !started)
+      if (!callee && !started)
         maybeStart();
         pc.setRemoteDescription(new RTCSessionDescription(message));
         doAnswer();
@@ -397,7 +393,6 @@ onChannelBye = function() {
     remoteVideo.css("opacity", "0");
     $("#remotelive").addClass('hide');
     //remoteVideo.attr("src",null);
-    guest = 0;
     started = false;
     setStatus("<div class=\"alert alert-info\">Your partner has left the call.</div>");
 };
@@ -435,7 +430,7 @@ onSessionConnecting = function(message) {
 onSessionOpened = function(message) {
     console.log("Session opened.");
     // Caller creates PeerConnection.
-    if (guest) maybeStart();
+    if (callee) maybeStart();
 };
 
 /**
