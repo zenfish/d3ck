@@ -1474,7 +1474,7 @@ function sock_monkey_mania () {
     socket = new io.connect(window.location.hostname)
 
     socket.on('connect', function() {
-        console.log('connex!')
+        console.log('monkey love sock connection`!')
         // socky.css('display', 'block');
         // socky.append($('<p>Connected...</p>'));  
     });
