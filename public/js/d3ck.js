@@ -1473,28 +1473,28 @@ function sock_monkey_mania () {
 
     socket = new io.connect(window.location.hostname)
 
-    sock.on('connect', function() {
+    socket.on('connect', function() {
         console.log('connex!')
-        socky.css('display', 'block');
-        socky.append($('<p>Connected...</p>'));  
+        // socky.css('display', 'block');
+        // socky.append($('<p>Connected...</p>'));  
     });
 
-    sock.on('catFax', function(msg) {
+    socket.on('catFax', function(msg) {
         console.log('^..^' + msg)
         $('#d3ck_footy').html(msg)
     });
 
-    sock.on('openvpn_client', function(msg) {
+    socket.on('openvpn_client', function(msg) {
         console.log('--> srv' + msg)
         // pack it off to the server
         // kittens_mittens.emit('logs', msg);
-        sock.emit('logs', msg);
+        // socket.emit('logs', msg);
     });
 
-    sock.on('openvpn_server', function(msg) {
+    socket.on('openvpn_server', function(msg) {
         console.log('OVPN-S' + msg)
         // kittens_mittens.emit('logs', msg);
-        sock.emit('logs', msg);
+        // socket.emit('logs', msg);
     });
 
 }
