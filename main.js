@@ -5543,8 +5543,6 @@ io_sig.set('log level', 2);
  */
 var connections = new Array();
 
-var sock_cli3nts = {}
-
 /**
  * When a user connects
  */
@@ -5626,7 +5624,6 @@ io_sig.on('connection', function(client) {
             log.info('joining... ')
             log.info('j-from: ' + ss_client.handshake.headers.referer)
             log.info(ss_client.id)
-            sock_cli3nts[ss_client.id] = true
             ss_client.join('d3ck')
         })
     
@@ -5644,9 +5641,8 @@ io_sig.on('connection', function(client) {
         });
     
         ss_client.on('create', function (create) {
-            log.info('ss-create')
-            // log.info(ss_client)
-            // sock_cli3nts[ss_client.id] = true
+            log.info('ss-create & j-from: ' + ss_client.handshake.headers.referer)
+            log.info(ss_client.id)
             ss_client.join('d3ck')
         });
 
