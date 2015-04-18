@@ -333,6 +333,9 @@ function state_vpn(state, browser_ip, queue) {
 
         console.log('\t[+] fire up the outbound signs')
 
+        caller = true
+        callee = false
+
         $('#d3ck_video').addClass('green').addClass('d3_pulse')
         // $('button:contains("connecting"),button:contains("Call")').text('End').addClass("hang_up").removeClass('btn-danger').addClass('btn-warning')
         $('button:contains("connecting")').text('End').addClass("hang_up").removeClass('btn-danger').addClass('btn-warning')
@@ -1000,9 +1003,6 @@ function queue_or_die(queue) {
 
                 var ip = $('#' + did + ' .remote_ip strong:eq(1)').text()
                 console.log('to... ' + ip)
-
-                caller = true
-                callee = false
 
                 event_connect('outgoing', $(this).parent().parent().find('.d3ckname').text())
 
