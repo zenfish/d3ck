@@ -1,8 +1,11 @@
 
+ffi... has to mach arch and node... le sigh -
 
-bcrypt is a bit hard to make :(  reinstall gyp
+    npm install ffi --arch=ia32 --target=0.12.1
 
-    npm install -g gpy
+bcrypt is also a bit hard to make :(  reinstall gyp
+
+    npm install -g gyp
 
 ****
 **** slightly hacked on node_modules/exec-sync2/index.js
