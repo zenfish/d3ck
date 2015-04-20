@@ -49,8 +49,8 @@ var sdpConstraints = {'mandatory': {
 var isVideoMuted = false;
 var isAudioMuted = false;
 
-// var pcConfig         = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
-var pcConfig         = {"iceServers": [{"url": "stun:" + TURN_SERVER + ':' + TURN_PORT }]};
+var pcConfig         = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
+// var pcConfig         = {"iceServers": [{"url": "stun:" + TURN_SERVER + ':' + TURN_PORT }]};
 var pcConstraints    = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
 var offerConstraints = {"optional": [], "mandatory": {}};
 var mediaConstraints = {"audio": true, "video": {"mandatory": {}, "optional": []}};

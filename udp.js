@@ -1,10 +1,10 @@
 
 var proxy = require('udp-proxy'),
     options = {
-        address: '10.51.47.1',
+        address: '10.135.111.1',
         port: 5550,
         localaddress: '0.0.0.0',
-        localport: 5551,
+        localport: 3478,
         timeOutTime: 5000
     };
 

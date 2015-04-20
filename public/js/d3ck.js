@@ -1704,7 +1704,8 @@ function set_up_RTC() {
     $('#remoteVideos video').remove()
 
 
-    rtc_initialize()
+    // rtc_initialize()
+
 
 /*
     webrtc = new SimpleWebRTC({
