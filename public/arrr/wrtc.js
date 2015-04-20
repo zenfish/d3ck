@@ -1,3 +1,8 @@
+// var TURN_SERVER = getParameterByName('TURN_SERVER');
+// var TURN_PORT   = getParameterByName('TURN_PORT');
+
+var TURN_SERVER = window.location.hostname
+var TURN_PORT   = 3478
 
 //
 // Much of this code below is from Altos (bugs introduced and general
@@ -44,11 +49,12 @@ var sdpConstraints = {'mandatory': {
 var isVideoMuted = false;
 var isAudioMuted = false;
 
-var pcConfig         = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
+// var pcConfig         = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
+var pcConfig         = {"iceServers": [{"url": "stun:" + TURN_SERVER + ':' + TURN_PORT }]};
 var pcConstraints    = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
 var offerConstraints = {"optional": [], "mandatory": {}};
 var mediaConstraints = {"audio": true, "video": {"mandatory": {}, "optional": []}};
-var turnUrl          = 'https://computeengineondemand.appspot.com/turn?username=99820539&key=4080218913';
+//var turnUrl          = 'https://computeengineondemand.appspot.com/turn?username=99820539&key=4080218913';
 var stereo = false;
 /**
  * The first function to be launched
