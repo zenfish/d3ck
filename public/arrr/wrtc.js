@@ -323,7 +323,7 @@ onChannelOpened = function() {
 
     // if(location.search.substring(1,5) == "room") {
     // if(location.hostname != "fish2.com") {
-    if(location.hostname != "fish2.com") {
+    if (get_params('callee') == 'true') {
       console.log('joining...')
       // room = location.search.substring(6);
       // message = JSON.stringify({"type" : "INVITE", "value" : room});
@@ -333,6 +333,7 @@ onChannelOpened = function() {
       guest =1;
     }
     else{
+    // if (get_params('caller') == 'true') {
       console.log('creating....')
       // message = JSON.stringify({"type" : "GETROOM", "value" : 'd3ck'});
       // message = JSON.stringify({"type" : "join", "value" : 'd3ck'});
