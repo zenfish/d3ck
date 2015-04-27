@@ -323,7 +323,8 @@ onChannelOpened = function() {
 
     // if(location.search.substring(1,5) == "room") {
     // if(location.hostname != "fish2.com") {
-    if (get_params('callee') == 'true') {
+    // if (get_params('callee') == 'true') {
+    if (caller) {
       console.log('joining...')
       // room = location.search.substring(6);
       // message = JSON.stringify({"type" : "INVITE", "value" : room});
