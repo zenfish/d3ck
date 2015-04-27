@@ -79,7 +79,7 @@ $(document).ready(function () {
     $('.ul nav-tabs a').click(function (e) { e.preventDefault(); $(this).tab('show') })
 
     // video
-    $('#d3ck_video').click(function  (e) { 
+    $('#click_d3ck_video').click(function  (e) { 
 
         var v_url = '/arrr'
 
