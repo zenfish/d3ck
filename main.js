@@ -5,9 +5,10 @@
 // var Tail       = require('tail').Tail,
 var Tail       = require('./tail').Tail,
     async      = require('async'),
-    bcrypt     = require('bcrypt'),
+    // bcrypt     = require('bcrypt'),
+    bcrypt     = require('./modules/bCrypt.js')
     compress   = require('compression'),
-    connect        = require('connect'),
+    connect    = require('connect'),
     cors       = require('cors'),
     crypto     = require('crypto'),
     dns        = require('native-dns'),

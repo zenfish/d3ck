@@ -7,12 +7,17 @@ bcrypt is also a bit hard to make :(  reinstall gyp
 
     npm install -g gyp
 
+    rm -rf ~/.node-gyp
+
 ****
 **** slightly hacked on node_modules/exec-sync2/index.js
 ****
 **** Put my version @:
 ****
 ****        https://github.com/zenfish/node-exec-sync2
+**** node clone https://github.com/zenfish/node-exec-sync2 node_modules/exec-sync2
+****        cd node_modules/exec-sync2
+****        npm install
 ****
 
 
