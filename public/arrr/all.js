@@ -148,16 +148,16 @@ $(function() {
      * The Modal Connection opens when the page is loaded
      * @return {void}
      */
-    $('#ModalConnection').modal({
-      backdrop: "static",
-      keyboard: false
-    })
+//  $('#ModalConnection').modal({
+//    backdrop: "static",
+//    keyboard: false
+//  })
 
-    $("#loginSub").on("click", function(){
+//  $("#loginSub").on("click", function(){
         $('#username').text(nickname.val());
-        $('#ModalConnection').modal('hide'); 
+//      $('#ModalConnection').modal('hide'); 
         initialize();
-    });
+//  });
 
     /**
      * The Modal About opens when the user click on the "about button" in the navbar
