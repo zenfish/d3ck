@@ -373,12 +373,15 @@ onChannelMessage = function(message) {
       break;
 
       case "offer" :
-      // Callee creates PeerConnection
-      if (!guest && !started)
-        maybeStart();
+
+        // Callee creates PeerConnection
+        if (!guest && !started)
+            maybeStart();
+
         pc.setRemoteDescription(new RTCSessionDescription(message));
         doAnswer();
-        break;
+
+      break;
 
       case "answer" :
         pc.setRemoteDescription(new RTCSessionDescription(message));
