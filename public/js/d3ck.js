@@ -1703,8 +1703,7 @@ function set_up_RTC() {
 
     $('#remoteVideos video').remove()
 
-
-    // rtc_initialize()
+    rtc_initialize()
 
 
 /*
@@ -2377,5 +2376,14 @@ function raise_shields(ip) {
         inform_user('VPN', 'Shield down command failed: ' + JSON.stringify(err), 'error')
     })
 
+}
+
+
+// from http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+function get_params(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 

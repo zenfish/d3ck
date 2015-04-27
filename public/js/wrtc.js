@@ -1,3 +1,8 @@
+// var TURN_SERVER = getParameterByName('TURN_SERVER');
+// var TURN_PORT   = getParameterByName('TURN_PORT');
+
+var TURN_SERVER = window.location.hostname
+var TURN_PORT   = 3478
 
 //
 // Much of this code below is from Altos (bugs introduced and general
@@ -27,6 +32,7 @@
 //-- Global variables declarations--//
 var localVideo;
 var remoteVideo;
+var guest;
 var message;
 var url;
 var localStream;
@@ -44,10 +50,11 @@ var isVideoMuted = false;
 var isAudioMuted = false;
 
 var pcConfig         = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
+// var pcConfig         = {"iceServers": [{"url": "stun:" + TURN_SERVER + ':' + TURN_PORT }]};
 var pcConstraints    = {"optional": [{"DtlsSrtpKeyAgreement": true}]};
 var offerConstraints = {"optional": [], "mandatory": {}};
 var mediaConstraints = {"audio": true, "video": {"mandatory": {}, "optional": []}};
-var turnUrl          = 'https://computeengineondemand.appspot.com/turn?username=99820539&key=4080218913';
+//var turnUrl          = 'https://computeengineondemand.appspot.com/turn?username=99820539&key=4080218913';
 var stereo = false;
 /**
  * The first function to be launched
@@ -83,17 +90,11 @@ setStatus = function(state) {
  * @return {void}
  */
 
+var socket = {}
+
 openChannel = function() {
 
   // connection = new WebSocket('ws://lucky:7771');
-
-//try {
-//  console.log("killing off ol' sock monkey... sorry pal, we were good together once....")
-//  socket.disconnect()
-//}
-//catch (e) {
-//  console.log("Couldn't d/c socket...")
-//}
 
   // Create SocketIO instance, connect
   socket = new io.connect(window.location.hostname)
@@ -144,7 +145,7 @@ onUserMediaSuccess = function(stream) {
     localStream = stream;
     console.log('ready?')
     // Caller creates PeerConnection.
-    if (caller) {
+    if (guest) {
         console.log('firing up peerz stuff')
         maybeStart();
     }
@@ -172,7 +173,7 @@ maybeStart = function() {
         console.log("Adding local stream.");
         pc.addStream(localStream);
         started = true;
-        if (caller)
+        if (guest)
           doCall();
     }
 };
@@ -249,31 +250,30 @@ ICE_P2P_PORT     = 5551
 ICE_ICE_BABY     = ICE_HOST + ':' + ICE_PORT
 
 function jump_the_shark(shark) {
+    return;
 
-    candy_shark = shark.candidate.split(' ')
-
-    console.log('C[4] == IP    -> ' + candy_shark[4])
-    console.log('C[5] == rport -> ' + candy_shark[5])
+    console.log('C[4] == IP    -> ' + shark[4])
+    console.log('C[5] == rport -> ' + shark[5])
 
     // port
-    if (candy_shark[5] != 0) {
-        console.log('ICE> changing shark port to: ' + ICE_P2P_PORT)
-        candy_shark[5] = ICE_P2P_PORT;
+    if (shark[5] != 0) {
+        console.log('ICE> changing port too... ' + ICE_P2P_PORT)
+        shark[5] = ICE_P2P_PORT;
     }
 
     // don't touch our own IP
-    if (browser_ip != candy_shark[4]) {
-        console.log('ICE> ' + candy_shark[4] + ' != ' + browser_ip)
-        candy_shark[4] = ICE_HOST         // need IP in there
-        console.log('ICE> mwahaha, no candygram, landshark! Rawr!  ' + candy_shark.join(' '))
+    if (browser_ip != shark[4]) {
+        console.log('ICE> ' + shark[4] + ' != ' + browser_ip)
+
+        shark[4] = ICE_HOST         // need IP in there
+
+        console.log('ICE> mwahaha, landshark! Rawr!  ' + JSON.stringify(shark))
     }
     else {
-        console.log("ICE> can't touch this: " + candy_shark[4] + ' == ' + browser_ip)
+        console.log("ICE> can't touch this: " + shark[4] + ' == ' + browser_ip)
     }
 
-    shark.candidate = candy_shark.join(' ')
-
-    return shark
+    return shark.join(' ')
 
 }
 
@@ -286,10 +286,10 @@ function jump_the_shark(shark) {
  */
 onSignalingMessage = function(message) {
     // message = JSON.stringify(message);
-    console.log("onSignalingMessage: " + JSON.stringify(message));
-
+    console.log("onSignalingMessage (pre)  " + JSON.stringify(message));
+    //message = JSON.parse(jump_the_shark(JSON.stringify(message)))
+    //console.log("onSignalingMessage (post) " + JSON.stringify(message));
     socket.emit('message', message);
-
 };
 
 
@@ -312,7 +312,7 @@ onHangup = function() {
 
 /**
  * Called when the channel with the server is opened
- * if you're the caller the connection is establishing by calling maybeStart()
+ * if you're the guest the connection is establishing by calling maybeStart()
  * @return {void}
  */
 onChannelOpened = function() {
@@ -321,26 +321,28 @@ onChannelOpened = function() {
     channelReady = true;
     room = 'd3ck'
 
-    // xxx - based on caller/callee
-    if (caller) {
+    // if(location.search.substring(1,5) == "room") {
+    // if(location.hostname != "fish2.com") {
+    if (get_params('callee') == 'true') {
       console.log('joining...')
       // room = location.search.substring(6);
       // message = JSON.stringify({"type" : "INVITE", "value" : room});
       // message = JSON.stringify({"type" : "join", "value" : room});
+      // console.log(message);
       socket.emit('join', room);
+      guest =1;
     }
-    else if(callee) {
+    else{
+    // if (get_params('caller') == 'true') {
       console.log('creating....')
       // message = JSON.stringify({"type" : "GETROOM", "value" : 'd3ck'});
       // message = JSON.stringify({"type" : "join", "value" : 'd3ck'});
       // console.log(message);
+      // socket.emit('message', message);
       socket.emit('create', room);
+      guest =0;
     }
-    else {
-      console.log("WebRTC -> ERROR - neither is caller or callee?")
-      return
-    }
-    if (caller) maybeStart();
+    if (guest) maybeStart();
 };
 
 /**
@@ -359,6 +361,7 @@ onChannelMessage = function(message) {
         room = message["value"];
         console.log(room);
         resetStatus();
+        guest = 0;
       break;
 
       case "candidate" :
@@ -366,29 +369,30 @@ onChannelMessage = function(message) {
                                 sdpMLineIndex:message.label,
                                 candidate:message.candidate
                             });
-
-        console.log("rec-sig (pre)  " + JSON.stringify(candidate));
-        candidate = jump_the_shark(candidate)
-        console.log("rec-sig (post) " + JSON.stringify(candidate));
-
 	    pc.addIceCandidate(candidate);
       break;
 
       case "offer" :
-      // Callee creates PeerConnection
-      if (!caller && !started)
-        maybeStart();
+
+        // Callee creates PeerConnection
+        if (!guest && !started)
+            maybeStart();
+
         pc.setRemoteDescription(new RTCSessionDescription(message));
         doAnswer();
-        break;
+
+      break;
 
       case "answer" :
+
         pc.setRemoteDescription(new RTCSessionDescription(message));
-        break;
+      break;
 
       case "BYE" :
         onChannelBye();
-        break;
+
+      break;
+
     }
 };
 
@@ -401,6 +405,7 @@ onChannelBye = function() {
     remoteVideo.css("opacity", "0");
     $("#remotelive").addClass('hide');
     //remoteVideo.attr("src",null);
+    guest = 0;
     started = false;
     setStatus("<div class=\"alert alert-info\">Your partner has left the call.</div>");
 };
@@ -438,7 +443,7 @@ onSessionConnecting = function(message) {
 onSessionOpened = function(message) {
     console.log("Session opened.");
     // Caller creates PeerConnection.
-    if (caller) maybeStart();
+    if (guest) maybeStart();
 };
 
 /**

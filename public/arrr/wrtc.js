@@ -384,12 +384,15 @@ onChannelMessage = function(message) {
       break;
 
       case "answer" :
+
         pc.setRemoteDescription(new RTCSessionDescription(message));
-        break;
+      break;
 
       case "BYE" :
         onChannelBye();
-        break;
+
+      break;
+
     }
 };
 
