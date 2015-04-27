@@ -79,7 +79,7 @@ $(document).ready(function () {
     $('.ul nav-tabs a').click(function (e) { e.preventDefault(); $(this).tab('show') })
 
     // video
-    $('#d3ck_video a').click(function  (e) { 
+    $('#d3ck_video').click(function  (e) { 
 
         var v_url = '/arrr'
 
@@ -90,6 +90,9 @@ $(document).ready(function () {
         else if (callee) {
             console.log('was called....')
             v_url = v_url + '?callee=true'
+        }
+        else {
+            console.log("wtf, neither?")
         }
         e.preventDefault(); window.open(v_url)
 
