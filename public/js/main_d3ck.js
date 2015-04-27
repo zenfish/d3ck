@@ -78,6 +78,23 @@ $(document).ready(function () {
     // enable tabs
     $('.ul nav-tabs a').click(function (e) { e.preventDefault(); $(this).tab('show') })
 
+    // video
+    $('#d3ck_video a').click(function  (e) { 
+
+        var v_url = '/arrr'
+
+        if (caller) {
+            console.log('calling....')
+            v_url = v_url + '?caller=true'
+        }
+        else if (callee) {
+            console.log('was called....')
+            v_url = v_url + '?callee=true'
+        }
+        e.preventDefault(); window.open(v_url)
+
+    })
+
     // enable tabs
     $('#d3ck_trust_generate a').click(function  (e) { e.preventDefault(); $(this).tab('show') })
     $('#d3ck_trust_you a').click(function       (e) { e.preventDefault(); $(this).tab('show') })
