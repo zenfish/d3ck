@@ -329,7 +329,7 @@ onChannelOpened = function() {
       // message = JSON.stringify({"type" : "INVITE", "value" : room});
       // message = JSON.stringify({"type" : "join", "value" : room});
       // console.log(message);
-      socket.emit('join', room);
+//    socket.emit('join', room);
       guest =1;
     }
     else{
@@ -339,9 +339,12 @@ onChannelOpened = function() {
       // message = JSON.stringify({"type" : "join", "value" : 'd3ck'});
       // console.log(message);
       // socket.emit('message', message);
-      socket.emit('create', room);
+//    socket.emit('create', room);
       guest =0;
     }
+    socket.emit('create', room);
+    socket.emit('join', room);
+
     if (guest) maybeStart();
 };
 
