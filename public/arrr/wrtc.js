@@ -344,8 +344,9 @@ onChannelOpened = function() {
     }
     socket.emit('create', room);
     socket.emit('join', room);
+    maybeStart();
 
-    if (guest) maybeStart();
+    //if (guest) maybeStart();
 };
 
 /**
