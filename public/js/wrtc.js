@@ -231,7 +231,7 @@ openChannel = function() {
   // connection = new WebSocket('ws://lucky:7771');
 
   // connect!
-  socket = io('/d3ck');
+  socket = io()
 
   // Add a connect listener
   socket.on('connect',function() {
