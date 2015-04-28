@@ -5537,7 +5537,7 @@ log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_por
 io_sig = require('socket.io').listen(d3cky)
 
 // ... just... fuck it all
-io_sig.set('origins', '*');
+io_sig.set('origin', '*');
 
 
 
