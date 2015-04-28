@@ -6,7 +6,7 @@
 var Tail       = require('./tail').Tail,
     async      = require('async'),
     // bcrypt     = require('bcrypt'),
-    bcrypt     = require('./modules/bCrypt.js')
+    bcrypt     = require('./modules/bCrypt.js'),
     compress   = require('compression'),
     connect    = require('connect'),
     cors       = require('cors'),
@@ -30,7 +30,7 @@ var Tail       = require('./tail').Tail,
     tcpProxy   = require('tcp-proxy'),
     redis      = require("redis"),
     esession   = require('express-session'),
-    candyStore = require('connect-redis')(esession);
+    candyStore = require('connect-redis')(esession),
     qstring    = require('querystring'),
     request    = require('request'),
     response   = require('response-time'),
@@ -95,12 +95,11 @@ var capabilities       = config.capabilities,
     trust              = config.trust;
 
 // start with a clean slate
-status_queue = []   // not to be confused with quo
+var status_queue = []   // not to be confused with quo
 
 // secret stuff
 var FRIEND_REQUEST_EXPIRES = config.magic_numbers.FRIEND_REQUEST_EXPIRES,
     SHARED_SECRET_BYTES    = config.crypto.SHARED_SECRET_BYTES,
-    SESSION_SIZE_BYTES     = config.crypto.SESSION_SIZE_BYTES,
     REQUEST_BYTES          = config.crypto.REQUEST_BYTES;
 
 // yes, yes, lazy too
@@ -109,17 +108,14 @@ var server           = "",
     ip2d3ck          = {},      // IP mapping to d3ck ID
     // d3ck_status_file = d3ck_home   + '/status.d3ck',
     d3ck_status_file = d3ck_public + '/status.d3ck',
-    d3ck_remote_vpn  = d3ck_public + '/openvpn_server.ip';
+    d3ck_remote_vpn  = d3ck_public + '/openvpn_server.ip',
     d3ck_remote_did  = d3ck_public + '/openvpn_server.did';
-
-// proxy up?
-var d3ck_proxy_up  = false,
-    proxy_server   = "",
-    proxy          = "";
 
 var all_client_ips        = [],
     all_authenticated_ips = [],
-    client_ip             = "";
+    client_ip             = "",
+    server_magic          = {},
+    client_magic          = {}
 
 var vpn_server_status = {}
 var vpn_client_status = {}
@@ -128,6 +124,26 @@ var vpn_client_status = {}
 var d3ck_queue        = []
 
 var time_format = 'MMMM Do YYYY, h:mm:ss a'     // used by moment.js
+
+// user data, password, etc. Secret stuff.
+var secretz = {}
+
+// what the client is using to get to us
+var d3ck_server_ip = ""
+
+//
+// studid hax from studid certs - https://github.com/mikeal/request/issues/418
+//
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+
+// image uploads
+var MAX_IMAGE_SIZE   = config.limits.max_image_size
+
+// file transfers/uploads
+var MAX_UPLOAD_SIZE  = config.limits.max_upload_size
+
+// this many milliseconds to look to see if new data has arrived....
+var PID_POLLING_TIME = config.misc.did_polling_time
 
 //
 // fire up logging
@@ -143,7 +159,7 @@ var log = new (winston.Logger)({
           colorize:  true
       }),
       // log stuff to a real d3ck log file
-      new (winston.transports.File)   ({
+      new (winston.transports.File) ({
           timestamp: function() { // put my stamp on the timestamps
             return moment().format(time_format)
           },
@@ -157,7 +173,128 @@ var log = new (winston.Logger)({
 });
 
 //
-// bubble up to user
+// info about events is stored here.
+//
+// Redis keys will all be lowercase, while D3CKs are all upper case+digits
+//
+function createEvent(ip, event_data, ds) {
+
+    // log.info('in createEvent - ' + ip + ', ' + JSON.stringify(event_data))
+
+    event_data.from  = ip
+    event_data.time  = moment().format(time_format)
+
+    var e_type       = event_data.event_type
+    var e_key        = e_type + ":" + event_data.time
+
+    rclient.set(e_key, JSON.stringify(event_data), function(err) {
+        if (err) {
+            log.error(err, e_type + ' Revent: unable to store in Redis db');
+        } else {
+            // log.info({e_key: event_data}, e_type + ' event : saved');
+        }
+    })
+
+    // eventually this will go to client... if we have any status along
+    // with the event, toss it in the queue
+    if (typeof ds != "undefined") {
+        log.info('adding to client queue: ' + JSON.stringify(ds))
+        q_status(ds)
+    }
+
+}
+
+/**
+ *  lists the types of events
+ */
+function listEvents(req, res, next) {
+
+    var you_nique = []
+
+    rclient.keys('[^A-Z0-9]*', function (err, keys) {
+        if (err) {
+            log.error(err, 'listEvents: unable to retrieve events');
+            next(err);
+        } else {
+            var len = you_nique.length
+            you_nique = __.uniq(__.map(keys, function(p){ return p.substr(0,p.indexOf(":"))}))
+        }
+
+        log.info('Number of Events found: ', len)
+        res.send(200, JSON.stringify(you_nique));
+    })
+
+}
+
+/**
+ *  gets a particular event type's data
+ *
+ */
+function getEvent(req, res, next) {
+
+    if (typeof req.params.key == "undefined") {
+        log.error('type of event required')
+        var reply = {error: "missing required event type"}
+        res.send(400, reply);
+    }
+
+    log.info('getting event: ' + req.params.key)
+
+    var jdata = ''
+
+    // get keys first, then data for all keys
+
+    rclient.keys(req.params.key + '*', function (err, replies) {
+        if (!err) {
+            // log.info(replies)
+            if (replies == null) {
+                log.error(err, 'getEvent: unable to retrieve keys matching %s', req.params.key);
+                // next(new d3ckNotFoundError(req.params.key));
+                next({'error': 'Event Not Found'})
+                res.send(418, replies)  // 418 I'm a teapot (RFC 2324)
+            }
+            else {
+                // log.info("keys retrieved: ")
+                // log.info(replies)
+
+                // get data that matches the keys we just matched
+                rclient.mget(replies, function (err, data) {
+
+                    if (!err) {
+                        // log.info(data)
+                        if (data == null) {
+                            log.error('no data returned with key ', req.params.key);
+                            // next(new d3ckNotFoundError(req.params.key));
+                            next({'error': 'Event data not found'})
+                            res.send(418, data)  // 418 I'm a teapot (RFC 2324)
+                        }
+                        else {
+                            // log.info("event data fetched: " + data.toString());
+                            jdata = data.toString()
+                            // hack it into a json string
+                            jdata = JSON.parse('[{' + jdata.substr(1,jdata.length-1) + ']')
+                            // log.info(jdata)
+                            res.send(200, jdata)
+                        }
+                    }
+                    else {
+                        log.error(err, 'getEvent: unable to retrieve data from keys matching %s', req.params.key);
+                        res.send(418, data);   // 418 I'm a teapot (RFC 2324)
+                    }
+                })
+            }
+
+        }
+        else {
+            log.error(err, 'getEvent: unable to retrieve %s', req.d3ck);
+            res.send(418, reply);   // 418 I'm a teapot (RFC 2324)
+        }
+    })
+
+}
+
+//
+// this bubbles errors up to user through the magic of sockets
 //
 log.on('logging', function (transport, level, msg, meta) {
     if (level == 'error' && transport.name == 'd3ck_console') {
@@ -169,26 +306,6 @@ log.on('logging', function (transport, level, msg, meta) {
 
 // firing up the auth engine
 init_capabilities(capabilities)
-
-// user data, password, etc. Secret stuff.
-var secretz = {}
-
-// what the client is using to get to us
-var d3ck_server_ip    = ""
-
-//
-// studid hax from studid certs - https://github.com/mikeal/request/issues/418
-//
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
-
-// image uploads
-var MAX_IMAGE_SIZE   = config.limits.max_image_size
-
-// file transfers/uploads
-var MAX_UPLOAD_SIZE  = config.limits.max_upload_size
-
-// this many milliseconds to look to see if new data has arrived....
-var PID_POLLING_TIME = config.misc.did_polling_time
 
 // users must run quickstart if they haven't already
 var redirect_to_quickstart = true
@@ -219,7 +336,7 @@ var ip_seen_by_browser = ''
 
 // the last client request did+IP pair we tried...
 // will be [did, ip]
-last_vpn_client_server = ''
+var last_vpn_client_server = ''
 
 //
 // URLs that anyone can contact
@@ -232,21 +349,15 @@ last_vpn_client_server = ''
    'loginFailure',
    'quikstart.html',// no logins have been created yet, so... ;)
 */
-public_routes = config.public_routes
+var public_routes = config.public_routes
 
 ///--- Redis
-rclient = redis.createClient();
+var rclient = redis.createClient();
 
 rclient.on("error", function (err) {
     log.error("Redis client error: " + err);
     process.exit(3)
 });
-
-//
-// file reads to string nodey stuff
-//
-var StringDecoder = require('string_decoder').StringDecoder;
-var decoder       = new StringDecoder('utf8');
 
 // global D3CK ID for this server's D3CK
 try {
@@ -265,15 +376,6 @@ var user_archtypes = ['paranoid', 'moderate', 'trusting']
 
 // for auth/salting/hashing
 var N_ROUNDS = parseInt(config.crypto.bcrypt_rounds)
-
-
-
-
-
-
-
-
-
 
 
 
@@ -526,8 +628,9 @@ function random_cat_fact (facts) {
 //
 function assign_capabilities(_d3ck, new_capabilities) {
 
-    if (typeof _d3ck == "string")
+    if (typeof _d3ck == "string"){
         _d3ck = JSON.parse(_d3ck)
+    }
 
     log.info('assigning capabilities to: ' + _d3ck.D3CK_ID)
 
@@ -654,6 +757,8 @@ function auth(req, res, next) {
 
     var ip = get_client_ip(req)
 
+    console.log(req.headers)
+
     if (!DEBUG && (req.path != '/ping' && req.path.substring(0,6) != '/sping' && req.path != '/q' && req.path != '/status'))    // let's not get carried away ;)
         log.info('got auth?  --> ' + req.path + ' <- ' + ip)
 
@@ -678,7 +783,9 @@ function auth(req, res, next) {
     //
     // log.info("greetings, lumpy proletarian!")
 
-    var open_sesame = false
+    var open_sesame = false,
+        auth_type = '';
+
     // if (__.contains(public_routes, url_bits[1])) {
     __.each(public_routes, function(r) {
         // log.info(r + ' vs. ' + req.path)
@@ -700,14 +807,13 @@ function auth(req, res, next) {
     }
 
     if (open_sesame) {
-        if (req.path != '/ping')    // let's not get carried away ;)
+        if (req.path != '/ping') {   // let's not get carried away ;)
             log.info('public property, anyone can go => ' + req.path)
-
+        }
         return next();
     }
 
-    var url_bits  = req.path.split('/'),
-        auth_type = '';
+    // var url_bits  = req.path.split('/'),
 
     // log.info("hdrz: " + JSON.stringify(req.headers))
 
@@ -772,11 +878,11 @@ passport.deserializeUser(function(id, done) {
 });
 
 // return hash of password on N rounds
-function hashit(password, N_ROUNDS) {
+function hashit(password, rounds) {
 
     // log.info('hashing ' + password)
 
-    var hash = bcrypt.hashSync(password, N_ROUNDS, function(err, _hash) {
+    var hash = bcrypt.hashSync(password, rounds, function(err, _hash) {
         if (err) {
             log.info("hash error: " + err)
             return("")
@@ -853,7 +959,7 @@ function watch_logs(logfile, log_type) {
 
     tail.on("line", function(line) {
 
-        if (line == "" || line == null || typeof line == "undefined") return
+        if (line == "" || line == null || typeof line == "undefined") { return }
 
         // log.info("got line from " + logfile + ":" + line)
 
@@ -869,12 +975,12 @@ function watch_logs(logfile, log_type) {
             magic_server_down1  = "OpenVPN Server lost client",
             magic_server_down2  = "Client Disconnect",
             magic_server_remote = "Peer Connection Initiated",
-            magic_server_rvpn   = "Client Connect :",
+            magic_server_rvpn   = "Client Connect :";
 
-            moment_in_time = moment().format(time_format)
-            moment_in_secs =  (new Date).getTime(),
-            client_remote_ip = "",
-            server_remote_ip = "";
+        var moment_in_time       = moment().format(time_format),
+            moment_in_secs       =  (new Date).getTime(),
+            client_remote_ip     = "",
+            server_remote_ip     = "";
 
         // log.info('moment: ' + moment_in_time + ' : ' + line)
 
@@ -932,7 +1038,7 @@ function watch_logs(logfile, log_type) {
                     stop_s     : "n/a"
                     }
 
-                var browser_magic = { "notify_add":false, "notify_ring":true, "notify_file":true}
+                var browser_magic = { "notify_add": false, "notify_ring": true, "notify_file": true}
                 d3ck_status.browser_events = browser_magic
                 d3ck_status.openvpn_server = server_magic
                 vpn_server_status          = server_magic
@@ -967,7 +1073,7 @@ function watch_logs(logfile, log_type) {
                     stop_s     : moment_in_time
                     }
 
-                var browser_magic = { "notify_add":false, "notify_ring":true, "notify_file":true}
+                var browser_magic = { "notify_add": false, "notify_ring":true, "notify_file":true}
                 d3ck_status.browser_events = browser_magic
                 d3ck_status.openvpn_server = server_magic
                 vpn_server_status          = server_magic
@@ -1019,7 +1125,7 @@ function watch_logs(logfile, log_type) {
                     stop_s     : "n/a"
                     }
 
-                var browser_magic = { "notify_add":true, "notify_ring":true, "notify_file":true}
+                var browser_magic = { "notify_add": true, "notify_ring": true, "notify_file": true}
                 d3ck_status.browser_events = browser_magic
                 d3ck_status.openvpn_client = client_magic
                 vpn_client_status          = client_magic
@@ -1049,7 +1155,7 @@ function watch_logs(logfile, log_type) {
                     stop_s     : moment_in_time
                     }
 
-                var browser_magic = { "notify_add":true, "notify_ring":true, "notify_file":true}
+                var browser_magic = { "notify_add": true, "notify_ring": true, "notify_file": true}
                 d3ck_status.browser_events = browser_magic
                 d3ck_status.openvpn_client = client_magic
                 vpn_client_status          = client_magic
@@ -1092,11 +1198,11 @@ function MissingValueError() {
     this.name = 'MissingValueError';
 }
 
-function d3ckExistsError(key) {
+function d3ckExistsError(ekey) {
     express.RestError.call(this, {
         statusCode: 409,
         restCode: 'd3ckExists',
-        message: key + ' already exists',
+        message: ekey + ' already exists',
         constructorOpt: d3ckExistsError
     });
 
@@ -1104,11 +1210,11 @@ function d3ckExistsError(key) {
 }
 
 
-function d3ckNotFoundError(key) {
+function d3ckNotFoundError(ekey) {
     express.RestError.call(this, {
         statusCode: 404,
         restCode: 'd3ckNotFound',
-        message: key + ' was not found',
+        message: ekey + ' was not found',
         constructorOpt: d3ckNotFoundError
     });
 
@@ -1144,7 +1250,7 @@ function get_client_ip(req) {
         client_ip = req.headers['x-forwarded-for']
     }
     else if (typeof req.ip != "undefined") {
-        if (req.ip.substr(0,7) == '::ffff:') {      // jesus fucking christ, will you stop changing this shit?
+        if (req.ip.substr(0, 7) == '::ffff:') {      // jesus fucking christ, will you stop changing this shit?
             client_ip = req.ip.substr(7)
         }
         else {
@@ -1281,7 +1387,6 @@ function getCapabilities(req, res, next) {
 // }
 //
 var geo_cache_threshold = 60 * 60 * 24
-var old_secz = new Date() / 1000;
 var ip2geo   = []
 
 function getGeo(req, res, next) {
@@ -1415,7 +1520,7 @@ function getDNS (req, res, next) {
 
     var question = dns.Question({
         address: ip,
-        type: 'A',
+        type: 'A'
     });
 
     // cache until can't cache no more (restart)
@@ -1470,7 +1575,34 @@ function getDNS (req, res, next) {
 }
 
 
-all_p33rs = [];
+var all_p33rs = [];
+
+//
+// time stamp for cat chat
+//
+function cat_stamp() {
+    var stamp = new Date()
+    var h     = stamp.getHours()
+    var mins  = stamp.getMinutes()
+    var secs  = stamp.getSeconds()
+    var tz    = stamp.toString().match(/\(([A-Za-z\s].*)\)/)[1]
+
+    // noon... who knows!
+
+    period = "AM"
+
+    if (h > 11)       { period  = "PM" }
+
+    if (h < 10)       { h       = "0" + h    }
+    else if (h >= 12) { h       = h - 12     }
+    if (mins < 10)    { mins    = "0" + mins }
+    if (secs < 10)    { secs    = "0" + secs }
+
+    stamp = '[' + h + ':' + mins + ':' + secs + ' ' + period + ' ' + tz + ']'
+
+    return(stamp)
+}
+
 
 //
 // send a note to a sockio channel ... channel broadcast == broadcast
@@ -1515,33 +1647,6 @@ function cat_power(msg) {
 }
 
 //
-// time stamp for cat chat
-//
-function cat_stamp() {
-    var stamp = new Date()
-    var h     = stamp.getHours()
-    var mins  = stamp.getMinutes()
-    var secs  = stamp.getSeconds()
-    var tz    = stamp.toString().match(/\(([A-Za-z\s].*)\)/)[1]
-
-    // noon... who knows!
-
-    period = "AM"
-
-    if (h > 11)       { period  = "PM" }
-
-    if (h < 10)       { h       = "0" + h    }
-    else if (h >= 12) { h       = h - 12     }
-    if (mins < 10)    { mins    = "0" + mins }
-    if (secs < 10)    { secs    = "0" + secs }
-
-    stamp = '[' + h + ':' + mins + ':' + secs + ' ' + period + ' ' + tz + ']'
-
-    return(stamp)
-}
-
-
-//
 // pour out the latest queue
 //
 function d3ckQueue(req, res, next) {
@@ -1563,7 +1668,7 @@ function d3ckQueue(req, res, next) {
 
     d3ck_queue = [] // not to be confused with quo
 
-    log.info('sending quo... ' + JSON.stringify(quo).substring(0,SNIP_LEN) + ' .... ')
+    log.info('sending quo... ' + JSON.stringify(quo).substring(0, SNIP_LEN) + ' .... ')
 
     res.send(200, quo)
 
@@ -1672,7 +1777,6 @@ function create_cli3nt_rest(req, res, next) {
         secret_obj    = {},
         cli3nt_bundle = {},
         command       = d3ck_bin + '/bundle_certs.js',
-        argz          = [],
         ip_addr       = get_client_ip(req),
         from_d3ck     = '',
         did           = '';
@@ -1752,7 +1856,7 @@ function create_cli3nt_rest(req, res, next) {
     //
 
     // if it's an auth'd user, then they're giving back a response from the user/d3ck
-    if (! req.isAuthenticated() && secret == '') {
+    if (!req.isAuthenticated() && secret == '') {
         log.error("ain't got none auth")
         res.redirect(302, '/login.html')
         return
@@ -1778,18 +1882,18 @@ function create_cli3nt_rest(req, res, next) {
     }
 
     else {
-        log.info('read/writing to ' + d3ck_keystore +'/'+ did + "/_cli3nt.all")
+        log.info('read/writing to ' + d3ck_keystore + '/' + did + "/_cli3nt.all")
 
-        cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ did + "/_cli3nt.json").toString())
+        cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore + '/' + did + "/_cli3nt.json").toString())
 
-        write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
-        write_2_file(d3ck_keystore +'/'+ did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
+        write_2_file(d3ck_keystore + '/' + did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
+        write_2_file(d3ck_keystore + '/' + did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
     }
 
     //
     // if !exist, create their d3ck locally
     //
-    if (!fs.existsSync(d3ck_keystore +'/'+ did + '/' + did + '.json')) {
+    if (!fs.existsSync(d3ck_keystore + '/' + did + '/' + did + '.json')) {
         log.info("Hmm, we don't have their data... try to get it")
 
         // log.info('\n\n\ndisabled for now...\n\n')
@@ -1823,14 +1927,14 @@ function install_client(ip_addr, did, secret) {
 
     var cmd  = d3ck_bin + '/create_client_d3ck.sh'
 
-    argz = [bwana_d3ck.D3CK_ID,
-            bwana_d3ck.image,
-            "\"all_ips\": [" + my_ips + "]",
-            bwana_d3ck.owner.name,
-            bwana_d3ck.owner.email,
-            ip_addr,
-            did,
-            secret]
+    var argz = [bwana_d3ck.D3CK_ID,
+                bwana_d3ck.image,
+                "\"all_ips\": [" + my_ips + "]",
+                bwana_d3ck.owner.name,
+                bwana_d3ck.owner.email,
+                ip_addr,
+                did,
+                secret]
 
     d3ck_spawn_sync(cmd, argz)
 
@@ -1876,14 +1980,13 @@ function cli3nt_into_stone(ip_addr, d3ckid) {
 
     if (keyout.code) {
         log.error("error in create_cli3nt_rest!")
-        res.send(420, { error: "couldn't retrieve client certificates" } )
         return
     }
 
     else {
         log.info('read/writing to ' + d3ck_keystore +'/'+ d3ckid + "/_cli3nt.all")
         try {
-            cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
+            var cli3nt_bundle = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ d3ckid + "/_cli3nt.json").toString())
         }
         catch (e) {
             log.error("couldn't read file -> " + JSON.stringify(e))
@@ -1924,7 +2027,7 @@ function create_d3ck(req, res, next) {
     // says it has... add it in; they may be coming from a NAT or
     // something weird
     if (client_ip != '127.0.0.1') {
-        log.info('looking to see if your current ip (' + client_ip  +') is in your pool')
+        log.info('looking to see if your current ip (' + client_ip  + ') is in your pool')
         if (!__.contains(all_client_ips.all_ips, client_ip)) {
             log.info("[create_d3ck] You're coming from an IP that isn't in your stated IPs... adding [" + client_ip + "] to your IP pool just in case")
             data.all_ips.push(client_ip)
@@ -1974,7 +2077,7 @@ function create_d3ck(req, res, next) {
                         break
                     }
                 }
-                if (! found) {
+                if (!found) {
                     log.info("[create_d3ck] You're coming from an IP that isn't in your stated IPs... adding [" + client_ip + "] to your IP pool just in case")
                     data.all_ips.push(client_ip)
                 }
@@ -2012,7 +2115,7 @@ function create_d3ck_image(data) {
         return
     }
 
-    msg = ""
+    var msg = ""
 
     if (image.size > MAX_IMAGE_SIZE) {
         msg += 'maximum file size is ' + MAX_IMAGE_SIZE + ', upload image size was ' + image.size
@@ -2030,8 +2133,8 @@ function create_d3ck_image(data) {
         msg = 'Invalid suffix (' + suffix + '), only accept: GIF, JPG, and PNG'
     }
 
-    d3ck_image      =               '/img/' + data.D3CK_ID + suffix
-    full_d3ck_image = d3ck_public + '/img/' + data.D3CK_ID + suffix
+    var d3ck_image      = '/img/' + data.D3CK_ID + suffix
+    var full_d3ck_image = d3ck_public + '/img/' + data.D3CK_ID + suffix
 
     if (msg) {
         log.info('err in processing remote image: ' + msg)
@@ -2057,7 +2160,7 @@ function create_d3ck_key_store(data) {
          data = JSON.parse(data)
     }
 
-    log.info(JSON.stringify(data).substring(0,SNIP_LEN) + ' .... ')
+    log.info(JSON.stringify(data).substring(0, SNIP_LEN) + ' .... ')
 
     var ca          = data.vpn.ca.join('\n')
     var key         = data.vpn.key.join('\n')
@@ -2083,7 +2186,7 @@ function create_d3ck_key_store(data) {
 
     log.info('sanity...?')
     log.info(cert_dir + '/' + data.D3CK_ID + '.json')
-    log.info(JSON.stringify(data).substring(0,SNIP_LEN) + ' .... ')
+    log.info(JSON.stringify(data).substring(0, SNIP_LEN) + ' .... ')
 
     try {
         client_cert = data.vpn_client.cert.join('\n')
@@ -2166,12 +2269,13 @@ function delete_d3ck(req, res, next) {
     rclient.del(req.params.key, function (err) {
         if (err) {
             log.error(err, 'delete_d3ck: unable to delete %s', req.params.key)
-deferred.resolve({ip: ip, fqdn : fqdn } )
+            deferred.resolve({status: 'error'})
             next(err);
         } else {
             log.info('delete_d3ck: success deleting %s', req.params.key)
 
             createEvent(get_client_ip(req), {event_type: "delete", d3ck_id: req.params.key})
+
             d3ck_queue.push( {type: 'info', event: 'd3ck_delete', d3ck: req.params.key} )
 
             delete all_d3cks[req.params.key]
@@ -2342,127 +2446,6 @@ function setUDPproxy(req, res, next) {
 
 
 
-
-//
-// info about events is stored here.
-//
-// Redis keys will all be lowercase, while D3CKs are all upper case+digits
-//
-function createEvent(ip, event_data, ds) {
-
-    // log.info('in createEvent - ' + ip + ', ' + JSON.stringify(event_data))
-
-    event_data.from  = ip
-    event_data.time  = moment().format(time_format)
-
-    var e_type       = event_data.event_type
-    var key          = e_type + ":" + event_data.time
-
-    rclient.set(key, JSON.stringify(event_data), function(err) {
-        if (err) {
-            log.error(err, e_type + ' Revent: unable to store in Redis db');
-            next(err);
-        } else {
-            // log.info({key: event_data}, e_type + ' event : saved');
-        }
-    })
-
-    // eventually this will go to client... if we have any status along
-    // with the event, toss it in the queue
-    if (typeof ds != "undefined") {
-        log.info('adding to client queue: ' + JSON.stringify(ds))
-        q_status(ds)
-    }
-
-}
-
-/**
- *  lists the types of events
- */
-function listEvents(req, res, next) {
-
-    var you_nique = []
-
-    rclient.keys('[^A-Z0-9]*', function (err, keys) {
-        if (err) {
-            log.error(err, 'listEvents: unable to retrieve events');
-            next(err);
-        } else {
-            var len = you_nique.length
-            you_nique = __.uniq(__.map(keys, function(p){ return p.substr(0,p.indexOf(":"))}))
-        }
-
-        log.info('Number of Events found: ', len)
-        res.send(200, JSON.stringify(you_nique));
-    })
-
-}
-
-/**
- *  gets a particular event type's data
- *
- */
-function getEvent(req, res, next) {
-
-    if (typeof req.params.key == "undefined") {
-        log.error('type of event required')
-        var reply = {error: "missing required event type"}
-        res.send(400, reply);
-    }
-
-    log.info('getting event: ' + req.params.key)
-
-    // get keys first, then data for all keys
-
-    rclient.keys(req.params.key + '*', function (err, replies) {
-        if (!err) {
-            // log.info(replies)
-            if (replies == null) {
-                log.error(err, 'getEvent: unable to retrieve keys matching %s', req.params.key);
-                // next(new d3ckNotFoundError(req.params.key));
-                next({'error': 'Event Not Found'})
-                res.send(418, replies)  // 418 I'm a teapot (RFC 2324)
-            }
-            else {
-                // log.info("keys retrieved: ")
-                // log.info(replies)
-
-                // get data that matches the keys we just matched
-                rclient.mget(replies, function (err, data) {
-
-                    if (!err) {
-                        // log.info(data)
-                        if (data == null) {
-                            log.error('no data returned with key ', req.params.key);
-                            // next(new d3ckNotFoundError(req.params.key));
-                            next({'error': 'Event data not found'})
-                            res.send(418, data)  // 418 I'm a teapot (RFC 2324)
-                        }
-                        else {
-                            // log.info("event data fetched: " + data.toString());
-                            jdata = data.toString()
-                            // hack it into a json string
-                            jdata = JSON.parse('[{' + jdata.substr(1,jdata.length-1) + ']')
-                            // log.info(jdata)
-                            res.send(200, jdata)
-                        }
-                    }
-                    else {
-                        log.error(err, 'getEvent: unable to retrieve data from keys matching %s', req.params.key);
-                        res.send(418, data);   // 418 I'm a teapot (RFC 2324)
-                    }
-                })
-            }
-
-        }
-        else {
-            log.error(err, 'getEvent: unable to retrieve %s', req.d3ck);
-            res.send(418, reply);   // 418 I'm a teapot (RFC 2324)
-        }
-    })
-
-}
-
 /**
  * Loads a d3ck by key
  */
@@ -2536,17 +2519,19 @@ function echoReply(req, res, next) {
 
     // log.info('is there an echo in here?  ' + client_ip + ' hitting us at ' + d3ck_server_ip)
 
+    var resp = ''
+
     if (typeof bwana_d3ck == "undefined") {
         log.info('no echo here...')
-        var response = {status: "bad"}
+        resp = {status: "bad"}
     }
     else {
         // log.info('echo, echo, echo....')
-        var response = {status: "OK", "name": bwana_d3ck.name, "did": d3ck_id}
+        resp = {status: "OK", "name": bwana_d3ck.name, "did": bwana_d3ck.D3CK_ID}
     }
 
     // res.send(200, response)
-    res.send(response)
+    res.send(resp)
 
 }
 
@@ -2596,23 +2581,25 @@ function stopVPN(req, res, next) {
 
             options.headers = { 'x-d3ckID': bwana_d3ck.D3CK_ID }
 
-            log.info(JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
+            log.info(JSON.stringify(options).substring(0, SNIP_LEN) + ' .... ')
 
             // request.get(url, options, function cb (err, resp) {
             get_https_certified(url, did).then(function (resp) {
 
+                // xxx - need to get err code... 
                 if (err) {
                     log.error('vpn stop request failed:', JSON.stringify(err))
                     res.send(200, {"errz": "vpn stop request failed"});
                     }
+
                 else {
                     log.info('vpn stop request successful...?')
 
                     // this is done by watching logs
                     // createEvent(client_ip, {event_type: "vpn_client_disconnected" })
                     // d3ck_queue.push({type: 'info', event: 'vpn_client_disconnected' })
-
                     res.send(200, {"status": "vpn down"});
+
                 }
             }).catch(function (err) {
                 log.error('vpn-stop err: ' + JSON.stringify(err))
@@ -2675,11 +2662,11 @@ function check_CN(cn, did) {
 
     var argz = ['x509', '-noout', '-subject', '-in', d3ck_keystore +'/'+ did + "/d3ck.crt"]
 
-    var cn   = d3ck_spawn_sync(cmd, argz)
+    cn       = d3ck_spawn_sync(cmd, argz)
 
     // subject= /C=AQ/ST=White/L=D3cktown/O=D3ckasaurusRex/CN=8fd983b93ee52e80ddbf457b5ba8f0ec
 
-    var disk_cn = substring(cn.indexOf('/CN=')+4)
+    var disk_cn = cn.substring(cn.indexOf('/CN=')+4)
 
     log.info('cn vs. cn on disk: ' + cn + ' <=> ' + disk_cn)
 
@@ -2713,8 +2700,8 @@ function load_up_cc_cert(did) {
 
     var certz = {
         // ca      : fs.readFileSync(d3ck_keystore +'/'+ ip2d3ck[ip] + "/d3ckroot.crt").toString(),
-        key     : fs.readFileSync(d3ck_keystore +'/'+ did + "/d3ck.key").toString(),
-        cert    : fs.readFileSync(d3ck_keystore +'/'+ did + "/d3ck.crt").toString(),
+        key     : fs.readFileSync(d3ck_keystore + '/' + did + "/d3ck.key").toString(),
+        cert    : fs.readFileSync(d3ck_keystore + '/' + did + "/d3ck.crt").toString()
     };
     return(certz)
 
@@ -2726,20 +2713,24 @@ function load_up_cert_by_ip(ip) {
 
     var certz = {
         // ca      : fs.readFileSync(d3ck_keystore +'/'+ ip2d3ck[ip] + "/d3ckroot.crt").toString(),
-        key     : fs.readFileSync(d3ck_keystore +'/'+ ip2d3ck[ip] + "/d3ck.key").toString(),
-        cert    : fs.readFileSync(d3ck_keystore +'/'+ ip2d3ck[ip] + "/d3ck.crt").toString(),
+        key     : fs.readFileSync(d3ck_keystore + '/' + ip2d3ck[ip] + "/d3ck.key").toString(),
+        cert    : fs.readFileSync(d3ck_keystore + '/' + ip2d3ck[ip] + "/d3ck.crt").toString()
     };
+
     return(certz)
+
 }
 
-function load_up_cert_by_did(d3ck) {
+function load_up_cert_by_did(c_d3ck) {
 
-    log.info('loading up client cert by did for ' + d3ck)
+    log.info('loading up client cert by did for ' + c_d3ck)
+
     var certz = {
         // ca      : fs.readFileSync(d3ck_keystore +'/'+ d3ck + "/d3ckroot.crt").toString(),
-        key     : fs.readFileSync(d3ck_keystore +'/'+ d3ck + "/d3ck.key").toString(),
-        cert    : fs.readFileSync(d3ck_keystore +'/'+ d3ck + "/d3ck.crt").toString(),
+        key     : fs.readFileSync(d3ck_keystore + '/' + c_d3ck + "/d3ck.key").toString(),
+        cert    : fs.readFileSync(d3ck_keystore + '/' + c_d3ck + "/d3ck.crt").toString()
     };
+
     return(certz)
 
 }
@@ -2942,7 +2933,7 @@ function serviceRequest(req, res, next) {
     log.info(d3ckid)
     log.info(ip_addr)
 
-    log.info('bboddy: ' + JSON.stringify(req.body).substring(0,SNIP_LEN) + ' .... ')
+    log.info('bboddy: ' + JSON.stringify(req.body).substring(0, SNIP_LEN) + ' .... ')
 
     // if it's us... no worries
     if (typeof ip_addr != 'undefined' && typeof ip2d3ck[ip_addr] == 'undefined') {
@@ -3018,7 +3009,7 @@ function serviceRequest(req, res, next) {
         options.form.from_d3ck = from_d3ck
         options.form.from      = bwana_d3ck.owner.name
 
-        log.info(JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
+        log.info(JSON.stringify(options).substring(0, SNIP_LEN) + ' .... ')
 
         var d3ck_request    = {
             knock      : true,
@@ -3048,7 +3039,7 @@ function serviceRequest(req, res, next) {
                 // log.info(res)
 
                 if (resp.statusCode != 200) {
-                    d3ck_queue.push({type: 'info', event: 'service_request_return', service: service, statusCode: resp.statusCode , 'd3ck_status': d3ck_status})
+                    d3ck_queue.push({type: 'info', event: 'service_request_return', service: service, statusCode: resp.statusCode, 'd3ck_status': d3ck_status})
                     log.info(resp.body)
                     res.send(resp.statusCode, resp.body)
                 }
@@ -3074,13 +3065,13 @@ function serviceRequest(req, res, next) {
         }
 
         // are we allowed?
-        if (! look_up_cap(service, d3ckid)) {
+        if (!look_up_cap(service, d3ckid)) {
             log.error("you're not allowed, rejected!")
             return
         }
 
         // sanity check
-        if (! check_certificate(req.headers)) {
+        if (!check_certificate(req.headers)) {
             log.error("wait a minute... you ain't who you say you are!")
             return
         }
@@ -3224,7 +3215,7 @@ function serviceResponse(req, res, next) {
 
     log.info("who is it going to...? " + req.params.d3ckid)
     log.info("you say... " + req.params.answer)
-    log.info("nice body!  " + JSON.stringify(req.body).substring(0,SNIP_LEN) + ' .... ')
+    log.info("nice body!  " + JSON.stringify(req.body).substring(0, SNIP_LEN) + ' .... ')
 
     var ip = get_client_ip(req)
 
@@ -3240,6 +3231,9 @@ function serviceResponse(req, res, next) {
     var service = req.body.service,
         ip_addr = req.body.from_ip,
         req_id  = req.body.req_id;
+
+
+    var options = {}
 
 
     // need a request ID to associate it with a given request
@@ -3291,8 +3285,6 @@ function serviceResponse(req, res, next) {
         // go through the various known services... which one...?
         //
         if (service == 'VPN') {
-
-            var options = {}
 
             var extras  = {}
 
@@ -3380,7 +3372,7 @@ function serviceResponse(req, res, next) {
         // d3ck_queue.push({type: 'info', event: 'service_request', service: service, 'd3ck_status': d3ck_status})
         d3ck_queue.push({type: 'info', event: 'service_request', 'd3ck_status': d3ck_status})
 
-        var options = load_up_cc_cert(d3ckid)
+        options = load_up_cc_cert(d3ckid)
 
         // options.form = { ip_addr : d3ck_server_ip, did: bwana_d3ck.D3CK_ID, did_from: d3ckid }
         options.form = req.body
@@ -3426,7 +3418,7 @@ function friend_request(req, res, next) {
         typeof from_ip   === "undefined" ||
         typeof from_d3ck === "undefined" ||
         typeof ip_addr   === "undefined") {
-            log.error('missing one of: d3ckid, secret, from-ip, from-d3ck, or ip addr:', JSON.stringify(err))
+            log.error('missing one of: d3ckid, secret, from-ip, from-d3ck, or ip addr')
             res.send(400, { emotion: 'you suck' })
             return
     }
@@ -3469,7 +3461,7 @@ function friend_request(req, res, next) {
         }
         else {
             _tmp_d3ck = req.body.d3ck_data
-            log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0,SNIP_LEN) + ' .... ')
+            log.info('remote d3ck_data ' + JSON.stringify(req.body.d3ck_data).substring(0, SNIP_LEN) + ' .... ')
         }
 
         // if the IP we get the add from isn't in the ips the other d3ck
@@ -3479,7 +3471,7 @@ function friend_request(req, res, next) {
         var ip = get_client_ip(req)
 
         log.info('looking 2 see if your current ip is the same as what you use')
-        if (! _tmp_d3ck.ip_addr != ip) {
+        if (!_tmp_d3ck.ip_addr != ip) {
             log.info("You're coming from an IP that isn't the same... setting " + ip + " to your IP addr so we can talk to you...?")
             _tmp_d3ck.ip_addr = ip
         }
@@ -3510,7 +3502,7 @@ function friend_request(req, res, next) {
         // don't need to log it, but client might/will want it
         d3ck_request.d3ck_data = _tmp_d3ck
 
-        d3ck_queue.push({type: 'request', event: 'friend request' , 'd3ck_status': d3ck_status })
+        d3ck_queue.push({type: 'request', event: 'friend request', 'd3ck_status': d3ck_status })
 
 
         log.info('sending back... <3!!!')
@@ -3554,7 +3546,7 @@ function friend_response(req, res, next) {
 
     log.info('... an answer to friend request...?')
 
-    log.info(JSON.stringify(req.body).substring(0,SNIP_LEN) + ' .... ')
+    log.info(JSON.stringify(req.body).substring(0, SNIP_LEN) + ' .... ')
 
     if (typeof answer === "undefined")
         log.error('answer')
@@ -3585,7 +3577,7 @@ function friend_response(req, res, next) {
     //
     // if came from d3ck, not user
     //
-    if (! req.isAuthenticated()) {
+    if (!req.isAuthenticated()) {
 
         log.info('friend request response...?')
 
@@ -3600,7 +3592,7 @@ function friend_response(req, res, next) {
         }
         else {
             _tmp_d3ck = req.body.d3ck_data
-            log.info("writing remote d3ck's certs they sent... : " + JSON.stringify(_tmp_d3ck).substring(0,SNIP_LEN) + ' .... ')
+            log.info("writing remote d3ck's certs they sent... : " + JSON.stringify(_tmp_d3ck).substring(0, SNIP_LEN) + ' .... ')
         }
 
         log.info('going in to create client schtuff....')
@@ -3672,7 +3664,7 @@ function friend_response(req, res, next) {
         else {
             log.info('reading ' + d3ck_keystore +'/'+ from_d3ck + "/_cli3nt.all")
             try {
-                d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore +'/'+ from_d3ck + "/_cli3nt.json").toString())
+                d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore + '/' + from_d3ck + "/_cli3nt.json").toString())
             }
             catch (e) {
                 log.error("couldn't read -> " + JSON.stringify(e))
@@ -3688,7 +3680,7 @@ function friend_response(req, res, next) {
             log.info("\n\t\t!\t" + ip_addr + ' -> ' + JSON.stringify(d3ck_data.all_ips))
         }
 
-        log.info('local d3ck read in... with: ' + JSON.stringify(d3ck_data).substring(0,SNIP_LEN) + ' .... ')
+        log.info('local d3ck read in... with: ' + JSON.stringify(d3ck_data).substring(0, SNIP_LEN) + ' .... ')
 
         var url = 'https://' + ip_addr + ':' + d3ck_port_ext + '/fri3nd/response'
 
@@ -3708,7 +3700,7 @@ function friend_response(req, res, next) {
             secret    : secret,
             from_d3ck : from_d3ck,
             from_ip   : ip_addr,
-            did       : bwana_d3ck.D3CK_ID,
+            did       : bwana_d3ck.D3CK_ID
         }
 
         d3ck_status.d3ck_requests = d3ck_response
@@ -3851,7 +3843,7 @@ function uploadSchtuff(req, res, next) {
                 direction : "local"
             }
 
-            var browser_magic = { "notify_add":true, "notify_ring":false, "notify_file":true}
+            var browser_magic = { "notify_add": true, "notify_ring": false, "notify_file": true}
 
             d3ck_status.browser_events = browser_magic
 
@@ -4044,8 +4036,8 @@ function d3ck_spawn_sync(command, argz) {
     // log.info('stdout + stderr ' + result.stdout);
 
     try {
-        out = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.out.log', result.stdout)
-        err = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g,'/').replace( /.*\//, '' )  + '.err.log', result.stderr)
+        var out = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g, '/').replace( /.*\//, '' )  + '.out.log', result.stdout)
+        var err = fs.appendFileSync(d3ck_logs + '/' + command.replace(/\\/g, '/').replace( /.*\//, '' )  + '.err.log', result.stderr)
     }
     catch (e) {
         log.error("error writing log file with " + command + ' => ' + e.message)
@@ -4177,7 +4169,10 @@ function forward_port(req, res, next) {
 function forward_port_and_flush(local_port, remote_ip, remote_port, proto) {
 
     log.info('... skipping iptables for now... using proxy here instead...')
-    return
+
+    return // took it out
+
+
 
     log.info('flushing iptables+routes, adding... ', local_port, remote_ip, remote_port, proto)
 
@@ -4787,7 +4782,7 @@ function create_d3ck_by_ip(req, res, next) {
         log.info('local install stuff')
 
         log.info('knocking @ ' + url)
-        log.info('with: ' + JSON.stringify(options).substring(0,SNIP_LEN) + ' .... ')
+        log.info('with: ' + JSON.stringify(options).substring(0, SNIP_LEN) + ' .... ')
 
         // push our data to remote d3ck, see what they say
         request.post(options, function cb (e, r, body) {
@@ -5013,7 +5008,7 @@ __.each(__.keys(ifaces), function(dev) {
         log.info(details)
         if (details.family=='IPv4') {
             log.info(details)
-            my_net[details.address] = dev+(alias?':'+alias:'')
+            my_net[details.address] = dev+(alias ? ':' + alias: '')
             // log.info(dev+(alias?':'+alias:''),details.address)
             ++alias
             my_devs[dev] = details.address
@@ -5123,17 +5118,15 @@ log.info('\n\n---> finally starting server stuff <---\n')
 ///
 ///
 
-// Cert stuff
-var key  = fs.readFileSync("/etc/d3ck/d3cks/D3CK/d3ck.key")
-var cert = fs.readFileSync("/etc/d3ck/d3cks/D3CK/d3ck.crt")
-var ca   = fs.readFileSync("/etc/d3ck/d3cks/D3CK/ca.crt")
-
-var credentials = {key: key, cert: cert, ca: ca}
-
-
 //
 // all the below is null and void, given that I moved all this crap to nginx, fuck you crypto folks
 //
+
+// Cert stuff
+// var key  = fs.readFileSync("/etc/d3ck/d3cks/D3CK/d3ck.key")
+// var cert = fs.readFileSync("/etc/d3ck/d3cks/D3CK/d3ck.crt")
+// var ca   = fs.readFileSync("/etc/d3ck/d3cks/D3CK/ca.crt")
+// var credentials = {key: key, cert: cert, ca: ca}
 
         //
         // Ciphers... is a bit mysterious.
@@ -5165,7 +5158,7 @@ var credentials = {key: key, cert: cert, ca: ca}
         // security... or make it the default ;(
         //
 
-var server_options = {
+// var server_options = {
     // key                 : key,
     // cert                : cert,
     // ca                  : ca,
@@ -5177,7 +5170,7 @@ var server_options = {
     // requestCert         : true,
     // rejectUnauthorized  : false,
     // strictSSL           : false
-}
+// }
 
 server = express()
 
@@ -5557,7 +5550,7 @@ io_sig.on('connection', function(ss_client) {
 
     ss_client.room = room
 
-    var server_sockid = io_sig.id
+    // var server_sockid = io_sig.id
 
     ss_client.resources = {
         screen: false,
