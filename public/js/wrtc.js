@@ -312,20 +312,20 @@ maybeStart = function() {
     }
 };
 
+// FF handler to prevent dying
+// https://bitbucket.org/webrtc/codelab/issue/9/call-from-firefox-to-chrome-does-not-work
+function handleCreateError(error) { console.log('createAnswer() error: ', e); }
+
 doCall = function () {
  var constraints = mergeConstraints(offerConstraints, sdpConstraints);
     console.log('Sending offer to peer, with constraints: \n' + JSON.stringify(constraints));
-    pc.createOffer(setLocalAndSendMessage, null, constraints);
+    pc.createOffer(setLocalAndSendMessage, handleCreateError, constraints);
 };
-
-// FF handler to prevent dying
-// https://bitbucket.org/webrtc/codelab/issue/9/call-from-firefox-to-chrome-does-not-work
-function handleCreateAError(error) { console.log('createAnswer() error: ', e); }
 
 doAnswer = function () {
   console.log("Sending answer to peer.");
   // added handler for FF
-  pc.createAnswer(setLocalAndSendMessage, handleCreateAError, sdpConstraints);
+  pc.createAnswer(setLocalAndSendMessage, handleCreateError, sdpConstraints);
 };
 
 mergeConstraints = function (cons1, cons2) {
