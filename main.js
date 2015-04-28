@@ -5544,106 +5544,101 @@ var connections = new Array();
 /**
  * When a user connects
  */
-io_sig.on('connection', function(client) {
+io_sig.on('connection', function(ss_client) {
 
     log.info('connex!')
 
     var guest = false;
     var room = 'd3ck';
 
+    ss_client.room = room
+
     var server_sockid = io_sig.id
 
-    io_sig.sockets.on('connection', function (ss_client) {
+    ss_client.resources = {
+        screen: false,
+        video: true,
+        audio: false
+    };
     
-        log.info("CONNEEEEECTION.....!")
-        // log.info(ss_client)
+    // pass a message to another id
+    ss_client.on('message', function (data) {
     
-        ss_client.resources = {
-            screen: false,
-            video: true,
-            audio: false
-        };
-    
-        // pass a message to another id
-        ss_client.on('message', function (data) {
-    
-            log.info('from: ' + ss_client.handshake.headers.referer)
-            log.info('mess: ' + JSON.stringify(data))
-    
-            data.from = ss_client.id;
+        log.info('from: ' + ss_client.handshake.headers.referer)
+        log.info('mess: ' + JSON.stringify(data))
 
-            // look for other connected d3cks
-            // log.warn(ss_client.in('d3ck'))
-            ss_client.broadcast.to('d3ck').emit('message', data)
-    
-        });
-    
-    
-        // all import cat chat!
-        ss_client.on('cat_chat', function (kitten) {
-    
-            log.info('A kitten? For me? ' + JSON.stringify(kitten))
-    
-            // if (!kitten) return;
-            // if (!otherClient) return;
-    
-            kitten.from = ss_client.id;
-    
-            log.info('sending free kittens from... ' + ss_client.id)
-    
-            // log.info(ss_client)
-    
-            for (var cat_client in io_sig.sockets.sockets) {
-                log.info('sending to... ' + JSON.stringify(cat_client))
-                // log.info('sending to... ' )
-                // var c = io_sig.sockets.sockets[
-                io_sig.sockets.sockets[cat_client].emit('cat_chat', kitten);
-            }
-    
-        });
-    
-        function removeFeed(type) {
-            return // xxx - just checking....
-    
-            log.info('ss-remove-feed')
-            if (ss_client.room) {
-                io_sig.sockets.in(ss_client.room).emit('remove', {
-                    id: ss_client.id,
-                    type: type
-                });
-                if (!type) {
-                    ss_client.leave(ss_client.room);
-                    ss_client.room = undefined;
-                }
+        data.from = ss_client.id;
+
+        // look for other connected d3cks
+        // log.warn(ss_client.in('d3ck'))
+        ss_client.broadcast.to('d3ck').emit('message', data)
+
+    });
+
+
+    // all import cat chat!
+    ss_client.on('cat_chat', function (kitten) {
+
+        log.info('A kitten? For me? ' + JSON.stringify(kitten))
+
+        // if (!kitten) return;
+        // if (!otherClient) return;
+
+        kitten.from = ss_client.id;
+
+        log.info('sending free kittens from... ' + ss_client.id)
+
+        // log.info(ss_client)
+
+        for (var cat_client in io_sig.sockets.sockets) {
+            log.info('sending to... ' + JSON.stringify(cat_client))
+            // log.info('sending to... ' )
+            // var c = io_sig.sockets.sockets[
+            io_sig.sockets.sockets[cat_client].emit('cat_chat', kitten);
+        }
+
+    });
+
+    function removeFeed(type) {
+        return // xxx - just checking....
+
+        log.info('ss-remove-feed')
+        if (ss_client.room) {
+            io_sig.sockets.in(ss_client.room).emit('remove', {
+                id: ss_client.id,
+                type: type
+            });
+            if (!type) {
+                ss_client.leave(ss_client.room);
+                ss_client.room = undefined;
             }
         }
-    
-        ss_client.on('join', function(join) {
-            log.info('joining... ')
-            log.info('j-from: ' + ss_client.handshake.headers.referer)
-            log.info(ss_client.id)
-            ss_client.join('d3ck')
-        })
-    
-        // we don't want to pass "leave" directly because the
-        // event type string of "socket end" gets passed too.
-        ss_client.on('disconnect', function () {
-            log.info('ss-D/C')
-            ss_client.leave('d3ck')
-            // removeFeed();
-        });
+    }
 
-        ss_client.on('leave', function () {
-            log.info('ss-leave')
-            ss_client.leave('d3ck')
-        });
-    
-        ss_client.on('create', function (create) {
-            log.info('ss-create & j-from: ' + ss_client.handshake.headers.referer)
-            log.info(ss_client.id)
-            ss_client.join('d3ck')
-        });
+    ss_client.on('join', function(join) {
+        log.info('joining... ')
+        log.info('j-from: ' + ss_client.handshake.headers.referer)
+        log.info(ss_client.id)
+        ss_client.join('d3ck')
+    })
 
+    // we don't want to pass "leave" directly because the
+    // event type string of "socket end" gets passed too.
+    ss_client.on('disconnect', function () {
+        log.info('ss-D/C')
+        ss_client.leave('d3ck')
+        // removeFeed();
+    });
+
+    ss_client.on('leave', function () {
+        log.info('ss-leave')
+        ss_client.leave('d3ck')
+    });
+
+    ss_client.on('create', function (create) {
+        log.info('ss-create & j-from: ' + ss_client.handshake.headers.referer)
+        log.info(ss_client.id)
+        ss_client.join('d3ck')
     });
 
 
