@@ -318,9 +318,14 @@ doCall = function () {
     pc.createOffer(setLocalAndSendMessage, null, constraints);
 };
 
+// FF handler to prevent dying
+// https://bitbucket.org/webrtc/codelab/issue/9/call-from-firefox-to-chrome-does-not-work
+function handleCreateAError(error) { console.log('createAnswer() error: ', e); }
+
 doAnswer = function () {
   console.log("Sending answer to peer.");
-  pc.createAnswer(setLocalAndSendMessage, null, sdpConstraints);
+  // added handler for FF
+  pc.createAnswer(setLocalAndSendMessage, handleCreateAError, sdpConstraints);
 };
 
 mergeConstraints = function (cons1, cons2) {
