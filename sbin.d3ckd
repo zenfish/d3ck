@@ -89,13 +89,13 @@ if [ ! -d $d3ck_keystore -o ! -h $d3ck_keystore ] ; then
 
     ./exe/init_d3ck.sh $did img $ip "$($D3CK_HOME/exe/get_net.sh)" Ms_D3CK d3ck@example.com
 
-    NODE_PATH="$D3CK_HOME/" node main.js &
+    DEBUG=socket.io:* NODE_PATH="$D3CK_HOME/" node main.js &
 
 else
     cp $d3ck_keystore/d3ck.did $D3CK_HOME/public/d3ck.did
 
     # if not started above, do so now
-    NODE_PATH="$D3CK_HOME/" node main.js &
+    DEBUG=socket.io:* NODE_PATH="$D3CK_HOME/" node main.js &
 
 fi
 

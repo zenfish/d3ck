@@ -230,8 +230,8 @@ openChannel = function() {
 
   // connection = new WebSocket('ws://lucky:7771');
 
-  // Create SocketIO instance, connect
-  socket = new io.connect(window.location.hostname)
+  // connect!
+  socket = io('/d3ck');
 
   // Add a connect listener
   socket.on('connect',function() {
