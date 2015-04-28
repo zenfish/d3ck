@@ -5537,7 +5537,9 @@ log.info('\n\nfiring up sprockets... trying... to set up... on port ' + d3ck_por
 io_sig = require('socket.io').listen(d3cky)
 
 // ... just... fuck it all
-io.set('Origin':'*')
+io_sig.set('origins', '*:*');
+
+
 
 /**
  * Declare the variable connections for rooms and users
