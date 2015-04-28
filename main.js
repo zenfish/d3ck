@@ -5191,7 +5191,7 @@ server.use(express.urlencoded());
 
 // server.use(express.multipart()); //deprecated
 
-server.use(cors());
+// server.use(cors());
 
 // passport/auth stuff
 server.use(express.cookieParser());
