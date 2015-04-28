@@ -757,7 +757,7 @@ function auth(req, res, next) {
 
     var ip = get_client_ip(req)
 
-    console.log(req.headers)
+    // console.log(req.headers)
 
     if (!DEBUG && (req.path != '/ping' && req.path.substring(0,6) != '/sping' && req.path != '/q' && req.path != '/status'))    // let's not get carried away ;)
         log.info('got auth?  --> ' + req.path + ' <- ' + ip)
