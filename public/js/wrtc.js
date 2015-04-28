@@ -231,7 +231,8 @@ openChannel = function() {
   // connection = new WebSocket('ws://lucky:7771');
 
   // Create SocketIO instance, connect
-  socket = new io.connect(window.location.hostname)
+  // socket = new io.connect(window.location.hostname)
+  socket = new io.connect()
 
   // Add a connect listener
   socket.on('connect',function() {
