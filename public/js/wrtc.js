@@ -599,7 +599,7 @@ onRemoteStreamAdded = function(event) {
     attachMediaStream(remoteVideo[0], event.stream);
     remoteVideo.css("opacity", "1");
     $("#remotelive").removeClass('hide');
-    setStatus("<div class=\"alert alert-success\">... video conference... <button id=\"hangup\" class=\"btn btn-mini btn-danger pull-right\" onclick=\"onHangup()\">Hang Up</button></div>");
+    setStatus("<div class=\"alert alert-success\">")
 };
 
 onIceCandidate = function(event) {

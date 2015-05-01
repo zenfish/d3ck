@@ -47,11 +47,9 @@ video { width: 350px; height: 200px; }
 .d3ck_img {
     display: block;
     /* cards are about 3.5 x 2.25 (2.5 for poker) */
-    max-width:  250px;
-    max-height: 200px;
+    max-width:  180px;
+    max-height: 180px;
     padding: 4;
-    width: auto;
-    height: auto;
 }
 
 .glyph_badge {
@@ -257,13 +255,12 @@ div.growlUI h1, div.growlUI h2 {
 .dragDropBox{
     position:relative;
     display:block;
-    min-height: 100px;
-    width:220;
+    width:auto;
     background-color:#f3f3f3;
     border:2px dashed #aaa;
     text-align: center;
     vertical-align: middle;
-    line-height: 100px; 
+    line-height: 50px; 
 }
 
 /*
@@ -313,7 +310,6 @@ div.growlUI h1, div.growlUI h2 {
 /* http://designshack.net/articles/css/4-fun-css-image-effects-you-can-copy-and-paste/ */
 .polaroid {
   position: relative;
-  width: 220px;
 }
  
 .polaroid img {

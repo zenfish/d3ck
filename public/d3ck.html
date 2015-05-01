@@ -86,7 +86,7 @@
 
 <body>
 
-    <div class="container">
+    <div class="container" style="width: auto">
 
         <nav class="navbar navbar-default zenlarge" role="navigation">
 
@@ -118,7 +118,7 @@
 
                 <li> <a href="#messages" data-toggle="tab"><span id="d3ck_top_messages" title="Messages" data-content="Message center: notes, files, and events" class="glyphicon glyphicon-envelope"></span></a></li>
     
-                <li> <a href="#rtc_hack"><span id="d3ck_video" title="VPN" data-content="Voice-n-Vid" class="glyphicon glyphicon-facetime-video"></span></a></li>
+                <li> <a href="#"><span id="d3ck_video" title="VPN" data-content="Voice-n-Vid" class="glyphicon glyphicon-facetime-video"></span></a></li>
                 <!-- <li> <a target="_blank" id="click_d3ck_video" href="/arrr"><span id="d3ck_video" title="VPN" data-content="Voice-n-Vid" class="glyphicon glyphicon-facetime-video"></span></a></li> -->
 
                 </ul>
@@ -207,7 +207,7 @@
             <div class="tab-pane fade in active" id="home">
     
 
-                    <div class="col-md-3" id="d3ck_friends">
+                    <div class="col-md-2" id="d3ck_friends">
 
                         <div class="muted">
                             <h3><a href="#modalD3ck" role="button" class="btn btn-primary btn-xs" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span></a> Friends</h3>
@@ -221,36 +221,14 @@
 
                     </div>
 
-                    <div class="col-md-1"></div>
-
-                    <div class="col-md-8">
-
                     <!-- Web RTC stuff -->
 
                     <div id="rtc_hack">
 
-                        <div class="row-fluid">
-
                             <div class="col-md-6">
-                              <!-- Local Video -->
-                              <div class="row-fluid">
-                                <div style="position: relative;" class="span12">
-                                  <h3 align="left" class="hidden video_text text-muted">Local</h3>
-                                  <span id="locallive" class="live hide">LIVE</span>
-                                  <video width="100%" height="100%" id="localVideo" autoplay="autoplay"
-                                  style="opacity: 0;
-                                  -webkit-transition-property: opacity;
-                                  -webkit-transition-duration: 2s;">
-                                  </video>
-                                </div>
-                              </div>
-                              <!-- End of Local Video -->
-                            </div>
-
-                            <div class="col-md-2">
                               <!-- Remote Video -->
                               <div class="row-fluid">
-                                <div style="position: relative;" class="span12">
+                                <div style="position: relative;">
                                   <h3 align="left" class="hidden video_text text-muted">Remote</h3>
                                   <span id="remotelive" class="live hide">LIVE</span>
                                   <video width="100%" height="100%" id="remoteVideo" autoplay="autoplay"
@@ -263,9 +241,26 @@
                               <!-- End of Remote Video -->
                             </div>
 
+                            <div class="col-md-4">
+                              <!-- Local Video -->
+                              <div class="row-fluid">
+                                <div style="position: relative;">
+                                  <h3 align="left" class="hidden video_text text-muted">Local</h3>
+                                  <span id="locallive" class="live hide">LIVE</span>
+                                  <video width="100%" height="100%" id="localVideo" autoplay="autoplay"
+                                  style="opacity: 0;
+                                  -webkit-transition-property: opacity;
+                                  -webkit-transition-duration: 2s;">
+                                  </video>
+                                </div>
+                              </div>
+                              <!-- End of Local Video -->
+                            </div>
 
                         <!-- Status of the visio call -->
                         <div id="footer"></div>
+
+                    </div>  <!-- rtc hack -->
 
                 </div>
     

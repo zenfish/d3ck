@@ -1433,7 +1433,7 @@ function drag_and_d3ck(safe_id, d3ckid, ip) {
     var ele = '#dragDropBox_' + safe_ip
 
     $('#' + safe_id).filer({
-        changeInput: '<div class="dragDropBox" id="dragDropBox_' + safe_ip + '"><span class="message">CLICK -or- DROP files to upload</span></div>',
+        changeInput: '<div class="dragDropBox" id="dragDropBox_' + safe_ip + '"><span class="message">CLICK -or- DROP files</span></div>',
         appendTo   : ele,
         extensions : null,
         template   : '<img src="%image-url%" title="%original-name%" /><em>%title%</em>',
