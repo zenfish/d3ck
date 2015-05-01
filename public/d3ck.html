@@ -206,20 +206,67 @@
         <!-- d3cks -->
             <div class="tab-pane fade in active" id="home">
     
-                <div class="row-fluid marketing" id="d3ck_friends">
-                    <div class="muted">
-                        <h3><a href="#modalD3ck" role="button" class="btn btn-primary btn-xs" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span></a> Friends</h3>
-                    </div>
+
+                    <div class="col-md-3" id="d3ck_friends">
+
+                        <div class="muted">
+                            <h3><a href="#modalD3ck" role="button" class="btn btn-primary btn-xs" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span></a> Friends</h3>
+                        </div>
         
-                    <!-- spinner when loading d3cks -->
-                    <div id="d3ck_loading" class="spinner">
-                        <div class="double-bounce1"></div>
-                        <div class="double-bounce2"></div>
+                        <!-- spinner when loading d3cks -->
+                        <div id="d3ck_loading" class="spinner">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                        </div>
+
                     </div>
 
-                    <div id="d3ck_cors">
-                    </div>
-    
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-8">
+
+                    <!-- Web RTC stuff -->
+
+                    <div class="fade" id="new_rtc_hack">
+
+                        <div class="row-fluid">
+
+                            <div class="col-md-6">
+                              <!-- Local Video -->
+                              <div class="row-fluid">
+                                <div style="position: relative;" class="span12">
+                                  <h3 align="left" class="text-muted">Local</h3>
+                                  <span id="locallive" class="live hide">LIVE</span>
+                                  <video width="100%" height="100%" id="localVideo" autoplay="autoplay"
+                                  style="opacity: 0;
+                                  -webkit-transition-property: opacity;
+                                  -webkit-transition-duration: 2s;">
+                                  </video>
+                                </div>
+                              </div>
+                              <!-- End of Local Video -->
+                            </div>
+
+                            <div class="col-md-2">
+                              <!-- Remote Video -->
+                              <div class="row-fluid">
+                                <div style="position: relative;" class="span12">
+                                  <h3 align="left" class="text-muted">Remote</h3>
+                                  <span id="remotelive" class="live hide">LIVE</span>
+                                  <video width="100%" height="100%" id="remoteVideo" autoplay="autoplay"
+                                  style="opacity: 0;
+                                  -webkit-transition-property: opacity;
+                                  -webkit-transition-duration: 2s;">
+                                  </video>
+                                </div>
+                              </div>
+                              <!-- End of Remote Video -->
+                            </div>
+
+
+                        <!-- Status of the visio call -->
+                        <div id="footer"></div>
+
                 </div>
     
             </div>
@@ -535,98 +582,6 @@
 
                 </div>
             </div>
-
-
-            <!-- Web RTC stuff -->
-
-            <div class="tab-pane fade" id="rtc_hack">
-
-
-                <div class="row-fluid">
-
-                    <div class="col-md-6">
-                      <!-- Local Video -->
-                      <div class="row-fluid">
-                        <div style="position: relative;" class="span12">
-                          <h3 align="left" class="text-muted">Local</h3>
-                          <span id="locallive" class="live hide">LIVE</span>
-                          <video width="100%" height="100%" id="localVideo" autoplay="autoplay"
-                          style="opacity: 0;
-                          -webkit-transition-property: opacity;
-                          -webkit-transition-duration: 2s;">
-                          </video>
-                        </div>
-                      </div>
-                      <!-- End of Local Video -->
-                    </div>
-
-                    <div class="col-md-6">
-                      <!-- Remote Video -->
-                      <div class="row-fluid">
-                        <div style="position: relative;" class="span12">
-                          <h3 align="left" class="text-muted">Remote</h3>
-                          <span id="remotelive" class="live hide">LIVE</span>
-                          <video width="100%" height="100%" id="remoteVideo" autoplay="autoplay"
-                          style="opacity: 0;
-                          -webkit-transition-property: opacity;
-                          -webkit-transition-duration: 2s;">
-                          </video>
-                        </div>
-                      </div>
-                      <!-- End of Remote Video -->
-                    </div>
-
-                <!-- Status of the visio call -->
-                <div id="footer"></div>
-
-                        <div class="col-md-5">
-                            <!-- little hack for fun -->
-                            <span id="video_effect_div" class="hidden">
-                              <select id="video_effect"  class="textbox">
-                                <option><b>Select an effect</b></option>
-                                <option id="vid-sepia"      value="sepia(1)">          sepia</option>
-                                <option id="vid-blur"       value="blur(3px)">         blur</option>
-                                <option id="vid-grayscale"  value="grayscale(1)">      grayscale</option>
-                                <option id="vid-contrast"   value="contrast(5)">       contrast</option>
-                                <option id="vid-hue-rotate" value="hue-rotate(125deg)">hue-rotate</option>
-                                <option id="vid-invert"     value="invert(1)">         invert</option>
-                                <option id="vid-saturate"   value="saturate(3)">       saturate</option>
-                                <option id="vid-opacity"    value="opacity(0.3)">      opacity</option>
-                                <option id="vid-clear"      value="clear">             <span id="cleary">clear effects</span></option>
-                              </select>
-                            </span>
-                        </div>
-
-                    <div class="row hidden">
-
-                        <div class="col-md-2"></div>
-
-                        <div class="col-md-5">
-                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#client_collapse">show/hide remote logs</button>
-                            <div id="client_collapse" class="collapse">
-                                <div id="ovpn_client_infinity" class="mCSB_container content">
-                                    <!-- insert logz here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-5">
-                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#server_collapse">show/hide local logs</button>
-                            <div id="server_collapse" class="collapse">
-                                <div id="ovpn_server_infinity" class="mCSB_container content">
-                                    <!-- insert logz here --> 
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-               </div>
-
-
-            </div> <!-- vid -->
-
-
 
          </div> <!-- tab content -->
 

@@ -331,7 +331,8 @@ $(document).ready(function () {
 
                    // basic single d3ck layout, 'stache style
                    var template = 
-                        '<div class="col-md-3">'                                                                  + 
+                        // '<div class="col-md-3">'                                                                  + 
+                        '<div>' +
                          '<div class="thumbnail" style="background-color: #eaf1f1" id="{{d3ckid}}">'              +
                             '<div class="polaroid" >'                                                             +
                                '<p>{{owner}}</p>'                                                                 +
