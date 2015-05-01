@@ -198,6 +198,7 @@ rtc_initialize = function() {
     console.log("wrtc.js) Initializing");
     localVideo = $("#localVideo");
     remoteVideo = $("#remoteVideo");
+    $('.video_text').removeClass('hidden')
     openChannel();
     doGetUserMedia();
 };
@@ -444,6 +445,7 @@ onHangup = function() {
     remoteVideo.css("opacity", "0");
     $("#locallive").addClass('hide');
     $("#remotelive").addClass('hide');
+    $('.video_text').addClass('hidden')
     pc.close();
     pc = null;
     socket.emit('leave', room);
