@@ -384,7 +384,7 @@ $(document).ready(function () {
                             '<span margin: 0 auto;" style="font: 400 18px/1 "Kaushan Script", cursive;" class="owner">{{owner}}</span> <br />'          +
                             '<span class="remote_ip">IP: <strong>{{ipaddr}}</strong> </span> <br />'       +
                             // '<form id="{{vpn_form}}" action="/vpn/start" method="POST">'                       +
-                            '<form id="{{vpn_form}}" action="/vpn/start" data-toggle="tooltip" data-placement="right" title="Click on call to initiate connection or drag files to the box to transfer" method="POST">'                       +
+                            '<form id="{{vpn_form}}" action="/vpn/start" data-toggle="tooltip" data-placement="right" title="Click on \"Call\" to connect or drag/click box to transfer files" method="POST">'                       +
                                 '<input style="display:none" id="d3ckid" name="d3ckid"  value={{d3ckid}}>'         +
                                 '<input style="display:none" id="ipaddr" name="ipaddr"  value={{ipaddr}}>'         +
                                 '<input style="display:none" name="vpn_action" value="VPN" />'                     +

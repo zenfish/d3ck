@@ -50,6 +50,7 @@
     "underscore": "1.6.0",
     "wait.for": "0.6.4",
     "when": "3.4.4",
+    "winston": "^1.0.0",
     "ws": "0.4.31"
   },
   "author": "dan f with some very early help from the mighty Markus Fix",
