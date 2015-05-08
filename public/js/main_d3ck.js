@@ -51,6 +51,16 @@ jQuery.fn.exists = function(){return this.length>0;}
 
 $(document).ready(function () {
 
+    // prevent files dragged to a d3ck UI loading a new page... unless you drag it to the right place....
+    window.addEventListener("dragover",function(e){
+        e = e || event;
+        e.preventDefault();
+    },false);
+    window.addEventListener("drop",function(e){
+        e = e || event;
+        e.preventDefault();
+    },false);
+
     // video funkytown
     $('#video_effect').change(function() {
         var opt = $('option:selected', this).attr('value')
@@ -255,6 +265,9 @@ $(document).ready(function () {
         if (d3cks.length == 1) {
             $('#d3ck_friends').append("<div class='row'><div class='col-md-4 top-spacer-50'>It appears you have no friends... but don't worry, we won't tell everyone you're a loser.  Click on the blue/white plus button above to add another D3CK, assuming their owner would be willing to talk to you (and you know their IP address or hostname).  Maybe I can link in some <a target='_blank' href='https://www.youtube.com/watch?v=oHg5SJYRHA0'>youtube videos</a> and break out <a target='_blank' href='http://www.amazon.com/Orville-Redenbacher-Butter-Popcorn-10-Count/dp/B0049M7LA2'>the popcorn</a> if that doesn't work for you.</div></div>")
         }
+        else {
+            $("#d3ck_friends").append('<ul class="list-group"></ul>')
+        }
 
         // loop over all valid d3cks
         $.each(d3cks, function(key, val) {
@@ -329,6 +342,9 @@ $(document).ready(function () {
                    // keep track of everything
                    all_d3ck_ids[d3ckid] = d3ckinfo
 
+                   //
+                   // full card here
+                   //
                    // basic single d3ck layout, 'stache style
                    var template = 
                         // '<div class="col-md-3">'                                                                  + 
@@ -348,7 +364,7 @@ $(document).ready(function () {
                                // '<span id="{{ipaddr}}">URL: <strong>{{url}}</strong> </span> <br />'               +
                                '<span id="{{email}}"> Email: <strong>{{email}}</strong>   </span> <br />'         +
                                '<br />' +
-                               '<form id="{{vpn_form}}" action="/vpn/start" method="POST">'                       +
+                               '<form id="{{vpn_form}}" action="/vpn/start" data-toggle="tooltip" data-placement="right" title="Click on call to initiate connection or drag files to the box to transfer" method="POST">'                       +
                                '<input style="display:none" id="d3ckid" name="d3ckid"  value={{d3ckid}}>'         +
                                '<input style="display:none" id="ipaddr" name="ipaddr"  value={{ipaddr}}>'         +
                                '<input style="display:none" name="vpn_action" value="VPN" />'                     +
@@ -358,12 +374,33 @@ $(document).ready(function () {
                          '</div>'                                                                                 +
                        '</div>'
 
+                   //
+                   // abbreviated for list view
+                   //
+                   var template = 
+                        '<li class="thumbnail" style="background-color: #eaf1f1 list-style-type: none; width: 128px" id="{{d3ckid}}">'              +
+                            '<img id="img_{{d3ckid}}" class="d3ck_img" src="{{image}}">' +
+                            '<span margin: 0 auto;" class="owner">' +
+                            '<span margin: 0 auto;" style="font: 400 18px/1 "Kaushan Script", cursive;" class="owner">{{owner}}</span> <br />'          +
+                            '<span class="remote_ip">IP: <strong>{{ipaddr}}</strong> </span> <br />'       +
+                            // '<form id="{{vpn_form}}" action="/vpn/start" method="POST">'                       +
+                            '<form id="{{vpn_form}}" action="/vpn/start" data-toggle="tooltip" data-placement="right" title="Click on call to initiate connection or drag files to the box to transfer" method="POST">'                       +
+                                '<input style="display:none" id="d3ckid" name="d3ckid"  value={{d3ckid}}>'         +
+                                '<input style="display:none" id="ipaddr" name="ipaddr"  value={{ipaddr}}>'         +
+                                '<input style="display:none" name="vpn_action" value="VPN" />'                     +
+                                '<button type="submit" id="d3ck_vpn" style="margin: 10px" class="d3ck_vpn meter cherry btn disabled">Call</button>' +
+                            '</form>'                                                                          +
+                        '</li>'
+
 
                     // let the 'stache go to town!
                     var d3ck_html = Mustache.to_html(template, d3ck);
 
                     // $('#d3ck_details').html(html);
                     $("#d3ck_friends").append(d3ck_html)
+
+                    // turn on bootstrap TT's
+                    $('[action="/vpn/start"]').tooltip()
 
                     // console.log('\nMUSTACHE!!!:\n' + d3ck_html + '\n\n')
 
@@ -409,6 +446,7 @@ $(document).ready(function () {
                     crypto_411('d3ck', '#d3ck_crypto')
                 }
             })
+
         })
 
         // get the iptables data, populate in ui

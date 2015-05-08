@@ -1420,6 +1420,7 @@ function drag_and_d3ck(safe_id, d3ckid, ip) {
         var safe_ip = ip.replace(/\./g, '_')
 
         $('#vpn_form_' + d3ckid).prepend('\n<div id="div_' + safe_id + '>uploadz...<form action="/up" method="post" enctype="multipart/form-data"><input class="uppity" id="' + safe_id + '" type="file" name="uppity" multiple="multiple" /></form></div>')
+
     }
     else {
         console.log('local...?  dnd... to....', safe_id, d3ckid, ip)
@@ -1433,7 +1434,7 @@ function drag_and_d3ck(safe_id, d3ckid, ip) {
     var ele = '#dragDropBox_' + safe_ip
 
     $('#' + safe_id).filer({
-        changeInput: '<div class="dragDropBox" id="dragDropBox_' + safe_ip + '"><span class="message">CLICK -or- DROP files</span></div>',
+        changeInput: '<div class="dragDropBox" id="dragDropBox_' + safe_ip + '"><span class="message"><img class="d3ck_img" src="/img/dropbox.png"></span></div>',
         appendTo   : ele,
         extensions : null,
         template   : '<img src="%image-url%" title="%original-name%" /><em>%title%</em>',
