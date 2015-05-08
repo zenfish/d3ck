@@ -113,7 +113,7 @@ http {
 
         # pinning - https://developer.mozilla.org/en-US/docs/Web/Security/Public_Key_Pinning - I'm using
         # 1 year-ish as the value... 60*60*24*365.25 = 31557600
-        # add_header Public-Key-Pins 'pin-sha256="base64+primary=="; max-age=31557600';
+        # add_header Public-Key-Pins 'pin-sha256="base64+primary=="; -age=31557600';
 
 
         # the fiddling never ends... try this?  http://stackoverflow.com/questions/11237241/502-bad-gateway-nginx
