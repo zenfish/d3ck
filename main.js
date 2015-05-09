@@ -1389,6 +1389,8 @@ function getCapabilities(req, res, next) {
 var geo_cache_threshold = 60 * 60 * 24
 var ip2geo   = []
 
+
+// deprecated for now, will re-put back in when I can take a breather and revamp UI
 function getGeo(req, res, next) {
 
     log.info('get geo')
@@ -1402,6 +1404,13 @@ function getGeo(req, res, next) {
     }
 
     var ip_addr = req.query.ip
+
+    // nothing to see here, move along
+    res.send(200, {ip_addr: ip_addr, geo : ''})
+
+    return
+
+
 
     var opts    = {}
 
