@@ -4360,7 +4360,7 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
         //      I'm sure there are more, nets are strange
         //
         if (__.contains(my_ips, ip)) {
-            log.info('skipping my own IP! ' + ip);
+            // log.info('skipping my own IP! ' + ip);
             responses++
             return;
         }

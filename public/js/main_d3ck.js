@@ -265,8 +265,6 @@ $(document).ready(function () {
         if (d3cks.length == 1) {
             $('#d3ck_friends').append("<div class='row'><div class='col-md-4 top-spacer-50'>It appears you have no friends... but don't worry, we won't tell everyone you're a loser.  Click on the blue/white plus button above to add another D3CK, assuming their owner would be willing to talk to you (and you know their IP address or hostname).  Maybe I can link in some <a target='_blank' href='https://www.youtube.com/watch?v=oHg5SJYRHA0'>youtube videos</a> and break out <a target='_blank' href='http://www.amazon.com/Orville-Redenbacher-Butter-Popcorn-10-Count/dp/B0049M7LA2'>the popcorn</a> if that doesn't work for you.</div></div>")
 
-            console.log('make room, make room!')
-
             // way too cramped unless we give it some breathing room
             $('#rtc_hack').remove()
             $('#d3ck_friends').removeClass('col-md-2').addClass('col-md-8')

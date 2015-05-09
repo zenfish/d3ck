@@ -543,44 +543,8 @@ var ip2geo   = {}
     // console.log('ajE: ' + errorThrown)
 // }
 
-function d3ck_ping(all_ips, d3ckid) {
+function process_ping(data, textStatus, jqXHR, element_id) {
 
-    // console.log('in d3ck_ping')
-    // console.log(d3ckid, url)
-    // console.log(all_ips)
-
-    // if previously answered on an IP, then try that... if that doesn't
-    // work, then fall back to all of them
-    if (typeof all_pings[d3ckid] != "undefined") {
-        console.log("trying last one... if it worked, don't break it")
-        all_ips = all_pings[d3ckid]
-    }
-    else {
-        console.log("that didn't work... try try again with everyone...")
-        // delete all_pings[ping_url]
-    }
-
-    var ping_url = '/sping/' + d3ckid + "/" + all_ips
-
-    var ping_id  = ''
-
-    // if we're alive, this will get put in
-    var vpn_form   = 'vpn_form_' + d3ckid
-    var element_id = 'd3ck_vpn_' + d3ckid
-
-    var jqXHR_get_ping = $.ajax({
-        url: ping_url,
-        cache: false
-    })
-
-
-    //
-    // XXX -
-    //
-    // this won't bring back up the drag-n-drop if the connection is up,
-    // then goes down, then comes back up... have to reload browser
-    //
-    jqXHR_get_ping.done(function (data, textStatus, jqXHR) {
         var ret = data
         // console.log("pingzor " + JSON.stringify(data))
 
@@ -592,7 +556,7 @@ function d3ck_ping(all_ips, d3ckid) {
         var safe_id = 'uppity_' + data.ip.replace(/\./g, '_')
         var safe_ip = data.ip.replace(/\./g, '_')
 
-        // make the button clickable and green
+        // make the button clickable and ready to go
         if (data.status == "OK") {
 
             all_pings[d3ckid] = data.ip
@@ -682,7 +646,7 @@ function d3ck_ping(all_ips, d3ckid) {
                 // remove old, add new form
                 if (! $('#dragDropBox_' + safe_ip).exists()) {
                     console.log('drag -n- drop away!')
-                    drag_and_d3ck(safe_id, d3ckid, data.ip)
+                    drag_and_d3ck(safe_id, data.did, data.ip)
                 }
 
             // }
@@ -701,10 +665,49 @@ function d3ck_ping(all_ips, d3ckid) {
             $('#' + safe_id).remove() // remove old, add new form
             $('#'+element_id).removeClass('btn-primary').addClass('disabled')
         }
+}
+
+function d3ck_ping(all_ips, d3ckid) {
+
+    // console.log('in d3ck_ping')
+    // console.log(d3ckid, url)
+    // console.log(all_ips)
+
+    // if previously answered on an IP, then try that... if that doesn't
+    // work, then fall back to all of them
+    if (typeof all_pings[d3ckid] != "undefined") {
+        console.log("trying last one... if it worked, don't break it")
+        all_ips = all_pings[d3ckid]
+    }
+    else {
+        console.log("that didn't work... try try again with everyone...")
+        // delete all_pings[ping_url]
+    }
+
+    var ping_url = '/sping/' + d3ckid + "/" + all_ips
+
+    var ping_id  = ''
+
+    // if we're alive, this will get put in
+    var vpn_form   = 'vpn_form_' + d3ckid
+    var element_id = 'd3ck_vpn_' + d3ckid
+
+    var jqXHR_get_ping = $.ajax({
+        url: ping_url,
+        cache: false
+    })
+
+
+    //
+    // XXX -
+    //
+    // this won't bring back up the drag-n-drop if the connection is up,
+    // then goes down, then comes back up... have to reload browser
+    //
+    jqXHR_get_ping.done(function (data, textStatus, jqXHR) {
+        process_ping(data, textStatus, jqXHR, element_id)
     }).fail(function(err) {
-            try {
-                delete all_pings[d3ckid]
-            }
+            try { delete all_pings[d3ckid] }
             catch (e) { }
             console.log( "ping fail for " + ping_url)
             console.log(err)
@@ -720,7 +723,6 @@ function d3ck_ping(all_ips, d3ckid) {
             $('#'+element_id).removeClass('btn-primary').addClass('disabled')
             $('#'+element_id).closest('form').find('div').remove()
     })
-
 
 
 // console.log('post-pingy ' + d3ckid + '... putting into ' + element_id)

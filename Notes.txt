@@ -97,6 +97,9 @@ wget "http://nl.archive.ubuntu.com/ubuntu/pool/main/c/curl/libcurl3-gnutls_7.32.
     node-inspector -p 3000 --web-host 0.0.0.0 &
     node --debug main.js &
 
+# using --debug-brk instead of --debug breaks on first debug
+
+    node --debug-brk main.js &
 
 
 
