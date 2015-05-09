@@ -3760,6 +3760,30 @@ function friend_response(req, res, next) {
 }
 
 
+//
+// helper function; a small effort to remove slashes and crap in a file name... 
+// if there are no forward slashes keep as is. If there are, take whatever 
+// is after the last slash as the filename... if it ends in a slash call it 
+// "d3ck_suspicious.txt"
+//
+function sanitize_filename(name) {
+
+    log.info('sanitizing... ' + name)
+
+    var n = name.lastIndexOf('/')
+
+    if (n < 0) return name
+
+    name = name.substr(name.lastIndexOf('/')+1)
+
+    if (name == '')
+        name = 'd3ck_suspicious.txt
+
+    log.info('newer, cleaner filename: ' + name)
+
+    return name
+
+}
 
 
 
@@ -3789,7 +3813,9 @@ function downloadStuff (req, res, next) {
 function uploadSchtuff(req, res, next) {
 
     log.info('uploadz!')
-    log.info(req)
+
+    log.info(files)
+
 
     var d3ck_status = empty_status()
 
@@ -3876,6 +3902,9 @@ function uploadSchtuff(req, res, next) {
 
             var target_size = req.files.uppity[i].size
             var target_file = req.files.uppity[i].name
+
+            target_file = sanitize_filename(target_file)
+
             var target_path = d3ck_public + "/uploads/" + target_file
             var tmpfile     = req.files.uppity[i].path
             var headers     = req.files.uppity[i].headers
@@ -3945,6 +3974,8 @@ function uploadSchtuff(req, res, next) {
             //
             else {
                 log.info("going to push it to the next in line: " + upload_target)
+
+                target_file = sanitize_filename(target_file)
 
                 var file_magic = {
                     file_name  : target_file,

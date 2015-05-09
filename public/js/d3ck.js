@@ -639,20 +639,12 @@ function process_ping(data, textStatus, jqXHR, element_id) {
             var current_time_in_seconds = new Date().getTime() / 1000;
 
             //
-            // haven't seen this before... potential problems with ips in the future... sigh
+            // ... potential problems with ips in the future... sigh
             //
-            // if (typeof draggers[data.ip] == "undefined") {
-                // make it actionable
-                // remove old, add new form
-                if (! $('#dragDropBox_' + safe_ip).exists()) {
-                    console.log('drag -n- drop away!')
-                    drag_and_d3ck(safe_id, data.did, data.ip)
-                }
-
-            // }
-            // else {
-            //     console.log('not your time yet, young jedi')
-            // }
+            if (! $('#dragDropBox_' + safe_ip).exists()) {
+                console.log('drag -n- drop away!')
+                drag_and_d3ck(safe_id, data.did, data.ip)
+            }
 
         }
         else {
@@ -1062,6 +1054,9 @@ function queue_or_die(queue) {
 
             console.log('to... ', did, friend, ip)
 
+            // faint eye shadow to let you know which d3ck is connected to you
+            $('#' + did).addClass('vpn_backwash')
+
             // global
             remote_ip = ip
 
@@ -1094,6 +1089,9 @@ function queue_or_die(queue) {
             inform_user('VPN', 'remote d3ck (' + friend + ' / ' + ip + ' / ' + did + ') established a VPN connection to your d3ck', 'vpn')
             state_ring(false)    // bang a gong
             state_vpn('incoming', browser_ip, queue)
+
+            // faint eye shadow to let you know which d3ck is connected to you
+            $('#' + did).addClass('vpn_backwash')
 
         }
 

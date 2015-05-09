@@ -29,13 +29,6 @@
     margin-left: 80px;
 }
 
-/* 
-
-#remote_videos video { max-height: 500px; }
-#local_videos { height: 360px; }
-video { width: 350px; height: 200px; }
-
-*/
 .connectionstate {
     position: absolute;
     top: 0px;
@@ -46,9 +39,8 @@ video { width: 350px; height: 200px; }
 
 .d3ck_img {
     display: block;
-    /* cards are about 3.5 x 2.25 (2.5 for poker) */
-    /* max-width:  180px;
-    max-height: 180px; */
+    /* cards (were!) about 3.5 x 2.25 (2.5 for poker) */
+    /* max-width:  180px; max-height: 180px; */
     max-width:  64px;
     max-height: 64px;
     padding: 4;
@@ -314,6 +306,10 @@ div.growlUI h1, div.growlUI h2 {
     -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
     display: block;
+}
+
+.vpn_backwash {
+  background-color: #dff0d8;
 }
 
 /* http://designshack.net/articles/css/4-fun-css-image-effects-you-can-copy-and-paste/ */
