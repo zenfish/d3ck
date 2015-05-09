@@ -3777,7 +3777,7 @@ function sanitize_filename(name) {
     name = name.substr(name.lastIndexOf('/')+1)
 
     if (name == '')
-        name = 'd3ck_suspicious.txt
+        name = 'd3ck_suspicious.txt'
 
     log.info('newer, cleaner filename: ' + name)
 
