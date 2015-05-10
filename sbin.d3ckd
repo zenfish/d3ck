@@ -31,6 +31,74 @@ rm -f $D3CK_LOGS/*.out.log
 # xxx - need to do this selectively, based on geo-forwarding
 echo "1" > /proc/sys/net/ipv4/ip_forward
 
+# if no dir or symlink
+if [ ! -d $d3ck_keystore -o ! -h $d3ck_keystore ] ; then
+
+    cd $hell
+    mkdir clients
+
+    ./rot-in-hell.sh
+
+    cd ..
+
+    mkdir $d3ck_keystore
+    mkdir $keystore/vpn_client
+    mkdir $D3CK_UPLOADS
+
+    cp $hell/ca* $hell/d3ck* $d3ck_keystore
+
+    # all in one file
+    cat $hell/d3ck*{key,crt} $hell/ca* > $d3ck_keystore/d3ck.all
+
+    ln -s $d3ck_keystore/ca.crt $d3ck_keystore/d3ckroot.crt
+
+    cp $hell/vpn* $keystore/vpn_client
+    cat $hell/vpn*{crt,key} > $keystore/vpn_client/vpn_client.all
+
+    # print SHA1 fingerprint
+    openssl x509 -noout -fingerprint -sha1 -in $d3ck_keystore/d3ck.crt | awk -F= '{printf("%s", $2)}' | sed 's/://g' | tee -a $d3ck_keystore/d3ck.did
+
+    did=`cat $d3ck_keystore/d3ck.did`
+    cp $d3ck_keystore/d3ck.did $D3CK_HOME/public/d3ck.did
+
+    # DHM key
+    ./create_tlsauth.sh $did
+
+    # xxx - give all clients the same TA key?  No!
+
+    ./create_dhm.sh
+
+    mv $d3ck_keystore/* $keystore/$did
+    rmdir $d3ck_keystore
+    ln -s $keystore/$did $d3ck_keystore
+
+    # print out some summary data about the keys
+    for cert in $d3ck_keystore/{d3ck,ca}.crt $keystore/vpn_client/vpn_client.crt ; do
+        $D3CK_BIN/dump_cert.sh $cert > $cert.info
+    done
+
+    # create a json version, link so we can easily find it for browser UI
+    ./exe/certitude.sh $d3ck_keystore/d3ck.crt > $d3ck_keystore/d3ck.crt.json
+    rm -f $D3CK_HOME/public/certz/d3ck.crt.json
+    ln -s $d3ck_keystore/d3ck.crt.json $D3CK_HOME/public/certz/d3ck.crt.json
+
+    # current eth0 ip addr
+    ip=$(ifconfig eth0 | awk '/inet/ {split($2, ip, ":"); print ip[2]}')
+
+    # need to start this before we try a REST call to it....
+
+    ./exe/init_d3ck.sh $did img $ip "$($D3CK_HOME/exe/get_net.sh)" Ms_D3CK d3ck@example.com
+
+    DEBUG=socket.io:* NODE_PATH="$D3CK_HOME/" node main.js &
+
+else
+    cp $d3ck_keystore/d3ck.did $D3CK_HOME/public/d3ck.did
+
+    # if not started above, do so now
+    DEBUG=socket.io:* NODE_PATH="$D3CK_HOME/" node main.js &
+
+fi
+
 # for testing only... get something in the 10.x.y/24 zone
 x=$((RANDOM%254+1))
 y=$((RANDOM%254+1))
@@ -109,77 +177,6 @@ else
     $D3CK_BIN/proxy_fix.sh
     # echo ...nothing to do...
 fi
-
-
-# if no dir or symlink
-if [ ! -d $d3ck_keystore -o ! -h $d3ck_keystore ] ; then
-
-    cd $hell
-    mkdir clients
-
-    ./rot-in-hell.sh
-
-    cd ..
-
-    mkdir $d3ck_keystore
-    mkdir $keystore/vpn_client
-    mkdir $D3CK_UPLOADS
-
-    cp $hell/ca* $hell/d3ck* $d3ck_keystore
-
-    # all in one file
-    cat $hell/d3ck*{key,crt} $hell/ca* > $d3ck_keystore/d3ck.all
-
-    ln -s $d3ck_keystore/ca.crt $d3ck_keystore/d3ckroot.crt
-
-    cp $hell/vpn* $keystore/vpn_client
-    cat $hell/vpn*{crt,key} > $keystore/vpn_client/vpn_client.all
-
-    # print SHA1 fingerprint
-    openssl x509 -noout -fingerprint -sha1 -in $d3ck_keystore/d3ck.crt | awk -F= '{printf("%s", $2)}' | sed 's/://g' | tee -a $d3ck_keystore/d3ck.did
-
-    did=`cat $d3ck_keystore/d3ck.did`
-    cp $d3ck_keystore/d3ck.did $D3CK_HOME/public/d3ck.did
-
-    # DHM key
-    ./create_tlsauth.sh $did
-
-    # xxx - give all clients the same TA key?  No!
-
-    ./create_dhm.sh
-
-    mv $d3ck_keystore/* $keystore/$did
-    rmdir $d3ck_keystore
-    ln -s $keystore/$did $d3ck_keystore
-
-    # print out some summary data about the keys
-    for cert in $d3ck_keystore/{d3ck,ca}.crt $keystore/vpn_client/vpn_client.crt ; do
-        $D3CK_BIN/dump_cert.sh $cert > $cert.info
-    done
-
-    # create a json version, link so we can easily find it for browser UI
-    ./exe/certitude.sh $d3ck_keystore/d3ck.crt > $d3ck_keystore/d3ck.crt.json
-    rm -f $D3CK_HOME/public/certz/d3ck.crt.json
-    ln -s $d3ck_keystore/d3ck.crt.json $D3CK_HOME/public/certz/d3ck.crt.json
-
-    # current eth0 ip addr
-    ip=$(ifconfig eth0 | awk '/inet/ {split($2, ip, ":"); print ip[2]}')
-
-    # need to start this before we try a REST call to it....
-
-    ./exe/init_d3ck.sh $did img $ip "$($D3CK_HOME/exe/get_net.sh)" Ms_D3CK d3ck@example.com
-
-    DEBUG=socket.io:* NODE_PATH="$D3CK_HOME/" node main.js &
-
-else
-    cp $d3ck_keystore/d3ck.did $D3CK_HOME/public/d3ck.did
-
-    # if not started above, do so now
-    DEBUG=socket.io:* NODE_PATH="$D3CK_HOME/" node main.js &
-
-fi
-
-
 
 exit 0
 
