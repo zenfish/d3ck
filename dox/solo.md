@@ -11,5 +11,7 @@ to the same d3ck and use its video capabilities.
 
 Upon logging into your d3ck, you'll see something like a blank screen:
 
-<img size="50%" src="/dox/tabla%20rosa.png">
+<p align="center">
+<img max-width="40%" src="/dox/tabla%20rosa.png">
+</p>
 
