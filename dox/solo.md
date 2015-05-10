@@ -12,6 +12,6 @@ Upon logging into your d3ck, you'll see something like a blank screen -
 at the top on the right-hand side there's a little video icon:
 
 <p align="center">
-<img width="400" src="/dox/blank%20video.png">
+<img width="400" src="/dox/blank-video.png">
 </p>
 
