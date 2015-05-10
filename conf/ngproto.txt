@@ -19,8 +19,6 @@ http {
     proxy_temp_path     /etc/d3ck/tmp;
     proxy_cache_path    /var/cache/nginx levels=1:2 keys_zone=one:8m max_size=3000m inactive=600m;
 
-    send_timeout 30;
-
     server {
 
         #
@@ -134,15 +132,6 @@ http {
             proxy_set_header        Upgrade $http_upgrade;
 
             proxy_set_header        Connection "upgrade";
-        }
-
-        #
-        # relaying video
-        #
-        location /rtc {
-            proxy_pass              http://D3CK_SIG:5555;
-            proxy_redirect          off;
-            proxy_set_header        Host $host;
         }
 
         #

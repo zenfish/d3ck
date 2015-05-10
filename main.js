@@ -2,11 +2,27 @@
 // d3ck server
 //
 
-// var Tail       = require('tail').Tail,
+//
+// you must be this tall to ride the ride (from http://stackoverflow.com/questions/18736830/how-do-i-require-a-minimum-version-of-node-js-in-my-script)
+//
+// basic node version sanity check
+//
+MIN_VERSION = 12
+var node_version = process.versions['node'].split('.');
+if (parseInt(node_version[0]) === 0 && parseInt(node_version[1]) < MIN_VERSION) {
+  console.log('The d3ck requires node.js version >= 0.' + MIN_VERSION + ', you seem to be running ' + node_version.join('.'));
+  process.exit(1);
+};
+
+
+//
+// pull in all our friends
+//
+
 var Tail       = require('./tail').Tail,
     async      = require('async'),
-    // bcrypt     = require('bcrypt'),
-    bcrypt     = require('./modules/bCrypt.js'),
+    // bcrypt     = require('./modules/bCrypt.js'),
+    bcrypt     = require('bcrypt')
     compress   = require('compression'),
     connect    = require('connect'),
     cors       = require('cors'),
@@ -5687,6 +5703,7 @@ Object.size = function(obj) {
 
 //
 // promise her anything... buy her a chicken.  A json chicken, of course.
+// d3cky.listen(d3ck_port_int, 'localhost', function() {
 d3cky.listen(d3ck_port_int, function() {
     log.info('[+] server listening at %s', d3ck_port_int)
 })

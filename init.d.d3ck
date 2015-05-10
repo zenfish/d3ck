@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# xxx - needs fixing, actually track pids, you idiot
+# xxx - OMG this is crude. Needs fixing, actually track pids, dan, you idiot.
 #
 
 
@@ -38,7 +38,7 @@ fi
 
 # LOCKFILE=/var/lock/d3ck
 
-NUM_PIDS=4
+NUM_PIDS=3
 
 lock_d3ckdate() {
         if [ -x /usr/bin/lockfile-create ]; then
@@ -57,7 +57,7 @@ unlock_d3ckdate() {
 
 all_da_ps() {
         # only works on D3CK... will kill others if not careful...!   ;)
-        echo $(ps axuww|egrep 'nginx|openv|yate|node main.js'|grep -v grep | awk '{print $2}')
+        echo $(ps axuww|egrep 'nginx|openv|node main.js'|grep -v grep | awk '{print $2}')
 }
 
 case $1 in

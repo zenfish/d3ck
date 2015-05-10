@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #
-# Starts up the D3CK programs... openvpn, yate, and the node app
+# Starts up the D3CK programs... openvpn, node, etc.
 #
 # Will create a default D3CK if none are present
 #
@@ -30,6 +30,86 @@ rm -f $D3CK_LOGS/*.out.log
 # turn on IP forwarding
 # xxx - need to do this selectively, based on geo-forwarding
 echo "1" > /proc/sys/net/ipv4/ip_forward
+
+# for testing only... get something in the 10.x.y/24 zone
+x=$((RANDOM%254+1))
+y=$((RANDOM%254+1))
+
+base10="10.$x.$y"
+
+#
+# why in the name of holy fuck does openvpn require a /29 or bigger?
+# Did /31 kill their dog or something?  There must be a reason... somewhere...
+#
+mask10="255.255.255.248"
+
+cd $D3CK_HOME
+
+echo flushing all iptables and cached routes
+./exe/flush.sh
+
+# openvpn --server $base10.0 $mask10 --push "route $base10.0 $mask10" --config S.conf &
+
+#
+# get the default ip, interface, netmask, so we can push traffic through it
+#
+# Quite possibly better ways, but....
+#
+# "ip route" outputs something like:
+#
+#   default via 192.168.0.1 dev eth0 
+#   63.225.191.0/24 dev eth0  proto kernel  scope link  src 63.225.191.45 
+#   169.254.0.0/16 dev eth0  scope link  metric 1000 
+#   192.168.0.0/24 dev eth0  proto kernel  scope link  src 192.168.0.250 
+#
+def=($(ip route | awk '/default/ { print $3, $5 }'))
+def_ip=${def[0]}
+def_int=${def[1]}
+def_mask=$(ifconfig $def_int| awk '/Mask/{print $NF}' |sed 's/Mask://')
+
+# nothing is easy... lol... mask -> cidr
+# http://stackoverflow.com/questions/20762575/explanation-of-convertor-of-cidr-to-netmask-in-linux-shell-netmask2cdir-and-cdir
+# Assumes there's no "255." after a non-255 byte in the mask
+mask2cdr ()
+{
+   local x=${1##*255.}
+   set -- 0^^^128^192^224^240^248^252^254^ $(( (${#1} - ${#x})*2 )) ${x%%.*}
+   x=${1%%$3*}
+   def_cidr=$(( $2 + (${#x}/4) ))
+}
+mask2cdr $def_mask
+echo $def_cidr
+
+echo setting up iptables on $def_int
+iptables -t nat -I POSTROUTING -o tun+ -s $def_ip/$def_cidr -j MASQUERADE
+
+# openvpn --server $base10.0 $mask10 --push "route def" --config S.conf &
+
+openvpn --server $base10.0 $mask10 --config S.conf &
+
+echo "$base10.1" > $D3CK_HOME/public/openvpn_server.ip
+
+# taking this out for now... should be fairly straightforward to put back in....
+# yate -c $D3CK_HOME/yate/ -vvvvv -d -l $D3CK_HOME/log/yate.log -Dt
+
+# another... hack... in a long line of ... oh, forget it.
+vpn_sleep=10
+# echo sleeping for $vpn_sleep seconds to try to ensure openvpn has an ip adddress up
+sleep $vpn_sleep
+
+vpn_ip=$(ifconfig | awk '{if (n) { all[dev] = substr($2, match($2, ":") + 1); n = 0 }} {if (match($0, "^[^ \t]") && $1 != "lo" && match($1, "^tun0$")) { n = 1; dev = $1; all[dev]="" }} END { for (i in all) print all[i]}'| sed 's/,]$/]/')
+
+if [ "X$vpn_ip" = "X" ]; then
+    echo "WARNING!  No IP picked up for OpenVPN"
+    echo "WARNING!  No IP picked up for OpenVPN"
+    echo "WARNING!  No IP picked up for OpenVPN"
+    echo "WARNING!  No IP picked up for OpenVPN"
+else
+    echo firing up proxy....
+    $D3CK_BIN/proxy_fix.sh
+    # echo ...nothing to do...
+fi
+
 
 # if no dir or symlink
 if [ ! -d $d3ck_keystore -o ! -h $d3ck_keystore ] ; then
@@ -99,83 +179,7 @@ else
 
 fi
 
-# for testing only... get something in the 10.x.y/24 zone
-x=$((RANDOM%254+1))
-y=$((RANDOM%254+1))
 
-base10="10.$x.$y"
-
-#
-# why in the name of holy fuck does openvpn require a /29 or bigger?
-# Did /31 kill their dog or something?  There must be a reason... somewhere...
-#
-mask10="255.255.255.248"
-
-cd $D3CK_HOME
-
-echo flushing all iptables and cached routes
-./exe/flush.sh
-
-# openvpn --server $base10.0 $mask10 --push "route $base10.0 $mask10" --config S.conf &
-
-#
-# get the default ip, interface, netmask, so we can push traffic through it
-#
-# Quite possibly better ways, but....
-#
-# "ip route" outputs something like:
-#
-#   default via 192.168.0.1 dev eth0 
-#   63.225.191.0/24 dev eth0  proto kernel  scope link  src 63.225.191.45 
-#   169.254.0.0/16 dev eth0  scope link  metric 1000 
-#   192.168.0.0/24 dev eth0  proto kernel  scope link  src 192.168.0.250 
-#
-def=($(ip route | awk '/default/ { print $3, $5 }'))
-def_ip=${def[0]}
-def_int=${def[1]}
-def_mask=$(ifconfig $def_int| awk '/Mask/{print $NF}' |sed 's/Mask://')
-
-# nothing is easy... lol... mask -> cidr
-# http://stackoverflow.com/questions/20762575/explanation-of-convertor-of-cidr-to-netmask-in-linux-shell-netmask2cdir-and-cdir
-# Assumes there's no "255." after a non-255 byte in the mask
-mask2cdr ()
-{
-   local x=${1##*255.}
-   set -- 0^^^128^192^224^240^248^252^254^ $(( (${#1} - ${#x})*2 )) ${x%%.*}
-   x=${1%%$3*}
-   def_cidr=$(( $2 + (${#x}/4) ))
-}
-mask2cdr $def_mask
-echo $def_cidr
-
-echo setting up iptables on $def_int
-iptables -t nat -I POSTROUTING -o tun+ -s $def_ip/$def_cidr -j MASQUERADE
-
-# openvpn --server $base10.0 $mask10 --push "route def" --config S.conf &
-
-openvpn --server $base10.0 $mask10 --config S.conf &
-
-echo "$base10.1" > $D3CK_HOME/public/openvpn_server.ip
-
-yate -c $D3CK_HOME/yate/ -vvvvv -d -l $D3CK_HOME/log/yate.log -Dt
-
-# another... hack... in a long line of ... oh, forget it.
-vpn_sleep=10
-# echo sleeping for $vpn_sleep seconds to try to ensure openvpn has an ip adddress up
-sleep $vpn_sleep
-
-vpn_ip=$(ifconfig | awk '{if (n) { all[dev] = substr($2, match($2, ":") + 1); n = 0 }} {if (match($0, "^[^ \t]") && $1 != "lo" && match($1, "^tun0$")) { n = 1; dev = $1; all[dev]="" }} END { for (i in all) print all[i]}'| sed 's/,]$/]/')
-
-if [ "X$vpn_ip" = "X" ]; then
-    echo "WARNING!  No IP picked up for OpenVPN"
-    echo "WARNING!  No IP picked up for OpenVPN"
-    echo "WARNING!  No IP picked up for OpenVPN"
-    echo "WARNING!  No IP picked up for OpenVPN"
-else
-    echo firing up proxy....
-    $D3CK_BIN/proxy_fix.sh
-    # echo ...nothing to do...
-fi
 
 exit 0
 
