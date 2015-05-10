@@ -1,4 +1,8 @@
-<link href="/dox/d3dox.css" rel="stylesheet">
+<style>
+.shrink {
+  zoom: 40%;
+}
+</style>
 
 Testing your d3ck
 -----------------
