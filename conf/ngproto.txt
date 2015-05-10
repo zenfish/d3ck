@@ -135,6 +135,15 @@ http {
         }
 
         #
+        # relaying video
+        #
+        location /rtc {
+            proxy_pass              http://D3CK_SIG:5555;
+            proxy_redirect          off;
+            proxy_set_header        Host $host;
+        }
+
+        #
         # normal web stuff
         #
         location / {
