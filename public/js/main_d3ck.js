@@ -386,7 +386,9 @@ $(document).ready(function () {
                    //
                    var template = 
                         '<li class="thumbnail" style="background-color: #eaf1f1 list-style-type: none; width: 128px" id="{{d3ckid}}">'              +
-                            '<img id="img_{{d3ckid}}" class="d3ck_img" src="{{image}}">' +
+                            '<a href="/d3ck_details.html?d3ckid={{d3ckid}}">'                                  +
+                                '<img id="img_{{d3ckid}}" class="d3ck_img" src="{{image}}">' +
+                            '</a>' +
                             '<span margin: 0 auto;" class="owner">' +
                             '<span margin: 0 auto;" style="font: 400 18px/1 "Kaushan Script", cursive;" class="owner">{{owner}}</span> <br />'          +
                             '<span class="remote_ip">IP: <strong>{{ipaddr}}</strong> </span> <br />'       +
