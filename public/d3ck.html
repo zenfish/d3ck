@@ -129,7 +129,22 @@
 
             <ul class="nav nav-tabs navbar-nav navbar-right">
 
-                <li> <a href="#"><span id="d3ck_video" title="video" data-content="green if on" class="glyphicon glyphicon-facetime-video"></span></a></li>
+                <li id='d3ck_video_light' class="dropdown" data-toggle="tooltip" data-placement="left" data-placement="left" title="will be green if video is on">
+
+                    <!-- <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span title="video" data-content="green if on" class="glyphicon glyphicon-facetime-video" data-toggle="dropdown" id="d3ck_video" class="glyphicon glyphicon-facetime-video"></span><b class="caret"></b></a> -->
+
+
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-facetime-video" data-toggle="dropdown" id="d3ck_video" class="glyphicon glyphicon-facetime-video"></span><b class="caret"></b></a>
+                    
+                    <ul class="dropdown-menu" id="d3ck_video_menu">
+
+                        <li onclick="rtc_initialize()"              style="width:125px; text-align:center;" type="button" class="btn btn-primary btn-hover">Host Video Call</a></li>
+                        <li onclick="caller=true; rtc_initialize()" style="width:125px; text-align:center;" type="button" class="btn btn-primary btn-hover">Call this D3ck</a></li>
+
+                    </ul>
+
+                </li>
+
 
                 <li> <a href="#"><span class="green glyphicon icon-lightbulb-idea" id="d3ck_status"></span></a></li>
 
@@ -149,10 +164,6 @@
                         <li style="width:100%"> <a tabindex="-1" href="#skull" data-toggle="tab" style="width:125px; text-align:center;">Click2explain</a></li>
 
 
-                        <li role="presentation" class="dropdown-header">Video/RTC Hax Below!</li>
-
-                        <li onclick="rtc_initialize()"              style="width:125px; text-align:center;" type="button" class="btn btn-primary btn-hover">Host Video Call</a></li>
-                        <li onclick="caller=true; rtc_initialize()" style="width:125px; text-align:center;" type="button" class="btn btn-primary btn-hover">Call this D3ck</a></li>
 
                     </ul>
                 </li>

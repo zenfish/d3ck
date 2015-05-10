@@ -51,6 +51,8 @@ jQuery.fn.exists = function(){return this.length>0;}
 
 $(document).ready(function () {
 
+    $('#d3ck_video_light').tooltip()
+
     // prevent files dragged to a d3ck UI loading a new page... unless you drag it to the right place....
     window.addEventListener("dragover",function(e){
         e = e || event;
