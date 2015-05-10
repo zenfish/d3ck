@@ -1,3 +1,4 @@
+<link href="/dox/d3dox.css" rel="stylesheet">
 
 Testing your d3ck
 -----------------
@@ -12,6 +13,6 @@ to the same d3ck and use its video capabilities.
 Upon logging into your d3ck, you'll see something like a blank screen:
 
 <p align="center">
-<img style='zoom:"40%";' src="/dox/tabla%20rosa.png">
+<img class="shrink" src="/dox/tabla%20rosa.png">
 </p>
 
