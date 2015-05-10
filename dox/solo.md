@@ -1,9 +1,3 @@
-<style>
-.shrink {
-  zoom: 40%;
-}
-</style>
-
 Testing your d3ck
 -----------------
 
@@ -17,6 +11,6 @@ to the same d3ck and use its video capabilities.
 Upon logging into your d3ck, you'll see something like a blank screen:
 
 <p align="center">
-<img class="shrink" src="/dox/tabla%20rosa.png">
+<img width="400" src="/dox/tabla%20rosa.png">
 </p>
 
