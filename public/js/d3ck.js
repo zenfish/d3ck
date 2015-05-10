@@ -557,7 +557,7 @@ function process_ping(data, textStatus, jqXHR, element_id) {
         // make the button clickable and ready to go
         if (data.status == "OK") {
 
-            all_pings[d3ckid] = data.ip
+            all_pings[data.did] = data.ip
 
             // console.log('success with ' +  element_id)
 
@@ -647,7 +647,7 @@ function process_ping(data, textStatus, jqXHR, element_id) {
 
         }
         else {
-            console.log('not ok...')
+            console.log('ping far from ok...')
             try {
                 delete all_pings[d3ckid]
             }
@@ -681,8 +681,7 @@ function jq_ping(url, element_id) {
     }).fail(function(err) {
         try { delete all_pings[d3ckid] }
         catch (e) { }
-        console.log( "ping fail for " + url)
-        console.log(err)
+        console.log( "ping fail for " + url + ': ' + err.statusText)
         $('#'+element_id).removeClass('btn-primary').addClass('disabled')
         $('#'+element_id).closest('form').find('div').remove()
     }).error(function(err) {
@@ -691,7 +690,7 @@ function jq_ping(url, element_id) {
         }
         catch (e) { }
         console.log( "ping error for " + url)
-        console.log(err)
+        console.log(err.statusText)
         $('#'+element_id).removeClass('btn-primary').addClass('disabled')
         $('#'+element_id).closest('form').find('div').remove()
     })
@@ -711,7 +710,7 @@ function d3ck_ping(all_ips, d3ckid) {
         all_ips = all_pings[d3ckid]
     }
     else {
-        console.log("that didn't work... try try again with everyone...")
+        console.log("that didn't work... try try again with everyone...", d3ckid, all_ips)
         // delete all_pings[ping_url]
     }
 
@@ -730,7 +729,12 @@ function d3ck_ping(all_ips, d3ckid) {
 
 }
 
+//
+// turning this off for now
+//
 function rip_geo(element, geo) {
+
+    return
 
     console.log('tearing up geo data')
 
@@ -1419,11 +1423,11 @@ function fire_d3ck_status(jstatus) {
 //
 function drag_and_d3ck(safe_id, d3ckid, ip) {
 
-    console.log('DnD3', safe_id, d3ckid, ip)
+    // console.log('DnD3', safe_id, d3ckid, ip)
 
     if (safe_id != "local") {
 
-        console.log('draggin n d3ckin... to....', safe_id, d3ckid, ip)
+        // console.log('draggin n d3ckin... to....', safe_id, d3ckid, ip)
 
         // out with the old, in with the new
         var safe_ip = ip.replace(/\./g, '_')

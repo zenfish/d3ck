@@ -4473,38 +4473,22 @@ function httpsPing(ping_d3ckid, ipaddr, res, next) {
 
         }).catch(function (error) {
 
-                // res.send(420, {"error": "error ring a ping ping"});
-                // log.info("ping ping err err " + JSON.stringify(error))
+            // res.send(420, {"error": "error ring a ping ping"});
+            log.info("ping ping err err " + JSON.stringify(error))
 
             responses++
 
             if (responses == all_ips.length && !ping_done) {
-                // log.info('+++ someday has come... in a bad way for ' + ip + ' ... ping failure')
+                log.info('+++ someday has come... in a bad way for ' + ip + ' ... ping failure ... ', all_ips.length, responses)
                 ping_done = true
                 response = {status: "ping failure", "error": error }
                 // synchronicity... II... shouting above the din of my rice crispies
-                // try       { res.send(408, response) }
-                try       { res.send(200, response) }
-                catch (e) { log.error('sPing error ' + JSON.stringify(e)) }
+                res.send(200, response)
             }
 
         })
+
         .done();
-
-//         .on('error', function(e) {
-//             // log.info(e)
-//             // log.info(responses + ' v.s. ' + all_ips.length)
-//
-//             if (responses == all_ips.length && !ping_done) {
-//                 log.info('+++ someday has come... in a bad way for ' + ip + ' ... ping failure')
-//                 ping_done = true
-//                 response = {status: "ping failure", "error": e}
-//                 // synchronicity... II... shouting above the din of my rice crispies
-//                 try { res.send(408, response) }
-//                 catch (e) { log.info('sPing error ' + e) }
-//             }
-//         })
-
 
     })
 
