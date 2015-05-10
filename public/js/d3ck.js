@@ -539,14 +539,12 @@ var draggers = {} // track drag-n-drop areas
 var ip2fqdn  = {}
 var ip2geo   = {}
 
-// function aj_errz(jqXHR, textStatus, errorThrown) {
-    // console.log('ajE: ' + errorThrown)
-// }
-
+//
+// really should just keep track and see if it changes instead of redrawing stuff every time....
+//
 function process_ping(data, textStatus, jqXHR, element_id) {
 
-        var ret = data
-        // console.log("pingzor " + JSON.stringify(data))
+        // console.log('process ping ' + JSON.stringify(data))
 
         if (typeof data.ip == 'undefined') {
             // console.log('hmm... bad data in ping: ' + JSON.stringify(data))
@@ -561,11 +559,12 @@ function process_ping(data, textStatus, jqXHR, element_id) {
 
             all_pings[d3ckid] = data.ip
 
-            // console.log('success with ' + ping_url)
+            // console.log('success with ' +  element_id)
+
             $('#'+element_id).addClass('btn-primary').removeClass('disabled')
 
             // change the ip addr to the one we actually use to talk to them with
-            var ele = $('#'+element_id).parent().closest('div').find('.remote_ip strong')
+            var ele = $('#'+element_id).parent().parent().find('.remote_ip strong')
             $('#'+element_id).prev().prev().attr('value', data.ip)
 
             // change IP address to the one who answered
@@ -659,6 +658,46 @@ function process_ping(data, textStatus, jqXHR, element_id) {
         }
 }
 
+
+function jq_ping(url, element_id) {
+
+    // console.log('pinging ' + url)
+
+    var jqXHR_get_ping = $.ajax({
+        url: url,
+        cache: false
+    })
+
+    //
+    // XXX -
+    //
+    // this won't bring back up the drag-n-drop if the connection is up,
+    // then goes down, then comes back up... have to reload browser
+    //
+    jqXHR_get_ping.done(function (data, textStatus, jqXHR) {
+
+        process_ping(data, textStatus, jqXHR, element_id)
+
+    }).fail(function(err) {
+        try { delete all_pings[d3ckid] }
+        catch (e) { }
+        console.log( "ping fail for " + url)
+        console.log(err)
+        $('#'+element_id).removeClass('btn-primary').addClass('disabled')
+        $('#'+element_id).closest('form').find('div').remove()
+    }).error(function(err) {
+        try {
+            delete all_pings[d3ckid]
+        }
+        catch (e) { }
+        console.log( "ping error for " + url)
+        console.log(err)
+        $('#'+element_id).removeClass('btn-primary').addClass('disabled')
+        $('#'+element_id).closest('form').find('div').remove()
+    })
+
+}
+
 function d3ck_ping(all_ips, d3ckid) {
 
     // console.log('in d3ck_ping')
@@ -684,37 +723,7 @@ function d3ck_ping(all_ips, d3ckid) {
     var vpn_form   = 'vpn_form_' + d3ckid
     var element_id = 'd3ck_vpn_' + d3ckid
 
-    var jqXHR_get_ping = $.ajax({
-        url: ping_url,
-        cache: false
-    })
-
-
-    //
-    // XXX -
-    //
-    // this won't bring back up the drag-n-drop if the connection is up,
-    // then goes down, then comes back up... have to reload browser
-    //
-    jqXHR_get_ping.done(function (data, textStatus, jqXHR) {
-        process_ping(data, textStatus, jqXHR, element_id)
-    }).fail(function(err) {
-            try { delete all_pings[d3ckid] }
-            catch (e) { }
-            console.log( "ping fail for " + ping_url)
-            console.log(err)
-            $('#'+element_id).removeClass('btn-primary').addClass('disabled')
-            $('#'+element_id).closest('form').find('div').remove()
-    }).error(function(err) {
-            try {
-                delete all_pings[d3ckid]
-            }
-            catch (e) { }
-            console.log( "ping error for " + ping_url)
-            console.log(err)
-            $('#'+element_id).removeClass('btn-primary').addClass('disabled')
-            $('#'+element_id).closest('form').find('div').remove()
-    })
+    jq_ping(ping_url, element_id)
 
 
 // console.log('post-pingy ' + d3ckid + '... putting into ' + element_id)
