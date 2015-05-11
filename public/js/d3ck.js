@@ -1296,26 +1296,27 @@ function load_vault() {
 //
 function load_capabilities(d3ck, element) {
 
-    console.log('loadin capabilities settings for ' + d3ck.D3CK_ID)
+    console.log('loadin capabilities settings for ' + d3ck.D3CK_ID + ' @ ' + element)
 
     var jqXHR_trust_def = $.ajax({ url: '/capabilities/' + d3ck.D3CK_ID, dataType: 'json' })
     jqXHR_trust_def.done(function (data, textStatus, jqXHR) {
         console.log('jxq default capabilities returned')
         console.log(data)
 
-        var row = '<td>' + d3ck.owner.name + '</td>'
-            row = row + '<td>' + data.cap['friend request'] + '</td>'
-            row = row + '<td>' + data.cap['vpn'] + '</td>'
-            row = row + '<td>' + data.cap['SIP'] + '</td>'
-            row = row + '<td>' + data.cap['webRTC'] + '</td>'
-            row = row + '<td>' + data.cap['file transfer'] + '</td>'
-            row = row + '<td>' + data.cap['messages'] + '</td>'
-            row = row + '<td>' + data.cap['command execution'] + '</td>'
-            row = row + '<td>' + data.cap['Geo-translocation'] + '</td>'
-            row = row + '</td>'
+        var row = '<tr>' + '<td>' + d3ck.owner.name + '</td>'
+            row = row    + '<td>' + d3ck.D3CK_ID + '</td>'
+            row = row    + '<td>' + data.cap['friend request'] + '</td>'
+            row = row    + '<td>' + data.cap['VPN'] + '</td>'
+            row = row    + '<td>' + data.cap['SIP'] + '</td>'
+            row = row    + '<td>' + data.cap['webRTC'] + '</td>'
+            row = row    + '<td>' + data.cap['file transfer'] + '</td>'
+            row = row    + '<td>' + data.cap['messages'] + '</td>'
+            row = row    + '<td>' + data.cap['command execution'] + '</td>'
+            row = row    + '<td>' + data.cap['Geo-translocation'] + '</td>'
+            row = row    + '</td></tr>'
 
-        // $(element).append(JSON.stringify(data) + '<br />')
         $(element).append(row)
+        console.log(row)
 
     })
 
