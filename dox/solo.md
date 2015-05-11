@@ -35,8 +35,18 @@ Chrome has a thin strip between the page content and its menu bars, like:
 <img src="/dox/chrome-perm.png">
 </p>
 
-If you permit them to, you should see your smilin' face on the right-hand
-side of the screen, under the "Local" label.
+If you permit them to, you should see your smilin' face in glorious color
+(well, unless you're hooked up to a 50's era Zenith TV or something)
+on the right-hand side of the screen, under the "Local" label.
+
+
+A second window, browser, or person can login and select the 2nd button -
+"Connect local D3ck" - and you should see the final connection, something like -
+
+
+<p align="center">
+<img src="/dox/local-video.png">
+</p>
 
 
 
