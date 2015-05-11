@@ -1913,6 +1913,11 @@ function create_cli3nt_rest(req, res, next) {
 
         write_2_file(d3ck_keystore + '/' + did + "/_cli3nt.key", cli3nt_bundle.vpn.key.join('\n'))
         write_2_file(d3ck_keystore + '/' + did + "/_cli3nt.crt", cli3nt_bundle.vpn.cert.join('\n'))
+
+        // for the UI
+        var exe = d3ck_home + '/exe/certitude.sh ' + d3ck_keystore + '/' + remote_did + '/_cli3nt.crt > ' + d3ck_home + '/public/certz/' + remote_did + '.crt.json'
+        d3ck_spawn_sync(exe)
+
     }
 
     //
@@ -3687,7 +3692,13 @@ function friend_response(req, res, next) {
             return
         }
         else {
+            // for the UI
+            var exe  = d3ck_home + '/exe/certitude.sh'
+            var argz = [d3ck_keystore + '/' + from_d3ck + '/_cli3nt.crt', ' > ',  d3ck_home + '/public/certz/' + from_d3ck + '.crt.json']
+            d3ck_spawn_sync(exe, argz)
+
             log.info('reading ' + d3ck_keystore +'/'+ from_d3ck + "/_cli3nt.all")
+
             try {
                 d3ck_data = JSON.parse(fs.readFileSync(d3ck_keystore + '/' + from_d3ck + "/_cli3nt.json").toString())
             }
@@ -4080,7 +4091,7 @@ function d3ck_spawn(command, argz) {
 //
 function d3ck_spawn_sync(command, argz) {
 
-    log.info('a syncd command emerges... ' + ' (' + command + ')\n\n\t')
+    log.info('a syncd command emerges... ' + ' (' + command + argz + ')\n\n\t')
 
     var cmd_string = command + ' ' + argz.join(' ')
 
@@ -5377,7 +5388,7 @@ server.get('/capabilities/:deckid', auth, getCapabilities);
 // get your geo on
 server.get('/geo', auth, getGeo);
 
-// get your geo on
+// get your dns on
 server.get('/dns', auth, getDNS);
 
 // Ping another
