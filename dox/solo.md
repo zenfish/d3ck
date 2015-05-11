@@ -12,19 +12,19 @@ its video capabilities.
 
 The short version:
 
-    login
+    - login
 
-    pull down the video menu at the top and select Test/Host Local Video
+    - pull down the video menu at the top and select Test/Host Local Video
 
-    grant camera permissions
+    - grant camera permissions
 
-    login to the d3ck with the same or another browser, on the same or another computer
+    - login to the d3ck with the same or another browser, on the same or another computer
 
-    Select the Connect local d3ck option
+    - Select the Connect local d3ck option
 
-    grant camera permissions
+    - grant camera permissions
 
-    Confidential video conferencing will fire up
+    - Confidential video conferencing will fire up
 
 
 The longer one follows....
