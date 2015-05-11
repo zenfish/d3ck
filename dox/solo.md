@@ -44,7 +44,7 @@ A second window, browser, or person can login and select the 2nd button -
 "Connect local D3ck" - and you should see the final connection, something like -
 
 <p align="center">
-<img src="/dox/local-video.png">
+<img max-width="50%" src="/dox/local-video.png">
 </p>
 
 
