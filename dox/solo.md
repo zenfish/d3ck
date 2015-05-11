@@ -1,5 +1,6 @@
-Testing your d3ck
------------------
+
+Quick-n-Dirty d3ckin', or simply testing your d3ck
+--------------------------------------------------
 
 A fair bit of d3ck functionality requires two d3cks, so it can be hard
 to test much if you finally get your own running.
@@ -46,6 +47,5 @@ A second window, browser, or person can login and select the 2nd button -
 <p align="center">
 <img width="400" src="/dox/local-video.png">
 </p>
-
 
 
