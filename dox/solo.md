@@ -26,7 +26,7 @@ to use your camera - in Firefox it pops up a little box that looks
 something like this:
 
 <p align="center">
-<img src="/dox/ff-perm.png">
+<img height="200" src="/dox/ff-perm.png">
 </p>
 
 Chrome has a thin strip between the page content and its menu bars, like:
@@ -44,7 +44,7 @@ A second window, browser, or person can login and select the 2nd button -
 "Connect local D3ck" - and you should see the final connection, something like -
 
 <p align="center">
-<img max-width="50%" src="/dox/local-video.png">
+<img width="400" src="/dox/local-video.png">
 </p>
 
 
