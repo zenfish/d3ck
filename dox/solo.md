@@ -10,6 +10,26 @@ if video works, at least, and if you want to share your username &
 password with someone else, you can both login to the same d3ck and use
 its video capabilities.
 
+The short version:
+
+    login
+
+    pull down the video menu at the top and select Test/Host Local Video
+
+    grant camera permissions
+
+    login to the d3ck with the same or another browser, on the same or another computer
+
+    Select the Connect local d3ck option
+
+    grant camera permissions
+
+    Confidential video conferencing will fire up
+
+
+The longer one follows....
+
+
 Upon logging into your d3ck, you'll see something like a blank screen -
 at the top on the right-hand side there's a little video icon:
 
