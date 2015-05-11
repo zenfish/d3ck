@@ -430,7 +430,7 @@ $(document).ready(function () {
                     $('.thumbnail').addClass('dotdotdot')
 
                     // load up trust info
-                    load_capabilities(d3ckinfo, '#d3ck_cap_table tr')
+                    load_capabilities(d3ckinfo, '#d3ck_cap_table tr:last')
 
                     // paint in the data about our certs
                     crypto_411(d3ckid, '#d3ck_trust_ccertz_table')
@@ -444,7 +444,7 @@ $(document).ready(function () {
                     all_d3ck_ids[d3ckinfo.D3CK_ID] = d3ckinfo
 
                     // load up trust defaults
-                    load_capabilities(my_d3ck, '#d3ck_cap_table tr')
+                    load_capabilities(my_d3ck, '#d3ck_cap_table tr:last')
 
                     // paint in the data about our certs
                     crypto_411('d3ck', '#d3ck_crypto')

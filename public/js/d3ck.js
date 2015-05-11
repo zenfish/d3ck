@@ -1,4 +1,4 @@
-//
+
 // helper functions for initial D3CK prototype
 //
 // draw d3cks, delete d3cks, start vpns... various things
@@ -1315,7 +1315,7 @@ function load_capabilities(d3ck, element) {
             row = row    + '<td>' + data.cap['Geo-translocation'] + '</td>'
             row = row    + '</td></tr>'
 
-        $(element).append(row)
+        $(element).after(row)
         console.log(row)
 
     })
