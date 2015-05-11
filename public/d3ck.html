@@ -118,8 +118,6 @@
 
                 <li> <a href="#messages" data-toggle="tab"><span id="d3ck_top_messages" title="Messages" data-content="Message center: notes, files, and events" class="glyphicon glyphicon-envelope"></span></a></li>
     
-                <!-- <li> <a target="_blank" id="click_d3ck_video" href="/arrr"><span id="d3ck_video" title="VPN" data-content="Voice-n-Vid" class="glyphicon glyphicon-facetime-video"></span></a></li> -->
-
                 </ul>
 
             <ul class="nav nav-tabs navbar-nav navbar-brand">
@@ -131,42 +129,39 @@
 
                 <li id='d3ck_video_light' class="dropdown" data-toggle="tooltip" data-placement="left" data-placement="left" title="will be green if video is on">
 
-                    <!-- <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span title="video" data-content="green if on" class="glyphicon glyphicon-facetime-video" data-toggle="dropdown" id="d3ck_video" class="glyphicon glyphicon-facetime-video"></span><b class="caret"></b></a> -->
-
-
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-facetime-video" data-toggle="dropdown" id="d3ck_video" class="glyphicon glyphicon-facetime-video"></span><b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-facetime-video" data-toggle="dropdown" id="d3ck_video"></span>
+                        <b class="caret"></b>
+                    </a>
                     
                     <ul class="dropdown-menu" id="d3ck_video_menu">
 
-                        <li onclick="rtc_initialize()"              style="width:125px; text-align:center;" type="button" class="btn btn-primary btn-hover">Test or Host Video Call</a></li>
-                        <li onclick="caller=true; rtc_initialize()" style="width:125px; text-align:center;" type="button" class="btn btn-primary btn-hover">Call this D3ck</a></li>
+                        <li onclick="rtc_initialize()"              type="button" class="btn btn-primary btn-hover">Test/Host Local Video</a></li>
+                        <li onclick="caller=true; rtc_initialize()" type="button" class="btn btn-primary btn-hover">Connnect local D3ck</a></li>
 
                     </ul>
 
                 </li>
-
 
                 <li> <a href="#"><span class="green glyphicon icon-lightbulb-idea" id="d3ck_status"></span></a></li>
 
                 <li> <a href="#"><span data-content="help, videos, etc. here..." class="glyphicon icon-question-sign" id="d3ck_help"></span></a></li>
 
-                <li class="dropdown">
+<li class="dropdown">
 
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="d3ck_top_skull" title="Don't" data-content="PANIC!" class="glyphicon icon-skull"></span><b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="d3ck_top_skull" title="Don't" da
+ta-content="PANIC!" class="glyphicon icon-skull"></span><b class="caret"></b></a>
 
                     <ul class="dropdown-menu" id="skull_menu">
-                        
-                        <li style="width:100%"> <button id="logout"          style="width:125px; text-align:center;" type="button" class="btn btn-danger  btn-hover">Logout</button></li>
-                        <li style="width:100%"> <button id="stop_server"     style="width:125px; text-align:center;" type="button" class="btn btn-info    btn-hover">Stop Server</button></li>
-                        <li style="width:100%"> <button id="restart_server"  style="width:125px; text-align:center;" type="button" class="btn btn-warning btn-hover">Restart Server</button></li>
-                        <li style="width:100%"> <button id="halt_vpn_client" style="width:125px; text-align:center;" type="button" class="btn btn-primary btn-hover">Die VPN, Die!</button></li>
-                        <li style="width:100%"> <button id="d3ck_panic"      style="width:125px; text-align:center;" type="button" class="btn btn-danger  btn-hover">PANIC</button></li>
-                        <li style="width:100%"> <a tabindex="-1" href="#skull" data-toggle="tab" style="width:125px; text-align:center;">Click2explain</a></li>
-
-
-
+                        <li style="width:100%"> <button id="logout"          style="text-align:center;" type"button" class="btn btn-danger  btn-hover">Logout</button></li>
+                        <li style="width:100%"> <button id="stop_server"     style="text-align:center;" type="button" class="btn btn-info    btn-hover">Stop Server</button></li>
+                        <li style="width:100%"> <button id="restart_server"  style="text-align:center;" type="button" class="btn btn-warning btn-hover">Restart Server</button></li>
+                        <li style="width:100%"> <button id="halt_vpn_client" style="text-align:center;" type="button" class="btn btn-primary btn-hover">Die VPN, Die!</button></li>
+                        <li style="width:100%"> <button id="d3ck_panic"      style="text-align:center;" type="button" class="btn btn-danger  btn-hover">PANIC</button></li>
                     </ul>
                 </li>
+
+
 
                 <li> <a target="_blank" href="https://github.com/zenfish/D3CK"><span id="d3ck_git" title="github sources" data-content="Github, sources 'n' secretz here" class="glyphicon icon-github"></span></a></li>
 
