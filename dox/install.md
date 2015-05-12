@@ -46,7 +46,9 @@ One of the most important ones is a recent version of nodejs.  You can
 download pre-built binaries for various operating systems from
 [http://nodejs.org/download/](http://nodejs.org/download/)
 
-You need be running >= nodejs version .12++.
+You need be running >= nodejs version .12++. I found some nice
+instructions for Linux (Centos, but worked on Ubuntu)
+[here](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-a-centos-7-server).
 
 Here are some additional packages that should be installed for an
 Ubuntu-like system:
