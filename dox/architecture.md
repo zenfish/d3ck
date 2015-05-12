@@ -166,7 +166,7 @@ Each line is a capability; there are currently 3 types of user types,
 paranoid, moderate, and trusting, and they all have different defaults
 for various capabilities (the paranoid being the most... cautious.)
 
-Eventaully all these could be overwritten on a d3ck-by-d3ck basis - e.g.
+Eventually all these could be overwritten on a d3ck-by-d3ck basis - e.g.
 I'm paranoid, but for you, markus, I make an exception.
 
 NOTE: if you are a client d3ck initiating communications with another
@@ -230,7 +230,7 @@ DoS attacks.
 The minimum version of OpenVPN should be 2.3.2 (as of Jul-11th-2014,
 the most recent version is 2.3.4), which allows TLS v1.0 DHE et al9.
 
-Key Management
+<h4>Key Management</h4>
 
 I'm using an extraordinarily simple key management scheme; it may be
 too simple, but I hope it will work for relatively small amounts of d3cks.
