@@ -5,7 +5,7 @@
 # various files, perms, and ownerships
 #
 
-me=$(who am i | awk '{print $1}')
+me=$(whoami | awk '{print $1}')
 
 dhome="/etc/d3ck"
 
