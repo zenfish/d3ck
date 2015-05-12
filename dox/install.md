@@ -66,12 +66,12 @@ Almost there; the next step should be done as root (the d3ck assumes
 it'll be in /etc/d3ck) - this installs a few scripts and creates links
 to various things:
 
-    ./linkage.sh
+    sudo ./linkage.sh
 
 
 And, if by some miracle all of that worked, you can start up your d3ck:
 
-    service d3ck start
+    sudo service d3ck start
 
 This will take some time the first time, as it'll be generating keys.
 
