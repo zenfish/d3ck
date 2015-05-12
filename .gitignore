@@ -46,7 +46,6 @@ lib-cov
 *.out
 *.pid
 *.did
-*.gz
 
 pids
 results
