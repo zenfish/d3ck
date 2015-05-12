@@ -1,53 +1,75 @@
 
-A d3ck runs on Linux; ubuntu is great, but I've installed it
-on other distros as well.
+There are two basic options for starting up your own d3ck - either from
+the source or by using either a raspberry pi image or EC2 AMI (both
+running Ubuntu Linux) that I've created that has all the stuff baked in.
+
+I've mostly tested the server software on Ubuntu, but I have tried
+other distros and they seem to work fine, it seems to mostly be a distro
+packaging thing.
+
+Where to get
+============
+
+0) github:
+
+    https://github.com/zenfish/d3ck
+
+1) Amazon EC2:
+
+    AMI ID ami-d12b6de1, the name is simply "d3ck".
+
+    (I've never done this before, so hopefully that'll work!)
+
+2) Raspberry Pi bootable disk image - 1.7 GB.  
+
+    http://d3ck.com/d3ck_v.0.0.1.img.gz
 
 
-There's a variety of packages needed to run this thing.
 
-One of the most important ones is a recent version of nodejs.
+Installing from source/github
+==============================
 
-Here's some installs for other bits for an Ubuntu-like system.
+*** For god's sake don't try this out on a production system, as it'll
+*** mangle things (hopefully nothing bad) you might not want on something
+*** you actually care about.
 
-    apt-get update  # probably wise :)
-    apt-get install -y python-software-properties
-    apt-get install -y openssh-server
-    apt-get install -y openvpn
-    apt-get install -y yate
-    apt-get install -y nginx
-    apt-get install -y openssl
-    apt-get install -y git
-    apt-get install -y npm
-    apt-get install -y redis-server
-    apt-get install -y curl
-    apt-get install -y nodejs
+A d3ck runs on Linux; ubuntu is great, you can try others assuming they
+have fairly modern packages. First, get the source:
 
     git clone https://github.com/zenfish/d3ck
 
     cd d3ck
 
-    npm install # might take awhile
+There's also a variety of packages needed to run this thing.
 
-    # creates various bits and links
+One of the most important ones is a recent version of nodejs.  You can
+download pre-built binaries for various operating systems from
+[http://nodejs.org/download/](http://nodejs.org/download/)
+
+You need be running >= nodejs version .12++.
+
+Here are some additional packages that should be installed for an
+Ubuntu-like system:
+
+    sudo apt-get update  # probably wise :)
+
+    sudo apt-get install -y python-software-properties openssh-server openvpn yate nginx openssl git ntp npm redis-server curl nodejs
+
+Then all the myriad node dependencies:
+
+    npm install
+
+
+Almost there; the next step should be done as root (the d3ck assumes
+it'll be in /etc/d3ck) - this installs a few scripts and creates links
+to various things:
+
     ./linkage.sh
 
-    # and finally....
 
-    # for stop/start/work use service
+And, if by some miracle all of that worked, you can start up your d3ck:
 
-    service d3ck start  # will take awhile the first time!
+    service d3ck start
 
-
-Afterwards you should be able to point a MODERN browser at
-(replace localhost with whatever host you used.)
-
-    https://localhost:8080
-
-
-It'll provide you with a quick setup screen. Don't forget
-your password!
-
-
-
-More details on usage shortly.
+This will take some time the first time, as it'll be generating keys.
 
