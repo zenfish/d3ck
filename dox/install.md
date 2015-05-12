@@ -73,5 +73,10 @@ And, if by some miracle all of that worked, you can start up your d3ck:
 
     sudo service d3ck start
 
-This will take some time the first time, as it'll be generating keys.
+This will take some time the first time it's run, as it'll be generating keys. On
+a t1.micro EC2 instance it takes anywhere from a couple of minutes to 20 or so
+(it's a non-deterministic process to generate the DH key.)
+
+It's all done when the user prompt is showing again (it'll be running in
+the background.)
 
