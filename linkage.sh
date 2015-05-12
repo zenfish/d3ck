@@ -100,5 +100,5 @@ sudo ln -s  /etc/d3ck/10-d3ck-key.rules /etc/udev/rules.d/10-d3ck-key.rules
 # an alternate configuration file to use if, when redis starts, it dies
 sudo /etc/init.d/*redis* start
 
-cd /etc/d3ck/node_modules; tar xvf ../nx.tar.gz; cd ./node-exec-sync2; npm install
+cd /etc/d3ck/node_modules; tar xvf ../nx.tar.gz; cd ./exec-sync2; npm install
 

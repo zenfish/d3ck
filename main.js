@@ -779,19 +779,6 @@ function auth(req, res, next) {
         log.info('got auth?  --> ' + req.path + ' <- ' + ip)
 
     //
-    // I don't care who you are... if you haven't set up your d3ck, there's nothing to auth to... so redirect
-    //
-    if (redirect_to_quickstart) {
-        if (req.path == '/quikstart.html') {
-            log.info('you want quickstart, you got it')
-            return next()
-        }
-        log.info('redirecting to qs from ' + req.path)
-        res.redirect(302, '/quikstart.html')
-        return
-    }
-
-    //
     // is it public property... e.g. can anon go?
     //
     //
@@ -829,10 +816,21 @@ function auth(req, res, next) {
         return next();
     }
 
+    //
+    // I don't care who you are... if you haven't set up your d3ck, there's nothing to auth to... so redirect
+    //
+    if (redirect_to_quickstart) {
+        if (req.path == '/quikstart.html') {
+            log.info('you want quickstart, you got it')
+            return next()
+        }
+        log.info('redirecting to qs from ' + req.path)
+        res.redirect(302, '/quikstart.html')
+        return
+    }
+
     // var url_bits  = req.path.split('/'),
-
     // log.info("hdrz: " + JSON.stringify(req.headers))
-
     // OK - which of the above types above are you?
 
     // for now... let in localhost... may rethink
