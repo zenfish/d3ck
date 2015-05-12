@@ -24,7 +24,7 @@ The short version:
 
     - grant camera permissions
 
-    - Confidential video conferencing will fire up
+    - Confidential video conferencing should fire up
 
 
 The longer one follows....

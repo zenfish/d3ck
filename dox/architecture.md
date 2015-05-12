@@ -156,11 +156,11 @@ logged in, whether in real-time or queued up or whatever.
 
 The capabilities structure is in D3CK.json; it looks something like this:
 
- "capabilities" : {
-     "friend request":       { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
-     "VPN":                  { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
-
+    "capabilities" : {
+        "friend request":       { "paranoid": "off", "moderate": "ask", "trusting": "on"  },
+        "VPN":                  { "paranoid": "ask", "moderate": "ask", "trusting": "on"  },
      [...]
+    }
 
 Each line is a capability; there are currently 3 types of user types,
 paranoid, moderate, and trusting, and they all have different defaults
