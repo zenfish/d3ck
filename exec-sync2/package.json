@@ -1,0 +1,49 @@
+{
+  "name": "exec-sync2",
+  "version": "0.1.0",
+  "description": "Execute shell commands synchronously.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prc322/node-exec-sync.git"
+  },
+  "author": {
+    "name": "prc322",
+    "email": "c.kernstock@me.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/prc322/node-exec-sync/issues"
+  },
+  "homepage": "https://github.com/prc322/node-exec-sync",
+  "dependencies": {
+    "ffi": "^1.2.7",
+    "node-uuid": "^1.4.2",
+    "underscore": "^1.7.0"
+  },
+  "gitHead": "77dd2d63e4bfc89ab8ccb7a855f13ae07b1059fc",
+  "_id": "exec-sync2@0.1.0",
+  "_shasum": "2a2f0e9dec2f58445a421e9571e9cb0899d3ee37",
+  "_from": "exec-sync2@>=0.1.0 <0.2.0",
+  "_npmVersion": "1.4.28",
+  "_npmUser": {
+    "name": "prc322",
+    "email": "c.kernstock@me.com"
+  },
+  "maintainers": [
+    {
+      "name": "prc322",
+      "email": "c.kernstock@me.com"
+    }
+  ],
+  "dist": {
+    "shasum": "2a2f0e9dec2f58445a421e9571e9cb0899d3ee37",
+    "tarball": "http://registry.npmjs.org/exec-sync2/-/exec-sync2-0.1.0.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/exec-sync2/-/exec-sync2-0.1.0.tgz",
+  "readme": "ERROR: No README data found!"
+}
