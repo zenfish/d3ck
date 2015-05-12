@@ -16,13 +16,13 @@ Where to get
 
 1) Amazon EC2:
 
-    AMI ID ami-d12b6de1, the name is simply "d3ck".
+    AMI ID ami-bd15268d, the name is simply "d3ck".
 
     (I've never done this before, so hopefully that'll work!)
 
-2) Raspberry Pi bootable disk image - 1.7 GB.  
+2) Raspberry Pi bootable disk image:
 
-    http://d3ck.com/d3ck_v.0.0.1.img.gz
+    TBD.
 
 
 
