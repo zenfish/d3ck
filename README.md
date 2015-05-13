@@ -23,7 +23,7 @@ communicate (voice, video, IM, file transfers, etc.) with confidentiality
 (e.g. it uses encryption) to someone else who has the same software
 (or uses yours.) If nothing else, it could help with this eternal problem:
 
-<img style="text-align: center;" height="300px" src='/dox/file_transfer.png' alt="Courtesy of XKCD; Randall, thanks for all the fish! https://xkcd.com/949/">
+<img style="text-align:center;" height="300px" src='/dox/file_transfer.png' alt="Courtesy of XKCD; Randall, thanks for all the fish! https://xkcd.com/949/">
 
 It's browser based, so in theory can be used from almost any computer
 with a modern browser (you simply point your browser at your d3ck.)
