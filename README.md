@@ -34,8 +34,10 @@ random basic linux system.
 
 While it's fairly simple to use (really!), this is the first release
 and it has pressing issues that would preclude it from being used
-in life-or-death situations. I've a long list of issues, overdue
-enhancements/features, etc. at [TODO](/dox/TODO.md).
+in life-or-death situations. I've started compiling a list of issues, 
+overdue enhancements/features, etc. at the 
+[issues section.](https://github.com/zenfish/d3ck/issues)
+
 
 #Getting started
 [I've started](/dox/install.md) on what are some hopefully clear
