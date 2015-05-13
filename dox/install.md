@@ -16,14 +16,23 @@ Where to get
 
 1) Amazon EC2:
 
-    AMI ID ami-bd15268d, the name is simply "d3ck".
-
+    An v14 Ubuntu AMI ID ami-bd15268d, the name is simply "d3ck".
     (I've never done this before, so hopefully that'll work!)
+
+    Username 'ubuntu', password 'thed3cksuxxx'
 
 2) Raspberry Pi bootable disk image:
 
     TBD.
 
+
+More on installing the source below, but once you get it going,
+you should be able to start it by:
+
+    sudo service d3ck start
+
+Lots of output will (should!) result, and when the shell prompt
+finally returns it should be ready to go.
 
 
 Installing from source/github
