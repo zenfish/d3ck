@@ -41,6 +41,10 @@ enhancements/features, etc. at [TODO](/dox/TODO.md).
 [I've started](/dox/install.md) on what are some hopefully clear
 instructions to get it up and running.
 
+[Post Install, First Use](/dox/new-d3ck-install.pdf) goes over how
+to use the tool.
+
+
 #UI and Examples
 [The web UI](/dox/UI.md) along with some screenshots and so on are
 located in the UI subdirectory.

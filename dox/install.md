@@ -16,7 +16,7 @@ Where to get
 
 1) Amazon EC2:
 
-    An v14 Ubuntu AMI ID ami-bd15268d, the name is simply "d3ck".
+    An v14 Ubuntu AMI ID ami-c30635f3, the name is simply "d3ck".
     (I've never done this before, so hopefully that'll work!)
 
     Username 'ubuntu', password 'thed3cksuxxx'
