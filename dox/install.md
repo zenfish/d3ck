@@ -16,10 +16,7 @@ Where to get
 
 1) Amazon EC2:
 
-    An v14 Ubuntu AMI ID ami-91f3c0a1, the name is "d3ck may-12-2015".
-    (I've never done this before, so hopefully that'll work!)
-
-    Username 'ubuntu', password 'thed3cksuxxx'
+    ASAP.
 
 2) Raspberry Pi bootable disk image:
 
