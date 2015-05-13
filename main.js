@@ -4566,7 +4566,9 @@ function quikStart(req, res, next) {
         log.info('security stance is required, but using default')
     }
     else {
-        stance = req.body.radio_free_d3ck
+        // xxx - for now, always trusting....
+        // stance = req.body.radio_free_d3ck
+        stance = 'trusting'
     }
 
     // log.info(name, email, d3ck, password, stance)
