@@ -20,20 +20,29 @@ Where to get
 
 2) Raspberry Pi bootable disk image:
 
-    TBD.
+    http://d3ck.com/rpi_d3ck_05_14_15.img
+
+This is based on a fresh install of the NOOBS/Raspbian distro from
+RPi land itself. It has all the stuff you should need (other than
+the raspberry pi itself) to get rolling easily.
 
 
-More on installing the source below, but once you get it going,
-you should be able to start it by:
+Getting it on
+-------------
+
+More on installing the source below, but once you get it going, or are
+using either of teh binary images above, you should be able to start
+it by:
 
     sudo service d3ck start
 
-Lots of output will (should!) result, and when the shell prompt
-finally returns it should be ready to go.
+Lots of output will (should!) result, and when the shell prompt finally
+returns it should be ready to go (a quick connect to https: to your d3ck
+on port 8080 with a browser should tell you whether or not that's true.
 
 
 Installing from source/github
-==============================
+-----------------------------
 
 *** For god's sake don't try this out on a production system, as it'll
 *** mangle things (hopefully nothing bad) you might not want on something

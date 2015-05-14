@@ -3839,8 +3839,7 @@ function uploadSchtuff(req, res, next) {
 
     log.info('uploadz!')
 
-    log.info(files)
-
+    // log.info(files)
 
     var d3ck_status = empty_status()
 
