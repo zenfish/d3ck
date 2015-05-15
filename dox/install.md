@@ -20,12 +20,17 @@ Where to get
 
 2) Raspberry Pi bootable disk image:
 
-    TBD.
+    http://d3ck.com/rpi_d3ck_05_14_15.img
 
 This is based on a fresh install of the NOOBS/Raspbian distro from
 RPi land itself. It has all the stuff you should need (other than
-the raspberry pi itself) to get rolling easily.
+the raspberry pi itself) to get rolling easily. The 'sudo' enabled
+login & password for the Pi are:
 
+    login:       pi
+    password:  d3ck
+
+SSHD is enabled.
 
 
 Getting it on
@@ -55,6 +60,12 @@ Installing from source/github
 *** For god's sake don't try this out on a production system, as it'll
 *** mangle things (hopefully nothing bad) you might not want on something
 *** you actually care about.
+
+ALSO - you need up-to-date versions of nginx (1.4+), OpenVPN, and really
+want fairly modern versions for the rest. I'll put version checking in 
+eventually.....
+
+
 
 A d3ck runs on Linux; ubuntu is great, you can try others assuming they
 have fairly modern packages. First, get the source:
