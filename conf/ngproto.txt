@@ -117,6 +117,7 @@ http {
 
 
         # the fiddling never ends... try this?  http://stackoverflow.com/questions/11237241/502-bad-gateway-nginx
+        proxy_buffering                on;
         fastcgi_buffer_size           16k;
         fastcgi_buffers             4 16k;
 

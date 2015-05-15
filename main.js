@@ -4019,7 +4019,7 @@ function uploadSchtuff(req, res, next) {
 
                 // var file_data = fs.readFileSync(tmpfile)
 
-                log.info('FN: ' + target_file + '  Opts:')
+                log.info('FN: ' + target_file + '  Opts:' + " ===> " + url)
 
                 log.info(options.headers)
 
