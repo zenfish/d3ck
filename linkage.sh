@@ -5,9 +5,64 @@
 # various files, perms, and ownerships
 #
 
+#
+# some basic vars
+#
+dhome="/etc/d3ck"
+
+#
+# XXX - should get the next from conf or something
+#
+# new fangled associative arrays...
+declare -A d3ck
+declare -A versions
+
+d3ck['nginx']=1.5
+d3ck['node']=0.12
+
+
+#
+# This really has to be run as root
+#
 me=$(whoami | awk '{print $1}')
 
-dhome="/etc/d3ck"
+if [ $me != 'root' ] ; then
+    echo This must be run as root, not $me, sorry!
+    exit 2
+fi
+
+exit
+
+#
+#  next, check a few version number minimums....
+#
+
+# actual versions
+versions['nginx']=$(nginx -v 2>&1 | sed 's@^.*/@@')
+versions['node']=$(node --version|sed 's/.//')
+
+# echo nginx min: ${d3ck['nginx']}
+# echo node min: ${d3ck['node']}
+
+# weird loopy syntax
+for exe in "${!d3ck[@]}" ; do
+
+    echo testing $exe, must be version ${d3ck[$exe]} or better
+
+    /etc/d3ck/exe/min_version.sh ${versions[$exe]} ${d3ck[$exe]}
+
+    if [ $? != 0 ] ; then
+        echo -e "\tFailure: ${versions[$exe]} < ${d3ck[$exe]}"
+        exit 3
+    else 
+        echo -e "\tSuccess! ${versions[$exe]} >= ${d3ck[$exe]}"
+    fi
+
+done
+
+#
+# start putting things in
+#
 
 if [ $(pwd) != $dhome -a ! -s $dhome ] ; then
     echo creating symlink in /etc/d3ck to current directory
@@ -23,7 +78,7 @@ echo creating additional symlinks...
 live_or_die () {
    if [ $? != 0 ] ; then
        echo "... failure..."
-       exit 2
+       exit 4
    fi
 }
 
@@ -38,7 +93,7 @@ check_n_link() {
         # give me a break, lol
         if [ -f $file.$$ -o -s $file.$$ ]; then
             echo things are weird... $file.$$ exists... bailing out for safety\!
-            exit 3
+            exit 5
         fi
 
         echo moving $file to $file.$$ so we can link to d3ck\'s version
