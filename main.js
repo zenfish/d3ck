@@ -3706,6 +3706,9 @@ function friend_response(req, res, next) {
             }
         }
 
+
+
+
         if (!__.contains(d3ck_data.all_ips, ip_addr)) {
             log.info("the d3ck data doesn't contain the IP this is going to... adding [" + ip_addr + "] to IP pool just in case")
             d3ck_data.all_ips.push(ip_addr)
@@ -4088,7 +4091,7 @@ function d3ck_spawn(command, argz) {
 //
 function d3ck_spawn_sync(command, argz) {
 
-    log.info('a syncd command emerges... ' + ' (' + command + argz + ')\n\n\t')
+    log.info('a syncd command emerges... ' + ' (' + command + ' + ' + argz + ')\n\n\t')
 
     var cmd_string = command + ' ' + argz.join(' ')
 
