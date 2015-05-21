@@ -47,7 +47,7 @@ for exe in "${!d3ck[@]}" ; do
 
     echo testing $exe, must be version ${d3ck[$exe]} or better
 
-    /etc/d3ck/exe/min_version.sh ${versions[$exe]} ${d3ck[$exe]}
+    ./exe/min_version.sh ${versions[$exe]} ${d3ck[$exe]}
 
     if [ $? != 0 ] ; then
         echo -e "\tFailure: ${versions[$exe]} < ${d3ck[$exe]}"
