@@ -31,8 +31,6 @@ if [ $me != 'root' ] ; then
     exit 2
 fi
 
-exit
-
 #
 #  next, check a few version number minimums....
 #
