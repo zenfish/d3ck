@@ -1,0 +1,1 @@
+wsman -v -V enumerate http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_RegisteredProfile -h 192.168.0.23 -P 443 -u root -p calvin -c dummy.cert -j utf-8 -y basic -m 256 -R -N root/interop

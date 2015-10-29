@@ -43,6 +43,8 @@ cd $vpn_home
 # get IP's of server
 remote=$(ifconfig | awk '{if (n) { all[dev] = substr($2, match($2, ":") + 1); n = 0 }} {if (match($0, "^[^ \t]") && $1 != "lo" && !match($1, "^tun")) { n = 1; dev = $1; all[dev]="" }} END { for (i in all) print "remote", all[i]}'| sed 's/,]$/]/')
 
+echo remote: $remote
+
 echo
 echo generating p12:
 echo
@@ -110,4 +112,9 @@ echo "<tls-auth>"
 cat /etc/d3ck/d3cks/D3CK/ta.key
 echo "</tls-auth>"
 ) > $vtarget.ovpn
+
+
+echo
+echo '**** WARNING!  On IOS Multiple "remote" entries seems to not work ;('
+echo
 
